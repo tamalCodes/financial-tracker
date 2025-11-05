@@ -1,5 +1,5 @@
-import type { KeyboardEvent } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
+import type { KeyboardEvent } from "react";
 
 interface Transaction {
   id: string;
@@ -11,7 +11,7 @@ interface Transaction {
 
 interface TransactionListProps {
   items: Transaction[];
-  type: 'expense' | 'investment' | 'credit';
+  type: "expense" | "investment" | "credit";
   onDelete: (id: string) => void;
   formatCurrency: (amount: number) => string;
   onSelect?: (id: string) => void;
@@ -28,7 +28,7 @@ export default function TransactionList({
 }: TransactionListProps) {
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>, id: string) => {
     if (!onSelect) return;
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       onSelect(id);
     }
@@ -43,29 +43,41 @@ export default function TransactionList({
         return (
           <div
             key={item.id}
-            role={canSelect ? 'button' : undefined}
+            role={canSelect ? "button" : undefined}
             tabIndex={canSelect ? 0 : undefined}
             onClick={canSelect ? () => onSelect?.(item.id) : undefined}
-            onKeyDown={canSelect ? (event) => handleKeyDown(event, item.id) : undefined}
-            className={`p-4 flex items-center justify-between transition-colors ${
-              canSelect ? 'hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20' : ''
+            onKeyDown={
+              canSelect ? (event) => handleKeyDown(event, item.id) : undefined
+            }
+            className={`p-4 relative flex items-center justify-between transition-colors ${
+              canSelect
+                ? "hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+                : ""
             }`}
           >
-            <div className="flex-1 min-w-0">
-              <p className="text-base font-medium text-slate-900 truncate">{item.description}</p>
-              {showDate && (
-                <p className="text-xs text-slate-500 mt-1">{formatDate!(item.created_at!)}</p>
-              )}
+            <div className="flex-1  min-w-0">
+              <p className="text-[18px] font-heading font-medium text-slate-900 truncate">
+                {item.description}
+              </p>
+
               <p
-                className={`text-sm font-semibold mt-1 ${
-                  type === 'expense'
-                    ? 'text-red-600'
-                    : type === 'credit'
-                    ? 'text-emerald-600'
-                    : 'text-indigo-600'
+                className={`text-md flex w-full font-sans items-center justify-between font-semibold mt-3 ${
+                  type === "expense"
+                    ? "text-red-600"
+                    : type === "credit"
+                    ? "text-emerald-600"
+                    : "text-indigo-600"
                 }`}
               >
-                {formatCurrency(Number(item.amount))}
+                <span>{formatCurrency(Number(item.amount))}</span>{" "}
+                <span>
+                  {" "}
+                  {showDate && (
+                    <p className="text-xs text-slate-500 mt-1">
+                      {formatDate!(item.created_at!)}
+                    </p>
+                  )}
+                </span>
               </p>
             </div>
             <button
@@ -74,8 +86,10 @@ export default function TransactionList({
                 event.stopPropagation();
                 onDelete(item.id);
               }}
-              className="ml-3 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              aria-label={type === 'expense' ? 'Delete expense' : 'Delete investment'}
+              className="absolute  right-[20px] top-[20px]  text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              aria-label={
+                type === "expense" ? "Delete expense" : "Delete investment"
+              }
             >
               <Trash2 className="w-5 h-5" />
             </button>

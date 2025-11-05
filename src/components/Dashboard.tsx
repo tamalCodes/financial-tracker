@@ -537,7 +537,7 @@ export default function Dashboard() {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">
+              <h1 className="text-lg font-heading font-semibold text-slate-900">
                 Financial Tracker
               </h1>
               <p className="text-xs text-slate-600">{getMonthName()}</p>
@@ -585,14 +585,18 @@ export default function Dashboard() {
                 className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-slate-900/40"
                 aria-label="Edit starting balance"
               >
-                <p className="text-sm text-slate-600 mb-1">Starting Balance</p>
-                <p className="text-2xl font-semibold text-slate-900">
+                <p className="text-sm font-sans text-slate-600 mb-1">
+                  Starting Balance
+                </p>
+                <p className="text-2xl font-heading font-semibold text-slate-900">
                   {formatCurrency(balance.starting_balance)}
                 </p>
               </button>
               <div className="bg-slate-900 rounded-2xl shadow-sm p-5">
-                <p className="text-sm text-slate-400 mb-1">Closing Balance</p>
-                <p className="text-2xl font-semibold text-white">
+                <p className="text-sm text-slate-400 font-sans mb-1">
+                  Closing Balance
+                </p>
+                <p className="text-2xl font-semibold text-white font-heading">
                   {formatCurrency(balance.closing_balance)}
                 </p>
               </div>
@@ -600,9 +604,9 @@ export default function Dashboard() {
 
             <div className="space-y-4 pt-10">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <TrendingDown className="w-5 h-5 text-red-600" />
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
                     Expenses
                   </h2>
                 </div>
@@ -634,7 +638,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-indigo-600" />
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
                     Credits
                   </h2>
                 </div>
@@ -666,7 +670,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
                     Investments
                   </h2>
                 </div>
