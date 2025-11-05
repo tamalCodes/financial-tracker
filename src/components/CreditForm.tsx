@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 
-interface ExpenseFormProps {
+interface CreditFormProps {
   currentMonth: string;
   onClose: () => void;
   onSuccess: () => void;
-  expense?: {
+  credit?: {
     id: string;
     description: string;
     amount: number;
@@ -15,37 +15,35 @@ interface ExpenseFormProps {
   };
 }
 
-export default function ExpenseForm({
+export default function CreditForm({
   currentMonth,
   onClose,
   onSuccess,
-  expense,
-}: ExpenseFormProps) {
+  credit,
+}: CreditFormProps) {
   const { user } = useAuth();
   const [description, setDescription] = useState(
-    expense ? expense.description : ""
+    credit ? credit.description : ""
   );
-  const [amount, setAmount] = useState(
-    expense ? expense.amount.toString() : ""
+  const [amount, setAmount] = useState(credit ? credit.amount.toString() : "");
+  const [carryForward, setCarryForward] = useState(
+    credit?.carry_forward ?? false
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [carryForward, setCarryForward] = useState(
-    expense?.carry_forward ?? false
-  );
 
   useEffect(() => {
-    if (expense) {
-      setDescription(expense.description);
-      setAmount(expense.amount.toString());
-      setCarryForward(expense.carry_forward ?? false);
+    if (credit) {
+      setDescription(credit.description);
+      setAmount(credit.amount.toString());
+      setCarryForward(credit.carry_forward ?? false);
     } else {
       setDescription("");
       setAmount("");
       setCarryForward(false);
     }
     setError("");
-  }, [expense]);
+  }, [credit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,19 +60,19 @@ export default function ExpenseForm({
 
     let submitError = null;
 
-    if (expense) {
+    if (credit) {
       const { error: updateError } = await supabase
-        .from("expenses")
+        .from("credits")
         .update({
           description,
           amount: parsedAmount,
           carry_forward: carryForward,
         })
-        .eq("id", expense.id)
+        .eq("id", credit.id)
         .eq("user_id", user.id);
       submitError = updateError;
     } else {
-      const { error: insertError } = await supabase.from("expenses").insert({
+      const { error: insertError } = await supabase.from("credits").insert({
         user_id: user.id,
         month: currentMonth,
         description,
@@ -90,18 +88,18 @@ export default function ExpenseForm({
       onSuccess();
       onClose();
     } else {
-      setError(submitError.message ?? "Unable to save expense.");
+      setError(submitError.message ?? "Unable to save credit.");
     }
   };
 
-  const isEditing = Boolean(expense);
+  const isEditing = Boolean(credit);
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
       <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md shadow-xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-semibold text-slate-900">
-            {isEditing ? "Edit Expense" : "Add Expense"}
+            {isEditing ? "Edit Credit" : "Add Credit"}
           </h2>
           <button
             onClick={onClose}
@@ -114,31 +112,31 @@ export default function ExpenseForm({
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div>
             <label
-              htmlFor="description"
+              htmlFor="credit-description"
               className="block text-sm font-medium text-slate-700 mb-2"
             >
               Title
             </label>
             <input
-              id="description"
+              id="credit-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              placeholder="e.g., Groceries, Fuel, Rent"
+              placeholder="e.g., Salary, Bonus, Refund"
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
             />
           </div>
 
           <div>
             <label
-              htmlFor="amount"
+              htmlFor="credit-amount"
               className="block text-sm font-medium text-slate-700 mb-2"
             >
               Amount
             </label>
             <input
-              id="amount"
+              id="credit-amount"
               type="number"
               step="0.01"
               value={amount}
@@ -151,14 +149,17 @@ export default function ExpenseForm({
 
           <div className="flex items-start gap-3">
             <input
-              id="carry-forward"
+              id="credit-carry-forward"
               type="checkbox"
               checked={carryForward}
               onChange={(e) => setCarryForward(e.target.checked)}
               className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
             />
-            <label htmlFor="carry-forward" className="text-sm text-slate-600">
-              Carry this payment forward to future months automatically.
+            <label
+              htmlFor="credit-carry-forward"
+              className="text-sm text-slate-600"
+            >
+              Carry this credit forward to future months automatically.
             </label>
           </div>
 
@@ -183,7 +184,7 @@ export default function ExpenseForm({
                   : "Adding..."
                 : isEditing
                 ? "Save Changes"
-                : "Add Expense"}
+                : "Add Credit"}
             </button>
           </div>
         </form>

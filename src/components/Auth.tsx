@@ -1,18 +1,19 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { LogIn } from 'lucide-react';
+import { DollarSign, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -22,7 +23,7 @@ export default function Auth() {
         await signUp(email, password);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -34,7 +35,7 @@ export default function Auth() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="flex items-center justify-center mb-8">
             <div className="bg-slate-900 p-3 rounded-xl">
-              <LogIn className="w-6 h-6 text-white" />
+              <DollarSign className="w-6 h-6 text-white" />
             </div>
           </div>
 
@@ -42,12 +43,15 @@ export default function Auth() {
             Financial Tracker
           </h1>
           <p className="text-slate-600 text-center mb-8 text-sm">
-            {isLogin ? 'Sign in to your account' : 'Create a new account'}
+            {isLogin ? "Sign in to your account" : "Create a new account"}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Email
               </label>
               <input
@@ -56,25 +60,42 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all text-base"
+                className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none   transition-all text-base"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all text-base"
-                placeholder="••••••••"
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none   transition-all text-base"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-[10px]  text-slate-500  bg-transparent"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {error && (
@@ -88,7 +109,7 @@ export default function Auth() {
               disabled={loading}
               className="w-full bg-slate-900 text-white py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base"
             >
-              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
             </button>
           </form>
 
@@ -97,7 +118,9 @@ export default function Auth() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
             >
-              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
             </button>
           </div>
         </div>
