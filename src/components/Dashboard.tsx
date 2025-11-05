@@ -582,21 +582,21 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={handleOpenStartingBalanceForm}
-                className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-slate-900/40"
+                className="bg-white rounded-2xl shadow-sm border border-slate-600 p-5 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-slate-900/40"
                 aria-label="Edit starting balance"
               >
-                <p className="text-sm font-sans text-slate-600 mb-1">
+                <p className="text-sm font-sans text-slate-600 mb-4">
                   Starting Balance
                 </p>
-                <p className="text-2xl font-heading font-semibold text-slate-900">
+                <p className="text-3xl font-heading font-semibold text-slate-900">
                   {formatCurrency(balance.starting_balance)}
                 </p>
               </button>
-              <div className="bg-slate-900 rounded-2xl shadow-sm p-5">
-                <p className="text-sm text-slate-400 font-sans mb-1">
+              <div className="bg-slate-600   rounded-2xl shadow-sm p-5">
+                <p className="text-sm text-slate-200 font-sans mb-4">
                   Closing Balance
                 </p>
-                <p className="text-2xl font-semibold text-white font-heading">
+                <p className="text-3xl font-semibold text-white font-heading">
                   {formatCurrency(balance.closing_balance)}
                 </p>
               </div>
@@ -606,15 +606,15 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <TrendingDown className="w-5 h-5 text-red-600" />
-                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
+                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
                     Expenses
                   </h2>
                 </div>
                 <button
                   onClick={handleCreateExpense}
-                  className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-7 h-7" />
                 </button>
               </div>
 
@@ -637,16 +637,16 @@ export default function Dashboard() {
             <div className="space-y-4 pt-10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-indigo-600" />
-                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
                     Credits
                   </h2>
                 </div>
                 <button
                   onClick={handleCreateCredit}
-                  className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-7 h-7 " />
                 </button>
               </div>
 
@@ -669,16 +669,16 @@ export default function Dashboard() {
             <div className="space-y-4 pt-10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-2xl font-heading font-semibold text-slate-900">
+                  <TrendingUp className="w-5 h-5  text-indigo-600" />
+                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
                     Investments
                   </h2>
                 </div>
                 <button
                   onClick={() => setShowInvestmentForm(true)}
-                  className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-7 h-7" />
                 </button>
               </div>
 
@@ -708,12 +708,12 @@ export default function Dashboard() {
             role="dialog"
             aria-modal="true"
           >
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
+            <div className="flex items-start justify-between p-6 ">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-3xl font-semibold text-slate-900">
                   Edit Starting Balance
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">{getMonthName()}</p>
+                <p className="text-md text-slate-500 mt-1">{getMonthName()}</p>
               </div>
               <button
                 type="button"
@@ -721,7 +721,7 @@ export default function Dashboard() {
                 className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                 aria-label="Close starting balance editor"
               >
-                <X className="w-5 h-5 text-slate-600" />
+                <X className="w-6 h-6 text-slate-600" />
               </button>
             </div>
 
@@ -732,7 +732,7 @@ export default function Dashboard() {
               <div>
                 <label
                   htmlFor="starting-balance"
-                  className="block text-sm font-medium text-slate-700 mb-2"
+                  className="block text-xl font-sans font-medium text-slate-700 mb-2"
                 >
                   Starting balance
                 </label>
@@ -745,7 +745,7 @@ export default function Dashboard() {
                   onChange={(e) => setStartingBalanceInput(e.target.value)}
                   required
                   autoFocus
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+                  className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
                 />
               </div>
 
@@ -753,7 +753,7 @@ export default function Dashboard() {
                 <p className="text-sm text-red-600">{startingBalanceError}</p>
               )}
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-10">
                 <button
                   type="button"
                   onClick={handleCloseStartingBalanceForm}

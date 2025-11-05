@@ -97,10 +97,10 @@ export default function ExpenseForm({
   const isEditing = Boolean(expense);
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md shadow-xl">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <h2 className="text-xl font-semibold text-slate-900">
+    <div className="fixed w-full inset-0 bg-black/40 flex items-end backdrop-blur-md sm:items-center justify-center z-50">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full   shadow-xl">
+        <div className="flex items-center justify-between p-6 ">
+          <h2 className="text-3xl font-semibold text-slate-900">
             {isEditing ? "Edit Expense" : "Add Expense"}
           </h2>
           <button
@@ -111,29 +111,33 @@ export default function ExpenseForm({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 h-full flex flex-col gap-10"
+        >
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-xl font-sans font-medium text-slate-700 mb-2"
             >
               Title
             </label>
             <input
               id="description"
               type="text"
+              autoFocus={true}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               placeholder="e.g., Groceries, Fuel, Rent"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>
 
           <div>
             <label
               htmlFor="amount"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-xl font-sans font-medium text-slate-700 mb-2"
             >
               Amount
             </label>
@@ -145,7 +149,7 @@ export default function ExpenseForm({
               onChange={(e) => setAmount(e.target.value)}
               required
               placeholder="0.00"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>
 
@@ -157,14 +161,14 @@ export default function ExpenseForm({
               onChange={(e) => setCarryForward(e.target.checked)}
               className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
             />
-            <label htmlFor="carry-forward" className="text-sm text-slate-600">
+            <label htmlFor="carry-forward" className="text-md text-slate-600">
               Carry this payment forward to future months automatically.
             </label>
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex  items-end gap-3 pt-10">
             <button
               type="button"
               onClick={onClose}

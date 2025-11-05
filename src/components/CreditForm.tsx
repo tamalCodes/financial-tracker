@@ -95,10 +95,10 @@ export default function CreditForm({
   const isEditing = Boolean(credit);
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md shadow-xl">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <h2 className="text-xl font-semibold text-slate-900">
+    <div className="fixed w-full inset-0 bg-black/40 flex items-end backdrop-blur-md sm:items-center justify-center z-50">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full   shadow-xl">
+        <div className="flex items-center justify-between p-6">
+          <h2 className="text-3xl font-semibold text-slate-900">
             {isEditing ? "Edit Credit" : "Add Credit"}
           </h2>
           <button
@@ -109,29 +109,33 @@ export default function CreditForm({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 h-full flex flex-col gap-10"
+        >
           <div>
             <label
               htmlFor="credit-description"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-xl font-sans font-medium text-slate-700 mb-2"
             >
               Title
             </label>
             <input
               id="credit-description"
               type="text"
+              autoFocus={true}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
               placeholder="e.g., Salary, Bonus, Refund"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>
 
           <div>
             <label
               htmlFor="credit-amount"
-              className="block text-sm font-medium text-slate-700 mb-2"
+              className="block text-xl font-sans font-medium text-slate-700 mb-2"
             >
               Amount
             </label>
@@ -143,7 +147,7 @@ export default function CreditForm({
               onChange={(e) => setAmount(e.target.value)}
               required
               placeholder="0.00"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>
 
@@ -157,7 +161,7 @@ export default function CreditForm({
             />
             <label
               htmlFor="credit-carry-forward"
-              className="text-sm text-slate-600"
+              className="text-md text-slate-600"
             >
               Carry this credit forward to future months automatically.
             </label>
