@@ -115,25 +115,6 @@ export default function CreditForm({
         >
           <div>
             <label
-              htmlFor="credit-description"
-              className="block text-xl font-sans font-medium text-slate-700 mb-2"
-            >
-              Title
-            </label>
-            <input
-              id="credit-description"
-              type="text"
-              autoFocus={true}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              placeholder="e.g., Salary, Bonus, Refund"
-              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
-            />
-          </div>
-
-          <div>
-            <label
               htmlFor="credit-amount"
               className="block text-xl font-sans font-medium text-slate-700 mb-2"
             >
@@ -143,10 +124,29 @@ export default function CreditForm({
               id="credit-amount"
               type="number"
               step="0.01"
+              autoFocus={true}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
               placeholder="0.00"
+              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="credit-description"
+              className="block text-xl font-sans font-medium text-slate-700 mb-2"
+            >
+              Title
+            </label>
+            <input
+              id="credit-description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              placeholder="e.g., Salary, Bonus, Refund"
               className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>

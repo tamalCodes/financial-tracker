@@ -1,14 +1,8 @@
-import {
-  LogOut,
-  Plus,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-  X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus, TrendingDown, TrendingUp, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
+import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
 import CreditForm from "./CreditForm";
 import ExpenseForm from "./ExpenseForm";
 import InvestmentForm from "./InvestmentForm";
@@ -33,6 +27,8 @@ interface Investment {
   description: string;
   amount: number;
   is_active: boolean;
+  carry_forward?: boolean | null;
+  start_month: string;
 }
 
 interface Credit {
@@ -67,6 +63,18 @@ export default function Dashboard() {
   const [startingBalanceInput, setStartingBalanceInput] = useState("");
   const [updatingStartingBalance, setUpdatingStartingBalance] = useState(false);
   const [startingBalanceError, setStartingBalanceError] = useState("");
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const totalExpensesAmount = useMemo(
+    () =>
+      expenses.reduce((sum, expense) => sum + Number(expense.amount ?? 0), 0),
+    [expenses]
+  );
+  const isAnyModalOpen =
+    showCreditForm ||
+    showExpenseForm ||
+    showInvestmentForm ||
+    showStartingBalanceForm;
+  useLockBodyScroll(isAnyModalOpen);
   const getPreviousMonth = (month: string) => {
     const date = new Date(month);
     date.setMonth(date.getMonth() - 1);
@@ -76,11 +84,7 @@ export default function Dashboard() {
     )}-01`;
   };
 
-  useEffect(() => {
-    loadData();
-  }, [currentMonth]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
 
     await ensureCarryForwardExpenses();
@@ -172,17 +176,51 @@ export default function Dashboard() {
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
-    setInvestments(investmentsData || []);
+    const filteredInvestments = (investmentsData || []).filter((investment) => {
+      const shouldCarryForward = investment.carry_forward ?? true;
+      if (shouldCarryForward) {
+        return true;
+      }
+
+      return investment.start_month === currentMonth;
+    });
+
+    setInvestments(filteredInvestments);
 
     if (resolvedBalance) {
       await updateClosingBalance(
         resolvedBalance.starting_balance,
         creditsData || [],
         expensesData || [],
-        investmentsData || []
+        filteredInvestments
       );
     }
-  };
+  }, [currentMonth, user]);
+
+  useEffect(() => {
+    setBalance(null);
+    setCredits([]);
+    setExpenses([]);
+    setInvestments([]);
+
+    if (!user) {
+      setIsBootstrapping(false);
+      return;
+    }
+
+    setIsBootstrapping(true);
+    let isMounted = true;
+
+    loadData().finally(() => {
+      if (isMounted) {
+        setIsBootstrapping(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentMonth, user, loadData]);
 
   const updateClosingBalance = async (
     starting: number,
@@ -530,30 +568,32 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-900 p-2 rounded-lg">
-              <Wallet className="w-5 h-5 text-white" />
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        {isBootstrapping ? (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 animate-pulse">
+              <div className="h-4 bg-slate-200 rounded w-1/3 mb-4" />
+              <div className="h-10 bg-slate-100 rounded" />
             </div>
-            <div>
-              <h1 className="text-lg font-heading font-semibold text-slate-900">
-                Financial Tracker
-              </h1>
-              <p className="text-xs text-slate-600">{getMonthName()}</p>
+            <div className="grid grid-cols-2 gap-4">
+              {[0, 1].map((card) => (
+                <div
+                  key={card}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 animate-pulse"
+                >
+                  <div className="h-3 bg-slate-100 rounded w-1/2 mb-3" />
+                  <div className="h-6 bg-slate-200 rounded w-2/3" />
+                </div>
+              ))}
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4 animate-pulse">
+              {[0, 1, 2].map((row) => (
+                <div key={row} className="h-4 bg-slate-100 rounded" />
+              ))}
+              <div className="h-12 bg-slate-200 rounded" />
             </div>
           </div>
-          <button
-            onClick={() => signOut()}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-          >
-            <LogOut className="w-5 h-5 text-slate-600" />
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {!balance ? (
+        ) : !balance ? (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-4">
               Set Starting Balance
