@@ -1,4 +1,11 @@
-import { Plus, TrendingDown, TrendingUp, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  TrendingDown,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -7,6 +14,27 @@ import CreditForm from "./CreditForm";
 import ExpenseForm from "./ExpenseForm";
 import InvestmentForm from "./InvestmentForm";
 import TransactionList from "./TransactionList";
+
+const formatMonthKey = (date: Date) => {
+  const normalized = new Date(date.getFullYear(), date.getMonth(), 1);
+  return `${normalized.getFullYear()}-${String(normalized.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-01`;
+};
+
+const parseMonthKey = (key: string) => {
+  const [yearStr, monthStr] = key.split("-");
+  const year = Number(yearStr);
+  const monthIndex = Number(monthStr) - 1;
+  return new Date(year, monthIndex, 1);
+};
+
+const shiftMonthKey = (key: string, delta: number) => {
+  const date = parseMonthKey(key);
+  date.setMonth(date.getMonth() + delta);
+  return formatMonthKey(date);
+};
 
 interface MonthlyBalance {
   starting_balance: number;
@@ -42,13 +70,7 @@ interface Credit {
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
-  const [currentMonth, setCurrentMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-01`;
-  });
+  const [currentMonth, setCurrentMonth] = useState(() => formatMonthKey(new Date()));
 
   const [balance, setBalance] = useState<MonthlyBalance | null>(null);
   const [credits, setCredits] = useState<Credit[]>([]);
@@ -64,6 +86,8 @@ export default function Dashboard() {
   const [updatingStartingBalance, setUpdatingStartingBalance] = useState(false);
   const [startingBalanceError, setStartingBalanceError] = useState("");
   const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const totalExpensesAmount = useMemo(
     () =>
       expenses.reduce((sum, expense) => sum + Number(expense.amount ?? 0), 0),
@@ -75,20 +99,52 @@ export default function Dashboard() {
     showInvestmentForm ||
     showStartingBalanceForm;
   useLockBodyScroll(isAnyModalOpen);
+  const todayMonthKey = useMemo(() => formatMonthKey(new Date()), []);
+  const selectedMonthDate = useMemo(() => parseMonthKey(currentMonth), [currentMonth]);
+  const todayMonthDate = useMemo(() => parseMonthKey(todayMonthKey), [todayMonthKey]);
+  const isViewingCurrentMonth = currentMonth === todayMonthKey;
+  const canNavigateNextMonth = selectedMonthDate < todayMonthDate;
+  const monthLabel = useMemo(
+    () =>
+      selectedMonthDate.toLocaleDateString("en-IN", {
+        month: "long",
+        year: "numeric",
+      }),
+    [selectedMonthDate]
+  );
+  const canEditCurrentMonth = isViewingCurrentMonth;
+  const showEmptyMonthMessage =
+    !isBootstrapping &&
+    !isRefreshing &&
+    !canEditCurrentMonth &&
+    !balance &&
+    credits.length === 0 &&
+    expenses.length === 0 &&
+    investments.length === 0;
   const getPreviousMonth = (month: string) => {
-    const date = new Date(month);
-    date.setMonth(date.getMonth() - 1);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-01`;
+    return shiftMonthKey(month, -1);
+  };
+  const getNextMonth = (month: string) => shiftMonthKey(month, 1);
+  const handleChangeMonth = (direction: "prev" | "next") => {
+    if (direction === "next" && !canNavigateNextMonth) {
+      return;
+    }
+    const targetMonth =
+      direction === "next"
+        ? getNextMonth(currentMonth)
+        : getPreviousMonth(currentMonth);
+    const targetDate = parseMonthKey(targetMonth);
+    if (targetDate > todayMonthDate) {
+      setCurrentMonth(todayMonthKey);
+      return;
+    }
+    setCurrentMonth(targetMonth);
   };
 
   const loadData = useCallback(async () => {
     if (!user) return;
 
-    await ensureCarryForwardExpenses();
-    await ensureCarryForwardCredits();
+    await Promise.all([ensureCarryForwardExpenses(), ensureCarryForwardCredits()]);
 
     const { data: balanceData, error: balanceError } = await supabase
       .from("monthly_balances")
@@ -150,31 +206,48 @@ export default function Dashboard() {
 
     setBalance(resolvedBalance ?? null);
 
-    const { data: creditsData } = await supabase
-      .from("credits")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("month", currentMonth)
-      .order("created_at", { ascending: false });
+    const [
+      creditsResult,
+      expensesResult,
+      investmentsResult,
+    ] = await Promise.all([
+      supabase
+        .from("credits")
+        .select("id, description, amount, created_at, carry_forward")
+        .eq("user_id", user.id)
+        .eq("month", currentMonth)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("expenses")
+        .select("id, description, amount, created_at, carry_forward, carried_from_month")
+        .eq("user_id", user.id)
+        .eq("month", currentMonth)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("investments")
+        .select("id, description, amount, carry_forward, start_month, created_at, is_active")
+        .eq("user_id", user.id)
+        .lte("start_month", currentMonth)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false }),
+    ]);
 
-    setCredits(creditsData || []);
+    if (creditsResult.error) {
+      console.error("Failed to load credits", creditsResult.error);
+    }
+    if (expensesResult.error) {
+      console.error("Failed to load expenses", expensesResult.error);
+    }
+    if (investmentsResult.error) {
+      console.error("Failed to load investments", investmentsResult.error);
+    }
 
-    const { data: expensesData } = await supabase
-      .from("expenses")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("month", currentMonth)
-      .order("created_at", { ascending: false });
+    const creditsData = creditsResult.data || [];
+    const expensesData = expensesResult.data || [];
+    const investmentsData = investmentsResult.data || [];
 
-    setExpenses(expensesData || []);
-
-    const { data: investmentsData } = await supabase
-      .from("investments")
-      .select("*")
-      .eq("user_id", user.id)
-      .lte("start_month", currentMonth)
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
+    setCredits(creditsData);
+    setExpenses(expensesData);
 
     const filteredInvestments = (investmentsData || []).filter((investment) => {
       const shouldCarryForward = investment.carry_forward ?? true;
@@ -190,37 +263,51 @@ export default function Dashboard() {
     if (resolvedBalance) {
       await updateClosingBalance(
         resolvedBalance.starting_balance,
-        creditsData || [],
-        expensesData || [],
+        creditsData,
+        expensesData,
         filteredInvestments
       );
     }
   }, [currentMonth, user]);
 
   useEffect(() => {
-    setBalance(null);
-    setCredits([]);
-    setExpenses([]);
-    setInvestments([]);
-
     if (!user) {
       setIsBootstrapping(false);
       return;
     }
 
-    setIsBootstrapping(true);
     let isMounted = true;
+    const shouldBootstrap = !hasLoadedOnce;
+    if (shouldBootstrap) {
+      setIsBootstrapping(true);
+    } else {
+      setIsRefreshing(true);
+    }
 
     loadData().finally(() => {
-      if (isMounted) {
+      if (!isMounted) return;
+      if (shouldBootstrap) {
         setIsBootstrapping(false);
+        setHasLoadedOnce(true);
       }
+      setIsRefreshing(false);
     });
 
     return () => {
       isMounted = false;
     };
-  }, [currentMonth, user, loadData]);
+  }, [currentMonth, user, loadData, hasLoadedOnce]);
+
+  useEffect(() => {
+    if (!user) {
+      setBalance(null);
+      setCredits([]);
+      setExpenses([]);
+      setInvestments([]);
+      setHasLoadedOnce(false);
+      setIsRefreshing(false);
+    }
+  }, [user]);
 
   const updateClosingBalance = async (
     starting: number,
@@ -411,13 +498,20 @@ export default function Dashboard() {
   };
 
   const handleCreateExpense = () => {
+    if (!canEditCurrentMonth) return;
     setEditingExpense(null);
     setShowExpenseForm(true);
   };
 
   const handleCreateCredit = () => {
+    if (!canEditCurrentMonth) return;
     setEditingCredit(null);
     setShowCreditForm(true);
+  };
+
+  const handleCreateInvestment = () => {
+    if (!canEditCurrentMonth) return;
+    setShowInvestmentForm(true);
   };
 
   const handleSelectCredit = (id: string) => {
@@ -455,7 +549,7 @@ export default function Dashboard() {
   };
 
   const handleOpenStartingBalanceForm = () => {
-    if (!balance) return;
+    if (!balance || !canEditCurrentMonth) return;
     setStartingBalanceInput(balance.starting_balance.toString());
     setStartingBalanceError("");
     setShowStartingBalanceForm(true);
@@ -468,7 +562,7 @@ export default function Dashboard() {
 
   const handleUpdateStartingBalance = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!balance) return;
+    if (!balance || !canEditCurrentMonth) return;
 
     setStartingBalanceError("");
     const amount = parseFloat(startingBalanceInput);
@@ -498,7 +592,7 @@ export default function Dashboard() {
 
   const handleSetStartingBalance = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !canEditCurrentMonth) return;
 
     const amount = parseFloat(startingBalanceInput);
     if (isNaN(amount)) return;
@@ -561,10 +655,7 @@ export default function Dashboard() {
     return `${day}${suffix} ${month}`;
   };
 
-  const getMonthName = () => {
-    const date = new Date(currentMonth);
-    return date.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-  };
+  const getMonthName = () => monthLabel;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -593,150 +684,243 @@ export default function Dashboard() {
               <div className="h-12 bg-slate-200 rounded" />
             </div>
           </div>
-        ) : !balance ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">
-              Set Starting Balance
-            </h2>
-            <form onSubmit={handleSetStartingBalance} className="space-y-4">
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Enter starting balance"
-                value={startingBalanceInput}
-                onChange={(e) => setStartingBalanceInput(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
-              />
-              <button
-                type="submit"
-                className="w-full bg-slate-900 text-white py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors text-base"
-              >
-                Set Balance
-              </button>
-            </form>
-          </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={handleOpenStartingBalanceForm}
-                className="bg-white rounded-2xl shadow-sm border border-slate-600 p-5 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-slate-900/40"
-                aria-label="Edit starting balance"
-              >
-                <p className="text-sm font-sans text-slate-600 mb-4">
-                  Starting Balance
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Viewing
                 </p>
-                <p className="text-3xl font-heading font-semibold text-slate-900">
-                  {formatCurrency(balance.starting_balance)}
+                <p className="text-3xl font-heading font-semibold text-slate-900 mt-1">
+                  {monthLabel}
                 </p>
-              </button>
-              <div className="bg-slate-600   rounded-2xl shadow-sm p-5">
-                <p className="text-sm text-slate-200 font-sans mb-4">
-                  Closing Balance
-                </p>
-                <p className="text-3xl font-semibold text-white font-heading">
-                  {formatCurrency(balance.closing_balance)}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <TrendingDown className="w-5 h-5 text-red-600" />
-                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
-                    Expenses
-                  </h2>
-                </div>
-                <button
-                  onClick={handleCreateExpense}
-                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <Plus className="w-7 h-7" />
-                </button>
-              </div>
-
-              {expenses.length > 0 ? (
-                <TransactionList
-                  items={expenses}
-                  type="expense"
-                  onDelete={handleDeleteExpense}
-                  formatCurrency={formatCurrency}
-                  onSelect={handleSelectExpense}
-                  formatDate={formatExpenseDate}
-                />
-              ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-                  <p className="text-slate-500 text-sm">No expenses recorded</p>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-4 pt-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
-                    Credits
-                  </h2>
-                </div>
-                <button
-                  onClick={handleCreateCredit}
-                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <Plus className="w-7 h-7 " />
-                </button>
-              </div>
-
-              {credits.length > 0 ? (
-                <TransactionList
-                  items={credits}
-                  type="credit"
-                  onDelete={handleDeleteCredit}
-                  formatCurrency={formatCurrency}
-                  onSelect={handleSelectCredit}
-                  formatDate={formatExpenseDate}
-                />
-              ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-                  <p className="text-slate-500 text-sm">No credits recorded</p>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-4 pt-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5  text-indigo-600" />
-                  <h2 className="text-3xl font-heading font-semibold text-slate-900">
-                    Investments
-                  </h2>
-                </div>
-                <button
-                  onClick={() => setShowInvestmentForm(true)}
-                  className="p-2 mr-1 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <Plus className="w-7 h-7" />
-                </button>
-              </div>
-
-              {investments.length > 0 ? (
-                <TransactionList
-                  items={investments}
-                  type="investment"
-                  onDelete={handleDeleteInvestment}
-                  formatCurrency={formatCurrency}
-                />
-              ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-                  <p className="text-slate-500 text-sm">
-                    No investments recorded
+                {!isViewingCurrentMonth && (
+                  <p className="text-sm text-slate-500 mt-2">
+                    Adding new entries is disabled for historical months.
                   </p>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="inline-flex rounded-2xl border border-slate-200 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => handleChangeMonth("prev")}
+                    className="px-3 py-2 text-slate-700 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+                    aria-label="Go to previous month"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleChangeMonth("next")}
+                    disabled={!canNavigateNextMonth}
+                    className={`px-3 py-2 border-l border-slate-200 transition-colors focus:outline-none ${
+                      canNavigateNextMonth
+                        ? "text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-slate-900/20"
+                        : "text-slate-300 bg-slate-50 cursor-not-allowed"
+                    }`}
+                    aria-label="Go to next month"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
-              )}
+                {isRefreshing && (
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <span className="h-2 w-2 rounded-full bg-slate-400 animate-ping" />
+                    Syncing data...
+                  </div>
+                )}
+              </div>
             </div>
+
+            {showEmptyMonthMessage && (
+              <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500">
+                No data captured for {monthLabel}.
+              </div>
+            )}
+
+            {!balance ? (
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                {canEditCurrentMonth ? (
+                  <>
+                    <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                      Set Starting Balance
+                    </h2>
+                    <form onSubmit={handleSetStartingBalance} className="space-y-4">
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="Enter starting balance"
+                        value={startingBalanceInput}
+                        onChange={(e) => setStartingBalanceInput(e.target.value)}
+                        required
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
+                      />
+                      <button
+                        type="submit"
+                        className="w-full bg-slate-900 text-white py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors text-base"
+                      >
+                        Set Balance
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-lg font-semibold text-slate-900 mb-2">
+                      No balance recorded for this month
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      Switch back to the current month to enter a starting balance.
+                    </p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={handleOpenStartingBalanceForm}
+                    disabled={!canEditCurrentMonth}
+                    className={`bg-white rounded-2xl shadow-sm border p-5 text-left transition-shadow focus:outline-none ${
+                      canEditCurrentMonth
+                        ? "border-slate-600 hover:shadow-md focus:ring-2 focus:ring-slate-900/40"
+                        : "border-slate-200 opacity-60 cursor-not-allowed"
+                    }`}
+                    aria-label="Edit starting balance"
+                  >
+                    <p className="text-sm font-sans text-slate-600 mb-4">
+                      Starting Balance
+                    </p>
+                    <p className="text-3xl font-heading font-semibold text-slate-900">
+                      {formatCurrency(balance.starting_balance)}
+                    </p>
+                  </button>
+                  <div className="bg-slate-600 rounded-2xl shadow-sm p-5">
+                    <p className="text-sm text-slate-200 font-sans mb-4">
+                      Closing Balance
+                    </p>
+                    <p className="text-3xl font-semibold text-white font-heading">
+                      {formatCurrency(balance.closing_balance)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <TrendingDown className="w-5 h-5 text-red-600" />
+                      <h2 className="text-3xl font-heading font-semibold text-slate-900">
+                        Expenses
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCreateExpense}
+                      disabled={!canEditCurrentMonth}
+                      className={`p-2 mr-1 rounded-lg transition-colors ${
+                        canEditCurrentMonth
+                          ? "bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Plus className="w-7 h-7" />
+                    </button>
+                  </div>
+
+                  {expenses.length > 0 ? (
+                    <TransactionList
+                      items={expenses}
+                      type="expense"
+                      onDelete={handleDeleteExpense}
+                      formatCurrency={formatCurrency}
+                      onSelect={handleSelectExpense}
+                      formatDate={formatExpenseDate}
+                    />
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                      <p className="text-slate-500 text-sm">No expenses recorded</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4 pt-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-emerald-600" />
+                      <h2 className="text-3xl font-heading font-semibold text-slate-900">
+                        Credits
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCreateCredit}
+                      disabled={!canEditCurrentMonth}
+                      className={`p-2 mr-1 rounded-lg transition-colors ${
+                        canEditCurrentMonth
+                          ? "bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Plus className="w-7 h-7 " />
+                    </button>
+                  </div>
+
+                  {credits.length > 0 ? (
+                    <TransactionList
+                      items={credits}
+                      type="credit"
+                      onDelete={handleDeleteCredit}
+                      formatCurrency={formatCurrency}
+                      onSelect={handleSelectCredit}
+                      formatDate={formatExpenseDate}
+                    />
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                      <p className="text-slate-500 text-sm">No credits recorded</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4 pt-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5  text-indigo-600" />
+                      <h2 className="text-3xl font-heading font-semibold text-slate-900">
+                        Investments
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCreateInvestment}
+                      disabled={!canEditCurrentMonth}
+                      className={`p-2 mr-1 rounded-lg transition-colors ${
+                        canEditCurrentMonth
+                          ? "bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Plus className="w-7 h-7" />
+                    </button>
+                  </div>
+
+                  {investments.length > 0 ? (
+                    <TransactionList
+                      items={investments}
+                      type="investment"
+                      onDelete={handleDeleteInvestment}
+                      formatCurrency={formatCurrency}
+                    />
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                      <p className="text-slate-500 text-sm">
+                        No investments recorded
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </>
         )}
       </main>

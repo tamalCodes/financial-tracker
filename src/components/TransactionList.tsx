@@ -27,6 +27,7 @@ export default function TransactionList({
   onSelect,
   formatDate,
 }: TransactionListProps) {
+  const isInvestment = type === "investment";
   const expenseTotal = useMemo(
     () =>
       type === "expense"
@@ -66,10 +67,20 @@ export default function TransactionList({
 
   return (
     <>
-      <div className="bg-white max-h-[500px] overflow-y-auto rounded-2xl shadow-sm border border-slate-200 divide-y divide-slate-100">
-        {items.map((item) => {
-          const canSelect = Boolean(onSelect);
-          const showDate = Boolean(item.created_at && formatDate);
+      <div
+        className={`max-h-[500px] overflow-y-auto rounded-2xl ${
+          isInvestment ? "" : "bg-white shadow-sm border border-slate-200"
+        }`}
+      >
+        <div className={isInvestment ? "flex flex-col gap-3 p-1" : "divide-y divide-slate-100"}>
+          {items.map((item) => {
+            const canSelect = Boolean(onSelect);
+            const showDate = Boolean(item.created_at && formatDate);
+            const interactiveClasses = canSelect
+              ? isInvestment
+                ? "cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                : "hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+              : "";
 
           return (
             <div
@@ -80,39 +91,34 @@ export default function TransactionList({
               onKeyDown={
                 canSelect ? (event) => handleKeyDown(event, item.id) : undefined
               }
-              className={`p-4 relative flex items-center justify-between transition-colors ${
-                canSelect
-                  ? "hover:bg-slate-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20"
-                  : ""
-              }`}
+                className={
+                  isInvestment
+                    ? `relative flex items-start justify-between rounded-2xl border border-indigo-100 bg-white shadow-sm p-5 transition-all hover:border-indigo-200 hover:shadow-md ${interactiveClasses}`
+                    : `p-4 relative flex items-center justify-between transition-colors ${interactiveClasses}`
+                }
             >
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-[18px] font-heading font-medium text-slate-900 truncate">
-                    {item.description}
-                  </p>
-                  {type === "investment" && (
-                    <span
-                      className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        (item.carry_forward ?? true)
-                          ? "bg-indigo-100 text-indigo-700"
-                          : "bg-amber-100 text-amber-700"
-                      }`}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p
+                      className={`${
+                        isInvestment ? "text-xl" : "text-[18px]"
+                      } font-heading font-medium text-slate-900 truncate`}
                     >
-                      {(item.carry_forward ?? true) ? "SIP" : "Lumpsum"}
-                    </span>
-                  )}
-                </div>
+                      {item.description}
+                    </p>
+                  </div>
 
                 <p
-                  className={`text-md flex w-full font-sans items-center justify-between font-semibold mt-3 ${amountColorClass}`}
+                    className={`${
+                      isInvestment ? "text-lg" : "text-md"
+                    } flex w-full font-sans items-center justify-between font-semibold mt-3 ${amountColorClass}`}
                 >
                   <span>{formatCurrency(Number(item.amount))}</span>
-                  {showDate && item.created_at && formatDate && (
-                    <span className="text-xs text-slate-500 mt-1">
-                      {formatDate(item.created_at)}
-                    </span>
-                  )}
+                    {showDate && item.created_at && formatDate && (
+                      <span className="text-xs text-slate-500 mt-1">
+                        {formatDate(item.created_at)}
+                      </span>
+                    )}
                 </p>
               </div>
               <button
@@ -121,14 +127,19 @@ export default function TransactionList({
                   event.stopPropagation();
                   onDelete(item.id);
                 }}
-                className="absolute right-[20px] top-[20px] text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className={`absolute right-[20px] top-[20px] rounded-lg transition-colors ${
+                  isInvestment
+                    ? "text-indigo-300 hover:text-red-600 hover:bg-red-50"
+                    : "text-slate-400 hover:text-red-600 hover:bg-red-50"
+                }`}
                 aria-label={deleteLabel}
               >
                 <Trash2 className="w-5 h-5" />
               </button>
             </div>
           );
-        })}
+          })}
+        </div>
       </div>
       {type === "expense" && (
         <div className="bg-white p-4 max-h-[500px] overflow-y-auto rounded-2xl  border border-slate-200 divide-y text-[20px] font-heading font-medium text-slate-900">
