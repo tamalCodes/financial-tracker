@@ -7,7 +7,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AuthScreen />
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
     </SafeAreaProvider>
   );
 }

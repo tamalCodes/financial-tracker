@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FormField } from "./FormField";
@@ -13,7 +14,7 @@ export const AuthForm = () => {
   }, [email, password]);
 
   return (
-    <View style={styles.form}>
+    <View className="gap-6 rounded-[28px] border border-white/5 bg-surface p-6">
       <FormField
         label="Email"
         placeholder="you@email.com"
@@ -35,12 +36,14 @@ export const AuthForm = () => {
             onPress={() => setShowPassword((prev) => !prev)}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+            accessibilityLabel={
+              showPassword ? "Hide password" : "Show password"
+            }
           >
             <Feather
               name={showPassword ? "eye" : "eye-off"}
               size={18}
-              color="#D1D5DB"
+              color="#E1E7FF"
             />
           </Pressable>
         }
@@ -48,45 +51,41 @@ export const AuthForm = () => {
 
       <Pressable
         onPress={handleSubmit}
+        accessibilityRole="button"
+        className="rounded-2xl shadow-lg shadow-aurora-purple/20"
         style={({ pressed }) => [
-          styles.primaryButton,
-          pressed && styles.primaryButtonPressed,
+          styles.buttonContainer,
+          pressed && styles.buttonPressed,
         ]}
       >
-        <Text style={styles.primaryButtonText}>Continue</Text>
+        <LinearGradient
+          style={styles.buttonGradient}
+          colors={["#945BFF", "#2CFACB"]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+        >
+          <Text className="text-center text-base font-semibold text-text-primary">
+            Continue
+          </Text>
+        </LinearGradient>
       </Pressable>
 
-      <Text style={styles.helperText}>
-        Continue with your email to sign in or create a workspace. One step, one
-        surface.
+      <Text className="mt-6 text-center text-sm text-[#fff] opacity-60">
+        Forgot password?
       </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  form: {
-    gap: 20,
+  buttonContainer: {
+    overflow: "hidden",
   },
-  primaryButton: {
-    backgroundColor: "#7C5CFF",
-    borderRadius: 16,
-    paddingVertical: 14,
-  },
-  primaryButtonPressed: {
+  buttonPressed: {
     opacity: 0.9,
   },
-  primaryButtonText: {
-    textAlign: "center",
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  helperText: {
-    textAlign: "center",
-    fontSize: 12,
-    color: "#9CA3AF",
-    lineHeight: 18,
+  buttonGradient: {
+    paddingVertical: 16,
+    borderRadius: 16,
   },
 });
-
