@@ -7,24 +7,25 @@ export const AuthScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
-        colors={["#060112", "#0b0220", "#150433"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={["#050816", "#02010C"]}
+        start={{ x: 0.2, y: 0 }}
+        end={{ x: 0.8, y: 1 }}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       />
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.appLabel}>FLOWTRACK</Text>
-          <Text style={styles.title}>Sign in</Text>
-          <Text style={styles.subtitle}>
-            Stay connected to your credits, investments, and cash flow from one
-            calm surface.
-          </Text>
-        </View>
+        <View style={styles.body}>
+          <View style={styles.header}>
+            <Text style={styles.appLabel}>FLOWTRACK</Text>
+            <Text style={styles.title}>Sign in</Text>
+            <Text style={styles.subtitle}>
+              Monitor credits, investments, and monthly cash with calm clarity.
+            </Text>
+          </View>
 
-        <View style={styles.formCard}>
-          <AuthForm />
+          <View style={styles.formArea}>
+            <AuthForm />
+          </View>
         </View>
 
         <Text style={styles.footerLink}>Forgot password?</Text>
@@ -36,48 +37,45 @@ export const AuthScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#060112",
+    backgroundColor: "#050816",
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 24,
     paddingBottom: 32,
-    justifyContent: "space-between",
+  },
+  body: {
+    flex: 1,
   },
   header: {
-    gap: 12,
+    gap: 10,
+    marginBottom: 32,
   },
   appLabel: {
     fontSize: 12,
     letterSpacing: 6,
-    color: "#a855f7",
-    fontWeight: "700",
+    color: "#8B95C9",
+    fontWeight: "600",
   },
   title: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: "700",
-    color: "#f8fafc",
+    color: "#F9FAFB",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#cbd5f5",
+    fontSize: 14,
+    color: "#A0AEC0",
+    lineHeight: 20,
   },
-  formCard: {
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    padding: 24,
-    backgroundColor: "rgba(12, 10, 25, 0.85)",
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 15 },
-    elevation: 8,
+  formArea: {
+    flex: 1,
+    justifyContent: "flex-start",
   },
   footerLink: {
     textAlign: "center",
     fontSize: 12,
-    color: "#94a3b8",
+    color: "#A0AEC0",
+    marginTop: 32,
   },
 });

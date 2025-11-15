@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useCallback, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FormField } from "./FormField";
 
 export const AuthForm = () => {
@@ -13,7 +13,7 @@ export const AuthForm = () => {
   }, [email, password]);
 
   return (
-    <View className="gap-6">
+    <View style={styles.form}>
       <FormField
         label="Email"
         placeholder="you@email.com"
@@ -40,7 +40,7 @@ export const AuthForm = () => {
             <Feather
               name={showPassword ? "eye" : "eye-off"}
               size={18}
-              color="#cbd5f5"
+              color="#D1D5DB"
             />
           </Pressable>
         }
@@ -48,21 +48,45 @@ export const AuthForm = () => {
 
       <Pressable
         onPress={handleSubmit}
-        style={({ pressed }) => ({
-          opacity: pressed ? 0.9 : 1,
-        })}
-        className="rounded-2xl bg-[#8b5cf6] py-4"
+        style={({ pressed }) => [
+          styles.primaryButton,
+          pressed && styles.primaryButtonPressed,
+        ]}
       >
-        <Text className="text-center text-base font-semibold text-white">
-          Continue
-        </Text>
+        <Text style={styles.primaryButtonText}>Continue</Text>
       </Pressable>
 
-      <Text className="text-center text-xs text-slate-400">
-        Use your email to sign in or create a workspace. We'll guide you either
-        way.
+      <Text style={styles.helperText}>
+        Continue with your email to sign in or create a workspace. One step, one
+        surface.
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  form: {
+    gap: 20,
+  },
+  primaryButton: {
+    backgroundColor: "#7C5CFF",
+    borderRadius: 16,
+    paddingVertical: 14,
+  },
+  primaryButtonPressed: {
+    opacity: 0.9,
+  },
+  primaryButtonText: {
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  helperText: {
+    textAlign: "center",
+    fontSize: 12,
+    color: "#9CA3AF",
+    lineHeight: 18,
+  },
+});
 

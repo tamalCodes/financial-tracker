@@ -1,10 +1,11 @@
 import { FC, ReactNode } from "react";
 import {
+  StyleSheet,
   Text,
   TextInput,
   TextInputProps,
-  View,
   TouchableOpacity,
+  View,
 } from "react-native";
 
 type FormFieldProps = {
@@ -25,37 +26,86 @@ export const FormField: FC<FormFieldProps> = ({
   ...inputProps
 }) => {
   return (
-    <View className="mb-5 gap-2">
-      <View className="flex-row items-baseline justify-between">
+    <View style={styles.field}>
+      <View style={styles.labelRow}>
         <View>
-          <Text className="text-xs font-semibold uppercase tracking-[3px] text-slate-300">
-            {label}
-          </Text>
-          {hint ? (
-            <Text className="text-xs text-slate-500">{hint}</Text>
-          ) : null}
+          <Text style={styles.label}>{label}</Text>
+          {hint ? <Text style={styles.hint}>{hint}</Text> : null}
         </View>
         {trailingActionLabel ? (
           <TouchableOpacity onPress={onTrailingActionPress}>
-            <Text className="text-xs font-semibold text-[#a78bfa]">
-              {trailingActionLabel}
-            </Text>
+            <Text style={styles.trailingAction}>{trailingActionLabel}</Text>
           </TouchableOpacity>
         ) : null}
       </View>
-      <View className="relative">
+      <View style={styles.inputWrapper}>
         <TextInput
-          placeholderTextColor="#94a3b8"
-          className="w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-4 pr-12 text-base text-white shadow-sm focus:border-[#8b5cf6] focus:bg-white/15"
+          placeholderTextColor="#7C87A9"
+          style={
+            trailingAccessory
+              ? [styles.input, styles.inputWithAccessory]
+              : styles.input
+          }
           secureTextEntry={secureTextEntry}
           {...inputProps}
         />
         {trailingAccessory ? (
-          <View className="pointer-events-auto absolute inset-y-0 right-4 flex-row items-center">
-            {trailingAccessory}
-          </View>
+          <View style={styles.trailingAccessory}>{trailingAccessory}</View>
         ) : null}
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  field: {
+    marginBottom: 20,
+  },
+  labelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 6,
+  },
+  label: {
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    color: "#9CA3AF",
+    fontWeight: "600",
+  },
+  hint: {
+    fontSize: 12,
+    color: "#94A3B8",
+  },
+  trailingAction: {
+    fontSize: 12,
+    color: "#A78BFA",
+    fontWeight: "600",
+  },
+  inputWrapper: {
+    position: "relative",
+  },
+  input: {
+    width: "100%",
+    backgroundColor: "#070B16",
+    borderWidth: 1,
+    borderColor: "#1E2537",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: "#E5E7EB",
+    fontSize: 16,
+  },
+  inputWithAccessory: {
+    paddingRight: 48,
+  },
+  trailingAccessory: {
+    position: "absolute",
+    right: 14,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
