@@ -19,7 +19,7 @@ export const FormField: FC<FormFieldProps> = ({
   ...inputProps
 }) => {
   const inputClassName = [
-    "w-full rounded-2xl border border-white/10 bg-surface-highlight px-4 py-3 text-base text-text-primary",
+    "w-full rounded-2xl border border-white/10 bg-surface-highlight px-4 py-3 text-base text-text-primary font-outfit-medium",
     trailingAccessory ? "pr-14" : "",
   ]
     .filter(Boolean)
@@ -29,16 +29,16 @@ export const FormField: FC<FormFieldProps> = ({
     <View className="gap-2">
       <View className="flex-row items-start justify-between">
         <View>
-          <Text className="text-[11px] font-semibold uppercase tracking-[0.3em] text-text-subtle">
+          <Text className="font-outfit-semibold text-[11px] font-semibold uppercase tracking-[0.3em] text-text-subtle">
             {label}
           </Text>
           {hint ? (
-            <Text className="text-xs text-text-muted">{hint}</Text>
+            <Text className="font-outfit text-xs text-text-muted">{hint}</Text>
           ) : null}
         </View>
         {trailingActionLabel ? (
           <Pressable onPress={onTrailingActionPress} hitSlop={8}>
-            <Text className="text-xs font-semibold text-aurora-purple">
+            <Text className="font-outfit-semibold text-xs font-semibold text-aurora-purple">
               {trailingActionLabel}
             </Text>
           </Pressable>

@@ -14,7 +14,7 @@ export const AuthForm = () => {
   }, [email, password]);
 
   return (
-    <View className="gap-6 rounded-[28px] border border-white/5 bg-surface p-6">
+    <View className="gap-6 w-full rounded-[28px] border border-white/5 bg-surface p-6">
       <FormField
         label="Email"
         placeholder="you@email.com"
@@ -52,7 +52,7 @@ export const AuthForm = () => {
       <Pressable
         onPress={handleSubmit}
         accessibilityRole="button"
-        className="rounded-2xl shadow-lg shadow-aurora-purple/20"
+        className="rounded-xl mt-8 shadow-lg shadow-aurora-purple/20"
         style={({ pressed }) => [
           styles.buttonContainer,
           pressed && styles.buttonPressed,
@@ -64,13 +64,13 @@ export const AuthForm = () => {
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
         >
-          <Text className="text-center text-base font-semibold text-text-primary">
+          <Text className="font-outfit-semibold text-center text-[15px] font-semibold text-text-primary">
             Continue
           </Text>
         </LinearGradient>
       </Pressable>
 
-      <Text className="mt-6 text-center text-sm text-[#fff] opacity-60">
+      <Text className="font-outfit mt-6 text-center text-sm text-[#fff] opacity-60">
         Forgot password?
       </Text>
     </View>

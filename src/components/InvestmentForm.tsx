@@ -18,7 +18,7 @@ export default function InvestmentForm({
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [carryForward, setCarryForward] = useState(true);
+  const [carryForward, setCarryForward] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,43 +89,6 @@ export default function InvestmentForm({
           </div>
 
           <div>
-            <p className="text-sm font-semibold text-slate-700 mb-3">
-              Investment type
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "SIP", description: "Carry forward monthly", value: true },
-                { label: "Lumpsum", description: "One-time this month", value: false },
-              ].map((option) => {
-                const isSelected = carryForward === option.value;
-                return (
-                  <button
-                    key={option.label}
-                    type="button"
-                    onClick={() => setCarryForward(option.value)}
-                    className={`rounded-2xl border p-4 text-left transition-colors ${
-                      isSelected
-                        ? "border-slate-900 bg-slate-900 text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-                    }`}
-                  >
-                    <p className="text-lg font-heading font-semibold">
-                      {option.label}
-                    </p>
-                    <p
-                      className={`mt-1 text-sm ${
-                        isSelected ? "text-slate-100" : "text-slate-500"
-                      }`}
-                    >
-                      {option.description}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
             <label
               htmlFor="description"
               className="block text-xl font-sans font-medium text-slate-700 mb-2"
@@ -141,6 +104,19 @@ export default function InvestmentForm({
               placeholder="e.g., SIP, Fixed Deposit, Stocks"
               className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
+          </div>
+
+          <div className="flex items-start gap-3">
+            <input
+              id="carry-forward"
+              type="checkbox"
+              checked={carryForward}
+              onChange={(e) => setCarryForward(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+            />
+            <label htmlFor="carry-forward" className="text-md text-slate-600">
+              Carry this payment forward to future months automatically.
+            </label>
           </div>
 
           <div className="flex gap-3 pt-2">

@@ -36,6 +36,9 @@ module.exports = {
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         heading: ["Bricolage Grotesque", "Inter", "sans-serif"],
+        outfit: ["Outfit_400Regular"],
+        "outfit-medium": ["Outfit_500Medium"],
+        "outfit-semibold": ["Outfit_600SemiBold"],
       },
     },
   },

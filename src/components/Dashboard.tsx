@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { supabase } from "../lib/supabase";
 import { useLockBodyScroll } from "../hooks/useLockBodyScroll";
+import { supabase } from "../lib/supabase";
 import CreditForm from "./CreditForm";
 import ExpenseForm from "./ExpenseForm";
 import InvestmentForm from "./InvestmentForm";
@@ -17,10 +17,9 @@ import TransactionList from "./TransactionList";
 
 const formatMonthKey = (date: Date) => {
   const normalized = new Date(date.getFullYear(), date.getMonth(), 1);
-  return `${normalized.getFullYear()}-${String(normalized.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-01`;
+  return `${normalized.getFullYear()}-${String(
+    normalized.getMonth() + 1
+  ).padStart(2, "0")}-01`;
 };
 
 const parseMonthKey = (key: string) => {
@@ -70,7 +69,9 @@ interface Credit {
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
-  const [currentMonth, setCurrentMonth] = useState(() => formatMonthKey(new Date()));
+  const [currentMonth, setCurrentMonth] = useState(() =>
+    formatMonthKey(new Date())
+  );
 
   const [balance, setBalance] = useState<MonthlyBalance | null>(null);
   const [credits, setCredits] = useState<Credit[]>([]);
@@ -100,8 +101,14 @@ export default function Dashboard() {
     showStartingBalanceForm;
   useLockBodyScroll(isAnyModalOpen);
   const todayMonthKey = useMemo(() => formatMonthKey(new Date()), []);
-  const selectedMonthDate = useMemo(() => parseMonthKey(currentMonth), [currentMonth]);
-  const todayMonthDate = useMemo(() => parseMonthKey(todayMonthKey), [todayMonthKey]);
+  const selectedMonthDate = useMemo(
+    () => parseMonthKey(currentMonth),
+    [currentMonth]
+  );
+  const todayMonthDate = useMemo(
+    () => parseMonthKey(todayMonthKey),
+    [todayMonthKey]
+  );
   const isViewingCurrentMonth = currentMonth === todayMonthKey;
   const canNavigateNextMonth = selectedMonthDate < todayMonthDate;
   const monthLabel = useMemo(
@@ -144,7 +151,10 @@ export default function Dashboard() {
   const loadData = useCallback(async () => {
     if (!user) return;
 
-    await Promise.all([ensureCarryForwardExpenses(), ensureCarryForwardCredits()]);
+    await Promise.all([
+      ensureCarryForwardExpenses(),
+      ensureCarryForwardCredits(),
+    ]);
 
     const { data: balanceData, error: balanceError } = await supabase
       .from("monthly_balances")
@@ -206,31 +216,32 @@ export default function Dashboard() {
 
     setBalance(resolvedBalance ?? null);
 
-    const [
-      creditsResult,
-      expensesResult,
-      investmentsResult,
-    ] = await Promise.all([
-      supabase
-        .from("credits")
-        .select("id, description, amount, created_at, carry_forward")
-        .eq("user_id", user.id)
-        .eq("month", currentMonth)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("expenses")
-        .select("id, description, amount, created_at, carry_forward, carried_from_month")
-        .eq("user_id", user.id)
-        .eq("month", currentMonth)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("investments")
-        .select("id, description, amount, carry_forward, start_month, created_at, is_active")
-        .eq("user_id", user.id)
-        .lte("start_month", currentMonth)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false }),
-    ]);
+    const [creditsResult, expensesResult, investmentsResult] =
+      await Promise.all([
+        supabase
+          .from("credits")
+          .select("id, description, amount, created_at, carry_forward")
+          .eq("user_id", user.id)
+          .eq("month", currentMonth)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("expenses")
+          .select(
+            "id, description, amount, created_at, carry_forward, carried_from_month"
+          )
+          .eq("user_id", user.id)
+          .eq("month", currentMonth)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("investments")
+          .select(
+            "id, description, amount, carry_forward, start_month, created_at, is_active"
+          )
+          .eq("user_id", user.id)
+          .lte("start_month", currentMonth)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false }),
+      ]);
 
     if (creditsResult.error) {
       console.error("Failed to load credits", creditsResult.error);
@@ -250,7 +261,7 @@ export default function Dashboard() {
     setExpenses(expensesData);
 
     const filteredInvestments = (investmentsData || []).filter((investment) => {
-      const shouldCarryForward = investment.carry_forward ?? true;
+      const shouldCarryForward = investment.carry_forward ?? false;
       if (shouldCarryForward) {
         return true;
       }
@@ -746,13 +757,18 @@ export default function Dashboard() {
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">
                       Set Starting Balance
                     </h2>
-                    <form onSubmit={handleSetStartingBalance} className="space-y-4">
+                    <form
+                      onSubmit={handleSetStartingBalance}
+                      className="space-y-4"
+                    >
                       <input
                         type="number"
                         step="0.01"
                         placeholder="Enter starting balance"
                         value={startingBalanceInput}
-                        onChange={(e) => setStartingBalanceInput(e.target.value)}
+                        onChange={(e) =>
+                          setStartingBalanceInput(e.target.value)
+                        }
                         required
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-base"
                       />
@@ -770,7 +786,8 @@ export default function Dashboard() {
                       No balance recorded for this month
                     </h2>
                     <p className="text-sm text-slate-500">
-                      Switch back to the current month to enter a starting balance.
+                      Switch back to the current month to enter a starting
+                      balance.
                     </p>
                   </>
                 )}
@@ -839,7 +856,9 @@ export default function Dashboard() {
                     />
                   ) : (
                     <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-                      <p className="text-slate-500 text-sm">No expenses recorded</p>
+                      <p className="text-slate-500 text-sm">
+                        No expenses recorded
+                      </p>
                     </div>
                   )}
                 </div>
@@ -877,7 +896,9 @@ export default function Dashboard() {
                     />
                   ) : (
                     <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-                      <p className="text-slate-500 text-sm">No credits recorded</p>
+                      <p className="text-slate-500 text-sm">
+                        No credits recorded
+                      </p>
                     </div>
                   )}
                 </div>

@@ -47,15 +47,15 @@ export const AuthScreen = () => {
               </Text>
             </View>
 
-            <Text className="text-4xl font-semibold leading-tight text-text-primary">
+            <Text className="font-outfit-semibold text-4xl font-semibold leading-tight text-text-primary">
               Sign In
             </Text>
-            <Text className="text-base leading-6 text-text-muted">
+            <Text className="font-outfit text-base leading-6 text-text-muted">
               Monitor your expenses, payments & monthly credits.
             </Text>
           </View>
 
-          <View className="flex-1 justify-start">
+          <View className="flex-1 flex max-h-[75%] flex-col items-center justify-center">
             <AuthForm />
           </View>
         </View>
