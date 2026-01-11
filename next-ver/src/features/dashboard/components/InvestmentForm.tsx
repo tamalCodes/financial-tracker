@@ -2,11 +2,15 @@
 
 import { X } from "lucide-react";
 import { useState } from "react";
+import { Investment, MonthlyBalance } from "@/features/dashboard/types/types";
 
 interface InvestmentFormProps {
   currentMonth: string;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (payload: {
+    item: Investment;
+    balance: MonthlyBalance | null;
+  }) => void;
 }
 
 export default function InvestmentForm({
@@ -48,13 +52,13 @@ export default function InvestmentForm({
 
     setLoading(false);
 
+    const data = await res.json();
     if (!res.ok) {
-      const data = await res.json();
       setError(data.error ?? "Unable to save investment.");
       return;
     }
 
-    onSuccess();
+    onSuccess(data);
     onClose();
   };
 

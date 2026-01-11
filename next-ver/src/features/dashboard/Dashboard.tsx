@@ -41,6 +41,13 @@ export default function Dashboard() {
     isBootstrapping,
     isRefreshing,
     reload,
+    setBalance,
+    upsertCredit,
+    removeCredit,
+    upsertExpense,
+    removeExpense,
+    upsertInvestment,
+    removeInvestment,
   } = useDashboardData(currentMonth);
   const [showCreditForm, setShowCreditForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
@@ -194,12 +201,19 @@ export default function Dashboard() {
               isEmpty={expenses.length === 0}
               emptyText="No expenses recorded"
             >
-              <TransactionList
-                items={expenses}
-                type="expense"
+            <TransactionList
+              items={expenses}
+              type="expense"
                 onDelete={async (id) => {
-                  await fetch(`/api/expenses?id=${id}`, { method: "DELETE" });
-                  reload();
+                  const res = await fetch(`/api/expenses?id=${id}`, {
+                    method: "DELETE",
+                  });
+                  if (!res.ok) return;
+                  const data = await res.json();
+                  removeExpense(id);
+                  if (data.balance) {
+                    setBalance(data.balance);
+                  }
                 }}
                 formatCurrency={formatCurrency}
                 onSelect={(id) => {
@@ -222,12 +236,19 @@ export default function Dashboard() {
               isEmpty={credits.length === 0}
               emptyText="No credits recorded"
             >
-              <TransactionList
-                items={credits}
-                type="credit"
+          <TransactionList
+            items={credits}
+            type="credit"
                 onDelete={async (id) => {
-                  await fetch(`/api/credits?id=${id}`, { method: "DELETE" });
-                  reload();
+                  const res = await fetch(`/api/credits?id=${id}`, {
+                    method: "DELETE",
+                  });
+                  if (!res.ok) return;
+                  const data = await res.json();
+                  removeCredit(id);
+                  if (data.balance) {
+                    setBalance(data.balance);
+                  }
                 }}
                 formatCurrency={formatCurrency}
                 onSelect={(id) => {
@@ -247,12 +268,19 @@ export default function Dashboard() {
               isEmpty={investments.length === 0}
               emptyText="No investments recorded"
             >
-              <TransactionList
-                items={investments}
-                type="investment"
+          <TransactionList
+            items={investments}
+            type="investment"
                 onDelete={async (id) => {
-                  await fetch(`/api/investments?id=${id}`, { method: "DELETE" });
-                  reload();
+                  const res = await fetch(`/api/investments?id=${id}`, {
+                    method: "DELETE",
+                  });
+                  if (!res.ok) return;
+                  const data = await res.json();
+                  removeInvestment(id);
+                  if (data.balance) {
+                    setBalance(data.balance);
+                  }
                 }}
                 formatCurrency={formatCurrency}
               />
@@ -277,7 +305,12 @@ export default function Dashboard() {
             setShowCreditForm(false);
             setEditingCredit(null);
           }}
-          onSuccess={reload}
+          onSuccess={(payload) => {
+            upsertCredit(payload.item);
+            if (payload.balance) {
+              setBalance(payload.balance);
+            }
+          }}
           credit={
             editingCredit
               ? {
@@ -297,7 +330,12 @@ export default function Dashboard() {
             setShowExpenseForm(false);
             setEditingExpense(null);
           }}
-          onSuccess={reload}
+          onSuccess={(payload) => {
+            upsertExpense(payload.item);
+            if (payload.balance) {
+              setBalance(payload.balance);
+            }
+          }}
           expense={
             editingExpense
               ? {
@@ -314,7 +352,12 @@ export default function Dashboard() {
         <InvestmentForm
           currentMonth={currentMonth}
           onClose={() => setShowInvestmentForm(false)}
-          onSuccess={reload}
+          onSuccess={(payload) => {
+            upsertInvestment(payload.item);
+            if (payload.balance) {
+              setBalance(payload.balance);
+            }
+          }}
         />
       )}
     </div>

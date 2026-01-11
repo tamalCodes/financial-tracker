@@ -2,11 +2,12 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Expense, MonthlyBalance } from "@/features/dashboard/types/types";
 
 interface ExpenseFormProps {
   currentMonth: string;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (payload: { item: Expense; balance: MonthlyBalance | null }) => void;
   expense?: {
     id: string;
     description: string;
@@ -73,13 +74,13 @@ export default function ExpenseForm({
 
     setLoading(false);
 
+    const data = await res.json();
     if (res.ok) {
-      onSuccess();
+      onSuccess(data);
       onClose();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "Unable to save expense.");
+      return;
     }
+    setError(data.error ?? "Unable to save expense.");
   };
 
   const isEditing = Boolean(expense);

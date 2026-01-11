@@ -1,8 +1,8 @@
 "use client";
 
+import { useAuth } from "@/features/auth/AuthContext";
 import AuthForm from "@/features/auth/components/AuthForm";
 import Dashboard from "@/features/dashboard/Dashboard";
-import { useAuth } from "@/features/auth/AuthContext";
 
 export default function Home() {
   const { user, loading } = useAuth();

@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import Dashboard from "@/features/dashboard/Dashboard";
+import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient();
@@ -10,4 +10,3 @@ export default async function DashboardPage() {
   }
   return <Dashboard />;
 }
-

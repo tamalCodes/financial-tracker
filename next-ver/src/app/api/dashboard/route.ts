@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { loadDashboardData } from "@/lib/api/dashboard";
+import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +11,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const data = await loadDashboardData(month);
+    const supabase = await createSupabaseServerClient();
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    const userId = auth?.user?.id;
+
+    if (authError || !userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const data = await loadDashboardData(supabase, userId, month);
     return NextResponse.json(data);
   } catch (error) {
     const message =

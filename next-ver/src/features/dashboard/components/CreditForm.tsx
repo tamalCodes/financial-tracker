@@ -2,11 +2,12 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Credit, MonthlyBalance } from "@/features/dashboard/types/types";
 
 interface CreditFormProps {
   currentMonth: string;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (payload: { item: Credit; balance: MonthlyBalance | null }) => void;
   credit?: {
     id: string;
     description: string;
@@ -70,13 +71,13 @@ export default function CreditForm({
 
     setLoading(false);
 
+    const data = await res.json();
     if (res.ok) {
-      onSuccess();
+      onSuccess(data);
       onClose();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "Unable to save credit.");
+      return;
     }
+    setError(data.error ?? "Unable to save credit.");
   };
 
   const isEditing = Boolean(credit);

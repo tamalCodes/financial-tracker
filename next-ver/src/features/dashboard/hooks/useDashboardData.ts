@@ -77,5 +77,48 @@ export const useDashboardData = (currentMonth: string) => {
     isBootstrapping,
     isRefreshing,
     reload: load,
+    setBalance,
+    upsertCredit: (credit: Credit) => {
+      setCredits((prev) => {
+        const index = prev.findIndex((item) => item.id === credit.id);
+        if (index === -1) {
+          return [credit, ...prev];
+        }
+        const next = [...prev];
+        next[index] = credit;
+        return next;
+      });
+    },
+    removeCredit: (id: string) => {
+      setCredits((prev) => prev.filter((item) => item.id !== id));
+    },
+    upsertExpense: (expense: Expense) => {
+      setExpenses((prev) => {
+        const index = prev.findIndex((item) => item.id === expense.id);
+        if (index === -1) {
+          return [expense, ...prev];
+        }
+        const next = [...prev];
+        next[index] = expense;
+        return next;
+      });
+    },
+    removeExpense: (id: string) => {
+      setExpenses((prev) => prev.filter((item) => item.id !== id));
+    },
+    upsertInvestment: (investment: Investment) => {
+      setInvestments((prev) => {
+        const index = prev.findIndex((item) => item.id === investment.id);
+        if (index === -1) {
+          return [investment, ...prev];
+        }
+        const next = [...prev];
+        next[index] = investment;
+        return next;
+      });
+    },
+    removeInvestment: (id: string) => {
+      setInvestments((prev) => prev.filter((item) => item.id !== id));
+    },
   };
 };

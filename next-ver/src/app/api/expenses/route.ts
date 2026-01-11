@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { applyBalanceDelta } from "@/lib/api/balances";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const payload = await request.json();
@@ -17,19 +18,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { error } = await supabase.from("expenses").insert({
-    user_id: userId,
-    month: currentMonth,
-    description,
-    amount,
-    carry_forward: Boolean(carry_forward),
-  });
+  const { data: inserted, error } = await supabase
+    .from("expenses")
+    .insert({
+      user_id: userId,
+      month: currentMonth,
+      description,
+      amount,
+      carry_forward: Boolean(carry_forward),
+    })
+    .select(
+      "id, description, amount, created_at, carry_forward, carried_from_month"
+    )
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
+  const balance = await applyBalanceDelta(
+    supabase,
+    userId,
+    currentMonth,
+    -Number(amount)
+  );
+
+  return NextResponse.json({ item: inserted, balance });
 }
 
 export async function PUT(request: Request) {
@@ -48,7 +62,18 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { error } = await supabase
+  const { data: existing, error: fetchError } = await supabase
+    .from("expenses")
+    .select("amount, month")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (fetchError || !existing) {
+    return NextResponse.json({ error: "Expense not found." }, { status: 404 });
+  }
+
+  const { data: updated, error } = await supabase
     .from("expenses")
     .update({
       description,
@@ -56,13 +81,25 @@ export async function PUT(request: Request) {
       carry_forward: Boolean(carry_forward),
     })
     .eq("id", id)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .select(
+      "id, description, amount, created_at, carry_forward, carried_from_month"
+    )
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
+  const delta = Number(existing.amount) - Number(amount);
+  const balance = await applyBalanceDelta(
+    supabase,
+    userId,
+    existing.month,
+    delta
+  );
+
+  return NextResponse.json({ item: updated, balance });
 }
 
 export async function DELETE(request: Request) {
@@ -81,6 +118,17 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { data: existing, error: fetchError } = await supabase
+    .from("expenses")
+    .select("amount, month")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (fetchError || !existing) {
+    return NextResponse.json({ error: "Expense not found." }, { status: 404 });
+  }
+
   const { error } = await supabase
     .from("expenses")
     .delete()
@@ -91,6 +139,12 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
-}
+  const balance = await applyBalanceDelta(
+    supabase,
+    userId,
+    existing.month,
+    Number(existing.amount)
+  );
 
+  return NextResponse.json({ ok: true, balance });
+}

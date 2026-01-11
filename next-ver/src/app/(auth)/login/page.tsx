@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import AuthForm from "@/features/auth/components/AuthForm";
+import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
   const supabase = await createSupabaseServerClient();

@@ -5,8 +5,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        heading: ["var(--font-heading)", "Bricolage Grotesque", "Inter", "sans-serif"],
+        sans: ["var(--font-heading)", "Bricolage Grotesque", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["var(--font-heading)", "Bricolage Grotesque", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },

@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   Credit,
   Expense,
@@ -6,7 +6,10 @@ import {
   MonthlyBalance,
 } from "@/features/dashboard/types/types";
 import { shiftMonthKey } from "@/features/dashboard/utils/dates";
-import { updateClosingBalance } from "@/lib/api/balances";
+import {
+  calculateClosingBalance,
+  updateClosingBalance,
+} from "@/lib/api/balances";
 
 interface DashboardPayload {
   balance: MonthlyBalance | null;
@@ -16,21 +19,16 @@ interface DashboardPayload {
 }
 
 export const loadDashboardData = async (
+  supabase: SupabaseClient,
+  userId: string,
   currentMonth: string
 ): Promise<DashboardPayload> => {
-  const supabase = await createSupabaseServerClient();
-  const { data: auth, error: authError } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-
-  if (authError || !userId) {
-    throw new Error("Unauthorized");
-  }
 
   const previousMonth = shiftMonthKey(currentMonth, -1);
 
   await Promise.all([
-    ensureCarryForwardExpenses(userId, previousMonth, currentMonth),
-    ensureCarryForwardCredits(userId, previousMonth, currentMonth),
+    ensureCarryForwardExpenses(supabase, userId, previousMonth, currentMonth),
+    ensureCarryForwardCredits(supabase, userId, previousMonth, currentMonth),
   ]);
 
   const { data: balanceData } = await supabase
@@ -115,13 +113,23 @@ export const loadDashboardData = async (
   });
 
   if (resolvedBalance) {
-    resolvedBalance = await updateClosingBalance(
-      currentMonth,
+    const calculatedClosing = calculateClosingBalance(
       resolvedBalance.starting_balance,
       creditsData,
       expensesData,
       filteredInvestments
     );
+    if (resolvedBalance.closing_balance !== calculatedClosing) {
+      resolvedBalance = await updateClosingBalance(
+        supabase,
+        userId,
+        currentMonth,
+        resolvedBalance.starting_balance,
+        creditsData,
+        expensesData,
+        filteredInvestments
+      );
+    }
   }
 
   return {
@@ -133,12 +141,11 @@ export const loadDashboardData = async (
 };
 
 const ensureCarryForwardExpenses = async (
+  supabase: SupabaseClient,
   userId: string,
   previousMonth: string,
   currentMonth: string
 ) => {
-  const supabase = await createSupabaseServerClient();
-
   const { data: recurringExpenses } = await supabase
     .from("expenses")
     .select("id, description, amount, carry_forward")
@@ -182,12 +189,11 @@ const ensureCarryForwardExpenses = async (
 };
 
 const ensureCarryForwardCredits = async (
+  supabase: SupabaseClient,
   userId: string,
   previousMonth: string,
   currentMonth: string
 ) => {
-  const supabase = await createSupabaseServerClient();
-
   const { data: recurringCredits } = await supabase
     .from("credits")
     .select("id, description, amount, carry_forward")
