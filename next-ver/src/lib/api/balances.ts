@@ -9,7 +9,7 @@ export const updateClosingBalance = async (
   investmentList: Investment[],
   options: { updateStarting?: boolean } = {}
 ) => {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: auth, error: authError } = await supabase.auth.getUser();
   const userId = auth?.user?.id;
 
@@ -52,7 +52,7 @@ export const createStartingBalance = async (
   currentMonth: string,
   starting: number
 ) => {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: auth, error: authError } = await supabase.auth.getUser();
   const userId = auth?.user?.id;
 
@@ -71,3 +71,4 @@ export const createStartingBalance = async (
     throw new Error(error.message ?? "Failed to set starting balance");
   }
 };
+

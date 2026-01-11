@@ -18,7 +18,7 @@ interface DashboardPayload {
 export const loadDashboardData = async (
   currentMonth: string
 ): Promise<DashboardPayload> => {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: auth, error: authError } = await supabase.auth.getUser();
   const userId = auth?.user?.id;
 
@@ -137,7 +137,7 @@ const ensureCarryForwardExpenses = async (
   previousMonth: string,
   currentMonth: string
 ) => {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: recurringExpenses } = await supabase
     .from("expenses")
@@ -186,7 +186,7 @@ const ensureCarryForwardCredits = async (
   previousMonth: string,
   currentMonth: string
 ) => {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data: recurringCredits } = await supabase
     .from("credits")
@@ -229,3 +229,4 @@ const ensureCarryForwardCredits = async (
     await supabase.from("credits").insert(insertPayload);
   }
 };
+

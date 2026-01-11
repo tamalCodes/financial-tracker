@@ -1,7 +1,8 @@
 "use client";
 
 import { DollarSign, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
 
 interface AuthFormProps {
@@ -9,13 +10,20 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboard");
+    }
+  }, [router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

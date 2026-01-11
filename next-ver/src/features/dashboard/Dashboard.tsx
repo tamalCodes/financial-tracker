@@ -14,6 +14,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import StartingBalanceModal from "@/features/dashboard/components/StartingBalanceModal";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
+import { useLockBodyScroll } from "@/features/shared/hooks/useLockBodyScroll";
 
 export default function Dashboard() {
   const {
@@ -50,6 +51,13 @@ export default function Dashboard() {
   const [editingCredit, setEditingCredit] = useState<
     typeof credits[number] | null
   >(null);
+  const isAnyModalOpen =
+    showCreditForm ||
+    showExpenseForm ||
+    showInvestmentForm ||
+    showStartingBalanceForm;
+
+  useLockBodyScroll(isAnyModalOpen);
   const showEmptyMonthMessage =
     !isBootstrapping &&
     !isRefreshing &&
@@ -75,12 +83,8 @@ export default function Dashboard() {
     e.preventDefault();
     if (!canEditCurrentMonth) return;
 
-    setStartingBalanceError("");
     const amount = parseFloat(startingBalanceInput);
-    if (Number.isNaN(amount)) {
-      setStartingBalanceError("Please enter a valid number.");
-      return;
-    }
+    if (Number.isNaN(amount)) return;
 
     const res = await fetch("/api/balances", {
       method: "POST",
@@ -131,102 +135,130 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        <MonthHeader
-          monthLabel={monthLabel}
-          isViewingCurrentMonth={isViewingCurrentMonth}
-          canNavigateNextMonth={canNavigateNextMonth}
-          isRefreshing={isRefreshing}
-          onPrev={() => handleChangeMonth("prev")}
-          onNext={() => handleChangeMonth("next")}
-        />
-        {showEmptyMonthMessage && (
-          <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500">
-            No data captured for {monthLabel}.
+        {isBootstrapping ? (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 animate-pulse">
+              <div className="h-4 bg-slate-200 rounded w-1/3 mb-4" />
+              <div className="h-10 bg-slate-100 rounded" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[0, 1].map((card) => (
+                <div
+                  key={card}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 animate-pulse"
+                >
+                  <div className="h-3 bg-slate-100 rounded w-1/2 mb-3" />
+                  <div className="h-6 bg-slate-200 rounded w-2/3" />
+                </div>
+              ))}
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4 animate-pulse">
+              {[0, 1, 2].map((row) => (
+                <div key={row} className="h-4 bg-slate-100 rounded" />
+              ))}
+              <div className="h-12 bg-slate-200 rounded" />
+            </div>
           </div>
+        ) : (
+          <>
+            <MonthHeader
+              monthLabel={monthLabel}
+              isViewingCurrentMonth={isViewingCurrentMonth}
+              canNavigateNextMonth={canNavigateNextMonth}
+              isRefreshing={isRefreshing}
+              onPrev={() => handleChangeMonth("prev")}
+              onNext={() => handleChangeMonth("next")}
+            />
+            {showEmptyMonthMessage && (
+              <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-5 text-center text-sm text-slate-500">
+                No data captured for {monthLabel}.
+              </div>
+            )}
+            <BalancePanel
+              balance={balance}
+              canEditCurrentMonth={canEditCurrentMonth}
+              startingBalanceInput={startingBalanceInput}
+              onStartInputChange={setStartingBalanceInput}
+              onSetStartingBalance={handleSetStartingBalance}
+              onEditStartingBalance={handleOpenStartingBalanceForm}
+              formatCurrency={formatCurrency}
+            />
+            <TransactionSection
+              title="Expenses"
+              icon={<TrendingDown className="w-5 h-5 text-red-600" />}
+              canEdit={canEditCurrentMonth}
+              onAdd={() => {
+                setEditingExpense(null);
+                setShowExpenseForm(true);
+              }}
+              isEmpty={expenses.length === 0}
+              emptyText="No expenses recorded"
+            >
+              <TransactionList
+                items={expenses}
+                type="expense"
+                onDelete={async (id) => {
+                  await fetch(`/api/expenses?id=${id}`, { method: "DELETE" });
+                  reload();
+                }}
+                formatCurrency={formatCurrency}
+                onSelect={(id) => {
+                  const expenseToEdit = expenses.find((item) => item.id === id);
+                  if (!expenseToEdit) return;
+                  setEditingExpense(expenseToEdit);
+                  setShowExpenseForm(true);
+                }}
+                formatDate={formatExpenseDate}
+              />
+            </TransactionSection>
+            <TransactionSection
+              title="Credits"
+              icon={<TrendingUp className="w-5 h-5 text-emerald-600" />}
+              canEdit={canEditCurrentMonth}
+              onAdd={() => {
+                setEditingCredit(null);
+                setShowCreditForm(true);
+              }}
+              isEmpty={credits.length === 0}
+              emptyText="No credits recorded"
+            >
+              <TransactionList
+                items={credits}
+                type="credit"
+                onDelete={async (id) => {
+                  await fetch(`/api/credits?id=${id}`, { method: "DELETE" });
+                  reload();
+                }}
+                formatCurrency={formatCurrency}
+                onSelect={(id) => {
+                  const creditToEdit = credits.find((item) => item.id === id);
+                  if (!creditToEdit) return;
+                  setEditingCredit(creditToEdit);
+                  setShowCreditForm(true);
+                }}
+                formatDate={formatExpenseDate}
+              />
+            </TransactionSection>
+            <TransactionSection
+              title="Investments"
+              icon={<TrendingUp className="w-5 h-5 text-indigo-600" />}
+              canEdit={canEditCurrentMonth}
+              onAdd={() => setShowInvestmentForm(true)}
+              isEmpty={investments.length === 0}
+              emptyText="No investments recorded"
+            >
+              <TransactionList
+                items={investments}
+                type="investment"
+                onDelete={async (id) => {
+                  await fetch(`/api/investments?id=${id}`, { method: "DELETE" });
+                  reload();
+                }}
+                formatCurrency={formatCurrency}
+              />
+            </TransactionSection>
+          </>
         )}
-        <BalancePanel
-          balance={balance}
-          canEditCurrentMonth={canEditCurrentMonth}
-          startingBalanceInput={startingBalanceInput}
-          onStartInputChange={setStartingBalanceInput}
-          onSetStartingBalance={handleSetStartingBalance}
-          onEditStartingBalance={handleOpenStartingBalanceForm}
-          formatCurrency={formatCurrency}
-        />
-        <TransactionSection
-          title="Expenses"
-          icon={<TrendingDown className="w-5 h-5 text-red-600" />}
-          canEdit={canEditCurrentMonth}
-          onAdd={() => {
-            setEditingExpense(null);
-            setShowExpenseForm(true);
-          }}
-          isEmpty={expenses.length === 0}
-          emptyText="No expenses recorded"
-        >
-          <TransactionList
-            items={expenses}
-            type="expense"
-            onDelete={async (id) => {
-              await fetch(`/api/expenses?id=${id}`, { method: "DELETE" });
-              reload();
-            }}
-            formatCurrency={formatCurrency}
-            onSelect={(id) => {
-              const expenseToEdit = expenses.find((item) => item.id === id);
-              if (!expenseToEdit) return;
-              setEditingExpense(expenseToEdit);
-              setShowExpenseForm(true);
-            }}
-            formatDate={formatExpenseDate}
-          />
-        </TransactionSection>
-        <TransactionSection
-          title="Credits"
-          icon={<TrendingUp className="w-5 h-5 text-emerald-600" />}
-          canEdit={canEditCurrentMonth}
-          onAdd={() => {
-            setEditingCredit(null);
-            setShowCreditForm(true);
-          }}
-          isEmpty={credits.length === 0}
-          emptyText="No credits recorded"
-        >
-          <TransactionList
-            items={credits}
-            type="credit"
-            onDelete={async (id) => {
-              await fetch(`/api/credits?id=${id}`, { method: "DELETE" });
-              reload();
-            }}
-            formatCurrency={formatCurrency}
-            onSelect={(id) => {
-              const creditToEdit = credits.find((item) => item.id === id);
-              if (!creditToEdit) return;
-              setEditingCredit(creditToEdit);
-              setShowCreditForm(true);
-            }}
-            formatDate={formatExpenseDate}
-          />
-        </TransactionSection>
-        <TransactionSection
-          title="Investments"
-          icon={<TrendingUp className="w-5 h-5 text-indigo-600" />}
-          canEdit={canEditCurrentMonth}
-          onAdd={() => setShowInvestmentForm(true)}
-          isEmpty={investments.length === 0}
-          emptyText="No investments recorded"
-        >
-          <TransactionList
-            items={investments}
-            type="investment"
-            onDelete={async (id) => {
-              await fetch(`/api/investments?id=${id}`, { method: "DELETE" });
-              reload();
-            }}
-            formatCurrency={formatCurrency}
-          />
-        </TransactionSection>
       </main>
       <StartingBalanceModal
         isOpen={showStartingBalanceForm}

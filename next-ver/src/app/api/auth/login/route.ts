@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     password: string;
   };
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
@@ -31,3 +31,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true });
 }
+

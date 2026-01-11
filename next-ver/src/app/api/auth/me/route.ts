@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
@@ -26,3 +26,4 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ user: data.user ?? null });
 }
+
