@@ -7,7 +7,15 @@
 }
 
 body {
-  font-family: "Bricolage Grotesque", sans-serif;
+  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif;
+}
+
+input,
+textarea,
+select,
+button,
+label {
+  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
 }
 
 h2 {

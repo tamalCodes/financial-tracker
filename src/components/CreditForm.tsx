@@ -129,7 +129,7 @@ export default function CreditForm({
               onChange={(e) => setAmount(e.target.value)}
               required
               placeholder="0.00"
-              className="w-full text-xl font-sans px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
+              className="w-full text-xl font-heading px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none ring-0"
             />
           </div>
 

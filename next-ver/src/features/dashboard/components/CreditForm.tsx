@@ -1,13 +1,16 @@
 "use client";
 
+import { Credit, MonthlyBalance } from "@/features/dashboard/types/types";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Credit, MonthlyBalance } from "@/features/dashboard/types/types";
 
 interface CreditFormProps {
   currentMonth: string;
   onClose: () => void;
-  onSuccess: (payload: { item: Credit; balance: MonthlyBalance | null }) => void;
+  onSuccess: (payload: {
+    item: Credit;
+    balance: MonthlyBalance | null;
+  }) => void;
   credit?: {
     id: string;
     description: string;
