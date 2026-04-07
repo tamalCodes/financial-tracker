@@ -1,5 +1,6 @@
 import { applyBalanceDelta } from "@/lib/api/balances";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { getUserFromCookies } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -11,11 +12,14 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: auth, error: authError } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-
-  if (authError || !userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const localUser = await getUserFromCookies();
+  let userId = localUser?.id;
+  if (!userId) {
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    userId = auth?.user?.id;
+    if (authError || !userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   const { data: inserted, error } = await supabase
@@ -56,11 +60,14 @@ export async function DELETE(request: Request) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: auth, error: authError } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-
-  if (authError || !userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const localUser = await getUserFromCookies();
+  let userId = localUser?.id;
+  if (!userId) {
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    userId = auth?.user?.id;
+    if (authError || !userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   const { data: existing, error: fetchError } = await supabase

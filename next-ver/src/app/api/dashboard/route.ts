@@ -1,5 +1,6 @@
 import { loadDashboardData } from "@/lib/api/dashboard";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { getUserFromCookies } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -12,9 +13,14 @@ export async function GET(request: Request) {
 
   try {
     const supabase = await createSupabaseServerClient();
+    const localUser = await getUserFromCookies();
+    if (localUser?.id) {
+      const data = await loadDashboardData(supabase, localUser.id, month);
+      return NextResponse.json(data);
+    }
+
     const { data: auth, error: authError } = await supabase.auth.getUser();
     const userId = auth?.user?.id;
-
     if (authError || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

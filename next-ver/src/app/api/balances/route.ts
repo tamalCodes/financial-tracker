@@ -4,6 +4,7 @@ import {
 } from "@/lib/api/balances";
 import { loadDashboardData } from "@/lib/api/dashboard";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
+import { getUserFromCookies } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -16,16 +17,24 @@ export async function POST(request: Request) {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const { data: auth, error: authError } = await supabase.auth.getUser();
-    const userId = auth?.user?.id;
-
-    if (authError || !userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const localUser = await getUserFromCookies();
+    if (!localUser?.id) {
+      const { data: auth, error: authError } = await supabase.auth.getUser();
+      if (authError || !auth?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      await createStartingBalance(
+        supabase,
+        auth.user.id,
+        currentMonth,
+        Number(startingBalance)
+      );
+      return NextResponse.json({ ok: true });
     }
 
     await createStartingBalance(
       supabase,
-      userId,
+      localUser.id,
       currentMonth,
       Number(startingBalance)
     );
@@ -50,17 +59,30 @@ export async function PUT(request: Request) {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const { data: auth, error: authError } = await supabase.auth.getUser();
-    const userId = auth?.user?.id;
-
-    if (authError || !userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const localUser = await getUserFromCookies();
+    if (!localUser?.id) {
+      const { data: auth, error: authError } = await supabase.auth.getUser();
+      if (authError || !auth?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const data = await loadDashboardData(supabase, auth.user.id, currentMonth);
+      const updated = await updateClosingBalance(
+        supabase,
+        auth.user.id,
+        currentMonth,
+        Number(startingBalance),
+        data.credits,
+        data.expenses,
+        data.investments,
+        { updateStarting: true }
+      );
+      return NextResponse.json({ ok: true, balance: updated });
     }
 
-    const data = await loadDashboardData(supabase, userId, currentMonth);
+    const data = await loadDashboardData(supabase, localUser.id, currentMonth);
     const updated = await updateClosingBalance(
       supabase,
-      userId,
+      localUser.id,
       currentMonth,
       Number(startingBalance),
       data.credits,

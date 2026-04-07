@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { rateLimit } from "@/lib/api/rateLimit";
+import { getUserFromCookies } from "@/lib/supabase/auth";
 
 export async function GET(request: Request) {
   const limit = rateLimit(request, "auth:me", {
@@ -15,6 +16,13 @@ export async function GET(request: Request) {
         headers: { "Retry-After": String(Math.ceil(limit.resetMs / 1000)) },
       }
     );
+  }
+
+  const localUser = await getUserFromCookies();
+  if (localUser?.id) {
+    return NextResponse.json({
+      user: { id: localUser.id, email: localUser.email ?? null },
+    });
   }
 
   const supabase = await createSupabaseServerClient();
