@@ -1,36 +1,37 @@
-# Graph Report - .  (2026-06-27)
+# Graph Report - /Users/tamalcodes/Gh/financial-tracker  (2026-06-27)
 
 ## Corpus Check
-- Corpus is ~18,466 words - fits in a single context window. You may not need a graph.
+- 72 files · ~34,872 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 163 nodes · 162 edges · 51 communities detected
-- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 43 edges (avg confidence: 0.79)
+- 166 nodes · 177 edges · 51 communities detected
+- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 48 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Dashboard UI & Handlers|Dashboard UI & Handlers]]
-- [[_COMMUNITY_Balance Logic & API Routes|Balance Logic & API Routes]]
-- [[_COMMUNITY_Auth Context & Forms|Auth Context & Forms]]
-- [[_COMMUNITY_App Shell & PWA Branding|App Shell & PWA Branding]]
-- [[_COMMUNITY_Supabase Server & Pages|Supabase Server & Pages]]
-- [[_COMMUNITY_Rate Limiting|Rate Limiting]]
-- [[_COMMUNITY_MonthDate Utils|Month/Date Utils]]
-- [[_COMMUNITY_Expo App Icons|Expo App Icons]]
-- [[_COMMUNITY_Expo App Entry|Expo App Entry]]
-- [[_COMMUNITY_useLockBodyScroll Hook|useLockBodyScroll Hook]]
-- [[_COMMUNITY_Auth Screen|Auth Screen]]
-- [[_COMMUNITY_Auth Toggle|Auth Toggle]]
-- [[_COMMUNITY_Auth Form|Auth Form]]
-- [[_COMMUNITY_Next Middleware|Next Middleware]]
-- [[_COMMUNITY_Root Layout|Root Layout]]
-- [[_COMMUNITY_Auth Form Submit|Auth Form Submit]]
-- [[_COMMUNITY_Currency Format|Currency Format]]
-- [[_COMMUNITY_Dashboard Data Hook|Dashboard Data Hook]]
-- [[_COMMUNITY_Dashboard State Hook|Dashboard State Hook]]
-- [[_COMMUNITY_Service Worker Register|Service Worker Register]]
-- [[_COMMUNITY_Vite Entry|Vite Entry]]
-- [[_COMMUNITY_Native Auth Submit|Native Auth Submit]]
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
@@ -62,16 +63,16 @@
 - [[_COMMUNITY_Community 50|Community 50]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `POST()` - 12 edges
-2. `DELETE()` - 9 edges
-3. `GET()` - 8 edges
-4. `PUT()` - 8 edges
-5. `createSupabaseServerClient()` - 8 edges
-6. `loadDashboardData()` - 8 edges
-7. `getUserFromCookies()` - 7 edges
-8. `shiftMonthKey()` - 6 edges
-9. `Financial Tracker (Vite App Shell)` - 6 edges
-10. `useAuth()` - 5 edges
+1. `POST()` - 15 edges
+2. `DELETE()` - 13 edges
+3. `PUT()` - 12 edges
+4. `GET()` - 8 edges
+5. `getUserFromCookies()` - 8 edges
+6. `createSupabaseServerClient()` - 8 edges
+7. `loadDashboardData()` - 8 edges
+8. `rateLimit()` - 6 edges
+9. `shiftMonthKey()` - 6 edges
+10. `Financial Tracker (Vite App Shell)` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Financial Tracker (Vite App Shell)` --conceptually_related_to--> `Rupee Currency App Icon (root public)`  [INFERRED]
@@ -82,8 +83,8 @@
   next-ver/public/icon.svg → public/icon.svg
 - `Home()` --calls--> `useAuth()`  [INFERRED]
   next-ver/src/app/page.tsx → src/contexts/AuthContext.tsx
-- `PUT()` --calls--> `updateClosingBalance()`  [INFERRED]
-  next-ver/src/app/api/credits/route.ts → src/components/Dashboard.tsx
+- `GET()` --calls--> `getUserFromCookies()`  [INFERRED]
+  next-ver/src/app/api/dashboard/route.ts → /Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts
 
 ## Hyperedges (group relationships)
 - **PWA App Shell (Vite Financial Tracker)** — index_financial_tracker, index_service_worker, index_pwa_manifest, index_main_tsx [INFERRED 0.85]
@@ -91,91 +92,91 @@
 
 ## Communities
 
-### Community 0 - "Dashboard UI & Handlers"
+### Community 0 - "Community 0"
 Cohesion: 0.1
 Nodes (14): ensureCarryForwardCredits(), ensureCarryForwardExpenses(), formatMonthKey(), getNextMonth(), getPreviousMonth(), handleChangeMonth(), handleCloseStartingBalanceForm(), handleOpenStartingBalanceForm() (+6 more)
 
-### Community 1 - "Balance Logic & API Routes"
-Cohesion: 0.15
-Nodes (12): extractAccessToken(), getProjectRef(), getUserFromCookies(), applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance(), handleDeleteCredit() (+4 more)
+### Community 1 - "Community 1"
+Cohesion: 0.16
+Nodes (15): extractAccessToken(), getProjectRef(), getUserFromCookies(), requireUser(), applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance() (+7 more)
 
-### Community 2 - "Auth Context & Forms"
+### Community 2 - "Community 2"
 Cohesion: 0.13
 Nodes (6): AuthProvider(), useAuth(), CreditForm(), ExpenseForm(), InvestmentForm(), Home()
 
-### Community 3 - "App Shell & PWA Branding"
+### Community 3 - "Community 3"
 Cohesion: 0.16
 Nodes (14): Rupee Currency App Icon, Rupee Currency App Icon (root public), Financial Tracker (Vite App Shell), Google Fonts (Bricolage Grotesque, Inter), main.tsx Entry Module, PWA Web App Manifest, Service Worker (sw.js) Registration, Next.js Wordmark Logo (+6 more)
 
-### Community 4 - "Supabase Server & Pages"
+### Community 4 - "Community 4"
 Cohesion: 0.25
 Nodes (4): createSupabaseServerClient(), DashboardPage(), LoginPage(), SignupPage()
 
-### Community 5 - "Rate Limiting"
+### Community 5 - "Community 5"
 Cohesion: 0.47
 Nodes (3): getClientId(), rateLimit(), GET()
 
-### Community 6 - "Month/Date Utils"
+### Community 6 - "Community 6"
 Cohesion: 0.6
 Nodes (3): formatMonthKey(), parseMonthKey(), shiftMonthKey()
 
-### Community 7 - "Expo App Icons"
+### Community 7 - "Community 7"
 Cohesion: 0.67
 Nodes (4): Android Adaptive Icon (Expo Placeholder), Favicon 3D Cube Logo, App Icon (Expo Placeholder), Splash Screen Icon (Expo Placeholder)
 
-### Community 8 - "Expo App Entry"
+### Community 8 - "Community 8"
 Cohesion: 0.67
 Nodes (1): App()
 
-### Community 9 - "useLockBodyScroll Hook"
+### Community 9 - "Community 9"
 Cohesion: 0.67
 Nodes (1): useLockBodyScroll()
 
-### Community 10 - "Auth Screen"
+### Community 10 - "Community 10"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 11 - "Auth Toggle"
+### Community 11 - "Community 11"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 12 - "Auth Form"
+### Community 12 - "Community 12"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 13 - "Next Middleware"
+### Community 13 - "Community 13"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 14 - "Root Layout"
+### Community 14 - "Community 14"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 15 - "Auth Form Submit"
+### Community 15 - "Community 15"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 16 - "Currency Format"
+### Community 16 - "Community 16"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 17 - "Dashboard Data Hook"
+### Community 17 - "Community 17"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 18 - "Dashboard State Hook"
+### Community 18 - "Community 18"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 19 - "Service Worker Register"
+### Community 19 - "Community 19"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 20 - "Vite Entry"
+### Community 20 - "Community 20"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 21 - "Native Auth Submit"
+### Community 21 - "Community 21"
 Cohesion: 1.0
 Nodes (0): 
 
@@ -298,29 +299,29 @@ Nodes (1): Browser Window Icon
 ## Knowledge Gaps
 - **9 isolated node(s):** `main.tsx Entry Module`, `create-next-app`, `Rupee Currency App Icon`, `Document/File Icon`, `Vercel Triangle Logo` (+4 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Auth Screen`** (2 nodes): `AuthScreen.tsx`, `AuthScreen()`
+- **Thin community `Community 10`** (2 nodes): `AuthScreen.tsx`, `AuthScreen()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Auth Toggle`** (2 nodes): `AuthToggle.tsx`, `AuthToggle()`
+- **Thin community `Community 11`** (2 nodes): `AuthToggle.tsx`, `AuthToggle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Auth Form`** (2 nodes): `AuthForm.tsx`, `AuthForm()`
+- **Thin community `Community 12`** (2 nodes): `AuthForm.tsx`, `AuthForm()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Next Middleware`** (2 nodes): `middleware()`, `middleware.ts`
+- **Thin community `Community 13`** (2 nodes): `middleware()`, `middleware.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Root Layout`** (2 nodes): `RootLayout()`, `layout.tsx`
+- **Thin community `Community 14`** (2 nodes): `RootLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Auth Form Submit`** (2 nodes): `handleSubmit()`, `AuthForm.tsx`
+- **Thin community `Community 15`** (2 nodes): `handleSubmit()`, `AuthForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Currency Format`** (2 nodes): `formatCurrency()`, `format.ts`
+- **Thin community `Community 16`** (2 nodes): `formatCurrency()`, `format.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Dashboard Data Hook`** (2 nodes): `useDashboardData.ts`, `useDashboardData()`
+- **Thin community `Community 17`** (2 nodes): `useDashboardData.ts`, `useDashboardData()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Dashboard State Hook`** (2 nodes): `useDashboardState.ts`, `useDashboardState()`
+- **Thin community `Community 18`** (2 nodes): `useDashboardState.ts`, `useDashboardState()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Service Worker Register`** (2 nodes): `ServiceWorkerRegister.tsx`, `ServiceWorkerRegister()`
+- **Thin community `Community 19`** (2 nodes): `ServiceWorkerRegister.tsx`, `ServiceWorkerRegister()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Vite Entry`** (2 nodes): `App.tsx`, `main.tsx`
+- **Thin community `Community 20`** (2 nodes): `App.tsx`, `main.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Native Auth Submit`** (2 nodes): `handleSubmit()`, `Auth.tsx`
+- **Thin community `Community 21`** (2 nodes): `handleSubmit()`, `Auth.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 22`** (1 nodes): `tailwind.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -384,17 +385,17 @@ Nodes (1): Browser Window Icon
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `createSupabaseServerClient()` connect `Supabase Server & Pages` to `Balance Logic & API Routes`, `Rate Limiting`?**
+- **Why does `DELETE()` connect `Community 1` to `Community 4`, `Community 5`?**
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
+- **Why does `PUT()` connect `Community 1` to `Community 0`, `Community 4`, `Community 5`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `createSupabaseServerClient()` connect `Community 4` to `Community 1`, `Community 5`?**
   _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `DELETE()` connect `Balance Logic & API Routes` to `Supabase Server & Pages`, `Rate Limiting`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `loadDashboardData()` connect `Dashboard UI & Handlers` to `Balance Logic & API Routes`, `Rate Limiting`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **Are the 5 inferred relationships involving `POST()` (e.g. with `rateLimit()` and `createSupabaseServerClient()`) actually correct?**
-  _`POST()` has 5 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 6 inferred relationships involving `DELETE()` (e.g. with `GET()` and `createSupabaseServerClient()`) actually correct?**
-  _`DELETE()` has 6 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 6 inferred relationships involving `POST()` (e.g. with `rateLimit()` and `createSupabaseServerClient()`) actually correct?**
+  _`POST()` has 6 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 8 inferred relationships involving `DELETE()` (e.g. with `GET()` and `createSupabaseServerClient()`) actually correct?**
+  _`DELETE()` has 8 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 7 inferred relationships involving `PUT()` (e.g. with `createSupabaseServerClient()` and `getUserFromCookies()`) actually correct?**
+  _`PUT()` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 6 inferred relationships involving `GET()` (e.g. with `rateLimit()` and `getUserFromCookies()`) actually correct?**
   _`GET()` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 5 inferred relationships involving `PUT()` (e.g. with `createSupabaseServerClient()` and `getUserFromCookies()`) actually correct?**
-  _`PUT()` has 5 INFERRED edges - model-reasoned connections that need verification._

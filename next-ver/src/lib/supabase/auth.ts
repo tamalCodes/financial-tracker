@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
+import { NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const getProjectRef = () => {
   const url = process.env.SUPABASE_URL ?? "";
@@ -59,4 +61,36 @@ export const getUserFromCookies = async () => {
   } catch {
     return null;
   }
+};
+
+/**
+ * Resolve the authenticated user for an API route.
+ * Tries the local JWT cookie first (getUserFromCookies), then falls back to
+ * supabase.auth.getUser(). Throws a 401 NextResponse if neither yields a user.
+ *
+ * Usage (wrap the handler body in try/catch — see specs/CONVENTIONS.md §1):
+ *   try {
+ *     const supabase = await createSupabaseServerClient();
+ *     const { userId } = await requireUser(supabase);
+ *     ...
+ *   } catch (e) {
+ *     if (e instanceof NextResponse) return e;
+ *     ...
+ *   }
+ */
+export const requireUser = async (
+  supabase: SupabaseClient
+): Promise<{ userId: string }> => {
+  const localUser = await getUserFromCookies();
+  if (localUser?.id) {
+    return { userId: localUser.id };
+  }
+
+  const { data: auth, error: authError } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
+  if (authError || !userId) {
+    throw NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return { userId };
 };
