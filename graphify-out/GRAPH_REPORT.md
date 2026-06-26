@@ -1,12 +1,12 @@
 # Graph Report - /Users/tamalcodes/Gh/financial-tracker  (2026-06-27)
 
 ## Corpus Check
-- 72 files · ~34,872 words
+- 78 files · ~36,415 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 166 nodes · 177 edges · 51 communities detected
-- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 48 edges (avg confidence: 0.79)
+- 177 nodes · 187 edges · 54 communities detected
+- Extraction: 68% EXTRACTED · 32% INFERRED · 0% AMBIGUOUS · INFERRED: 59 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -61,18 +61,21 @@
 - [[_COMMUNITY_Community 48|Community 48]]
 - [[_COMMUNITY_Community 49|Community 49]]
 - [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 51|Community 51]]
+- [[_COMMUNITY_Community 52|Community 52]]
+- [[_COMMUNITY_Community 53|Community 53]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `POST()` - 15 edges
-2. `DELETE()` - 13 edges
-3. `PUT()` - 12 edges
-4. `GET()` - 8 edges
+1. `POST()` - 16 edges
+2. `PUT()` - 13 edges
+3. `DELETE()` - 13 edges
+4. `GET()` - 11 edges
 5. `getUserFromCookies()` - 8 edges
 6. `createSupabaseServerClient()` - 8 edges
 7. `loadDashboardData()` - 8 edges
-8. `rateLimit()` - 6 edges
-9. `shiftMonthKey()` - 6 edges
-10. `Financial Tracker (Vite App Shell)` - 6 edges
+8. `requireUser()` - 6 edges
+9. `rateLimit()` - 6 edges
+10. `shiftMonthKey()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Financial Tracker (Vite App Shell)` --conceptually_related_to--> `Rupee Currency App Icon (root public)`  [INFERRED]
@@ -83,8 +86,8 @@
   next-ver/public/icon.svg → public/icon.svg
 - `Home()` --calls--> `useAuth()`  [INFERRED]
   next-ver/src/app/page.tsx → src/contexts/AuthContext.tsx
-- `GET()` --calls--> `getUserFromCookies()`  [INFERRED]
-  next-ver/src/app/api/dashboard/route.ts → /Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts
+- `DashboardPage()` --calls--> `createSupabaseServerClient()`  [INFERRED]
+  next-ver/src/app/(app)/dashboard/page.tsx → /Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/cookies.ts
 
 ## Hyperedges (group relationships)
 - **PWA App Shell (Vite Financial Tracker)** — index_financial_tracker, index_service_worker, index_pwa_manifest, index_main_tsx [INFERRED 0.85]
@@ -93,12 +96,12 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.1
-Nodes (14): ensureCarryForwardCredits(), ensureCarryForwardExpenses(), formatMonthKey(), getNextMonth(), getPreviousMonth(), handleChangeMonth(), handleCloseStartingBalanceForm(), handleOpenStartingBalanceForm() (+6 more)
+Cohesion: 0.12
+Nodes (19): extractAccessToken(), getProjectRef(), getUserFromCookies(), requireUser(), applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance() (+11 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.16
-Nodes (15): extractAccessToken(), getProjectRef(), getUserFromCookies(), requireUser(), applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance() (+7 more)
+Cohesion: 0.1
+Nodes (14): ensureCarryForwardCredits(), ensureCarryForwardExpenses(), formatMonthKey(), getNextMonth(), getPreviousMonth(), handleChangeMonth(), handleCloseStartingBalanceForm(), handleOpenStartingBalanceForm() (+6 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.13
@@ -113,12 +116,12 @@ Cohesion: 0.25
 Nodes (4): createSupabaseServerClient(), DashboardPage(), LoginPage(), SignupPage()
 
 ### Community 5 - "Community 5"
-Cohesion: 0.47
-Nodes (3): getClientId(), rateLimit(), GET()
-
-### Community 6 - "Community 6"
 Cohesion: 0.6
 Nodes (3): formatMonthKey(), parseMonthKey(), shiftMonthKey()
+
+### Community 6 - "Community 6"
+Cohesion: 0.4
+Nodes (0): 
 
 ### Community 7 - "Community 7"
 Cohesion: 0.67
@@ -286,13 +289,25 @@ Nodes (0):
 
 ### Community 48 - "Community 48"
 Cohesion: 1.0
-Nodes (1): Document/File Icon
+Nodes (0): 
 
 ### Community 49 - "Community 49"
 Cohesion: 1.0
-Nodes (1): Globe Icon
+Nodes (0): 
 
 ### Community 50 - "Community 50"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 51 - "Community 51"
+Cohesion: 1.0
+Nodes (1): Document/File Icon
+
+### Community 52 - "Community 52"
+Cohesion: 1.0
+Nodes (1): Globe Icon
+
+### Community 53 - "Community 53"
 Cohesion: 1.0
 Nodes (1): Browser Window Icon
 
@@ -345,57 +360,63 @@ Nodes (1): Browser Window Icon
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 32`** (1 nodes): `postcss.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 33`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `eslint.config.mjs`
+- **Thin community `Community 34`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (1 nodes): `next.config.ts`
+- **Thin community `Community 35`** (1 nodes): `vitest.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (1 nodes): `sw.js`
+- **Thin community `Community 36`** (1 nodes): `eslint.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (1 nodes): `types.ts`
+- **Thin community `Community 37`** (1 nodes): `next.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (1 nodes): `BalancePanel.tsx`
+- **Thin community `Community 38`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (1 nodes): `StartingBalanceModal.tsx`
+- **Thin community `Community 39`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (1 nodes): `TransactionSection.tsx`
+- **Thin community `Community 40`** (1 nodes): `BalancePanel.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (1 nodes): `TransactionList.tsx`
+- **Thin community `Community 41`** (1 nodes): `StartingBalanceModal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (1 nodes): `MonthHeader.tsx`
+- **Thin community `Community 42`** (1 nodes): `TransactionSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `server.ts`
+- **Thin community `Community 43`** (1 nodes): `TransactionList.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `sw.js`
+- **Thin community `Community 44`** (1 nodes): `MonthHeader.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `vite-env.d.ts`
+- **Thin community `Community 45`** (1 nodes): `database.types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `TransactionList.tsx`
+- **Thin community `Community 46`** (1 nodes): `server.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `supabase.ts`
+- **Thin community `Community 47`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `Document/File Icon`
+- **Thin community `Community 48`** (1 nodes): `vite-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `Globe Icon`
+- **Thin community `Community 49`** (1 nodes): `TransactionList.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `Browser Window Icon`
+- **Thin community `Community 50`** (1 nodes): `supabase.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 51`** (1 nodes): `Document/File Icon`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 52`** (1 nodes): `Globe Icon`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 53`** (1 nodes): `Browser Window Icon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `DELETE()` connect `Community 1` to `Community 4`, `Community 5`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Why does `PUT()` connect `Community 1` to `Community 0`, `Community 4`, `Community 5`?**
+- **Why does `PUT()` connect `Community 0` to `Community 1`, `Community 4`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
+- **Why does `DELETE()` connect `Community 0` to `Community 4`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
-- **Why does `createSupabaseServerClient()` connect `Community 4` to `Community 1`, `Community 5`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Are the 6 inferred relationships involving `POST()` (e.g. with `rateLimit()` and `createSupabaseServerClient()`) actually correct?**
-  _`POST()` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 8 inferred relationships involving `DELETE()` (e.g. with `GET()` and `createSupabaseServerClient()`) actually correct?**
-  _`DELETE()` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 7 inferred relationships involving `PUT()` (e.g. with `createSupabaseServerClient()` and `getUserFromCookies()`) actually correct?**
-  _`PUT()` has 7 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 6 inferred relationships involving `GET()` (e.g. with `rateLimit()` and `getUserFromCookies()`) actually correct?**
-  _`GET()` has 6 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `createSupabaseServerClient()` connect `Community 4` to `Community 0`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Are the 9 inferred relationships involving `POST()` (e.g. with `rateLimit()` and `createSupabaseServerClient()`) actually correct?**
+  _`POST()` has 9 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `PUT()` (e.g. with `rateLimit()` and `tooManyRequests()`) actually correct?**
+  _`PUT()` has 10 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `DELETE()` (e.g. with `rateLimit()` and `tooManyRequests()`) actually correct?**
+  _`DELETE()` has 10 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 9 inferred relationships involving `GET()` (e.g. with `rateLimit()` and `getUserFromCookies()`) actually correct?**
+  _`GET()` has 9 INFERRED edges - model-reasoned connections that need verification._

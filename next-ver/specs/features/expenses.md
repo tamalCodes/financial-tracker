@@ -20,9 +20,7 @@ carried_from_month, created_at`. Mutations adjust `monthly_balances.closing_bala
   Balance delta **`+amount`**.
 - Errors: 400 / 401 / 404 / 429.
 - `select`: `"id, description, amount, created_at, carry_forward, carried_from_month"`.
-- **TODO (migrate to standard)**: this route still inlines the old auth block and has **no
-  `rateLimit`**. When touched, switch to `requireUser` + add `expenses:{verb}` rate limits
-  per CONVENTIONS §1/§3.
+- Rate limit: `expenses:{post,put,delete}` `{ limit: 30, windowMs: 60_000 }`. Auth via `requireUser`.
 
 ## Carry-forward
 Same as credits: `carry_forward=true` rows copied from previous month, deduped by

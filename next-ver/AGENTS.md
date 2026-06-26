@@ -17,13 +17,15 @@ Vite app at the repo root — **never touch the root `src/`**.
 - `src/features/auth/` — `AuthContext` (client), `components/AuthForm`.
 - `src/features/dashboard/` — `Dashboard.tsx`, `components/`, `hooks/` (`useDashboardData`, `useDashboardState`), `types/types.ts`, `utils/` (`dates`, `format`).
 - `src/features/pwa/`, `src/features/shared/` — service-worker registration, shared hooks.
-- `src/lib/supabase/` — `cookies.ts` (SSR client), `auth.ts` (`getUserFromCookies`, `requireUser`), `server.ts` (service-role client).
-- `src/lib/api/` — `balances.ts` (balance math), `dashboard.ts` (`loadDashboardData`), `rateLimit.ts`.
+- `src/lib/supabase/` — `cookies.ts` (SSR client, typed `<Database>`), `auth.ts` (`getUserFromCookies`, `requireUser`), `server.ts` (service-role client), `database.types.ts` (generated/best-effort DB types).
+- `src/lib/api/` — `balances.ts` (balance math + `*.test.ts`), `dashboard.ts` (`loadDashboardData`), `rateLimit.ts`, `responses.ts` (`handleError`/`tooManyRequests`), `schemas.ts` (zod request schemas + `validate`).
 - `src/middleware.ts` — refreshes the Supabase session on every non-`/api` request.
+- `supabase/schema.sql` — reverse-engineered DB schema (verify against live project).
+- `.claude/` — `commands/` (slash commands), `agents/` (subagents), `hooks/` + `settings.json` (auto typecheck on edit, graphify on stop, permission allowlist).
 
 ## Read order for any task
 1. **This file** (AGENTS.md).
-2. The matching spec in **`specs/features/<feature>.md`** (+ `specs/DATA_MODEL.md` if touching tables, `specs/ARCHITECTURE.md` for request flow).
+2. The matching spec in **`specs/features/<feature>.md`** (+ `specs/DATA_MODEL.md` if touching tables, `specs/ARCHITECTURE.md` for request flow, `specs/DECISIONS.md` for *why* before changing odd-looking code).
 3. **`specs/CONVENTIONS.md`** — copy-pasteable patterns. Follow exactly.
 
 New feature with no spec yet → start from `specs/SPEC_TEMPLATE.md` (or run `/new-feature`).
@@ -52,8 +54,14 @@ New feature with no spec yet → start from `specs/SPEC_TEMPLATE.md` (or run `/n
 4. `const supabase = await createSupabaseServerClient();`
 5. Inside `try`: `const { userId } = await requireUser(supabase);` (throws a 401 `NextResponse`).
 6. DB op scoped by `userId`; on a mutation call `applyBalanceDelta` with the correct sign.
-7. Return `NextResponse.json({ item, balance })` (or `{ ok: true, balance }`).
-8. `catch (e)`: `if (e instanceof NextResponse) return e;` then map to a 400/500.
+7. Validate the body with `validate(<schema>, await request.json())` from `@/lib/api/schemas`.
+8. Return `NextResponse.json({ item, balance })` (or `{ ok: true, balance }`).
+9. `catch (e) { return handleError(e); }` (`handleError(e, 500)` for read routes).
+
+## Verify before done
+- `npx tsc --noEmit` and `npm run lint` — must be clean. (A PostToolUse hook auto-runs tsc on every `.ts` edit and blocks on errors.)
+- `npm test` — vitest; balance math is covered in `src/lib/api/balances.test.ts`.
+- `npm run build` for a full check before shipping.
 
 ---
-*After editing code, run `graphify update .` from the repo root to refresh the knowledge graph.*
+*After editing code, run `graphify update .` from the repo root (a Stop hook also does this automatically).*

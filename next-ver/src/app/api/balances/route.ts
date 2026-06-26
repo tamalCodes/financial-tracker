@@ -3,86 +3,56 @@ import {
   updateClosingBalance,
 } from "@/lib/api/balances";
 import { loadDashboardData } from "@/lib/api/dashboard";
+import { rateLimit } from "@/lib/api/rateLimit";
+import { handleError, tooManyRequests } from "@/lib/api/responses";
+import { startingBalanceSchema, validate } from "@/lib/api/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
-import { getUserFromCookies } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const payload = await request.json();
-  const { currentMonth, startingBalance } = payload ?? {};
-
-  if (!currentMonth || startingBalance === undefined) {
-    return NextResponse.json({ error: "Missing fields." }, { status: 400 });
-  }
+  const limit = rateLimit(request, "balances:post", { limit: 30, windowMs: 60_000 });
+  if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
+    const { currentMonth, startingBalance } = validate(
+      startingBalanceSchema,
+      await request.json()
+    );
+
     const supabase = await createSupabaseServerClient();
-    const localUser = await getUserFromCookies();
-    if (!localUser?.id) {
-      const { data: auth, error: authError } = await supabase.auth.getUser();
-      if (authError || !auth?.user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      await createStartingBalance(
-        supabase,
-        auth.user.id,
-        currentMonth,
-        Number(startingBalance)
-      );
-      return NextResponse.json({ ok: true });
-    }
+    const { userId } = await requireUser(supabase);
 
     await createStartingBalance(
       supabase,
-      localUser.id,
+      userId,
       currentMonth,
       Number(startingBalance)
     );
+
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to set starting balance.";
-    const status = message === "Unauthorized" ? 401 : 400;
-    return NextResponse.json({ error: message }, { status });
+    return handleError(error);
   }
 }
 
 export async function PUT(request: Request) {
-  const payload = await request.json();
-  const { currentMonth, startingBalance } = payload ?? {};
-
-  if (!currentMonth || startingBalance === undefined) {
-    return NextResponse.json({ error: "Missing fields." }, { status: 400 });
-  }
+  const limit = rateLimit(request, "balances:put", { limit: 30, windowMs: 60_000 });
+  if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const supabase = await createSupabaseServerClient();
-    const localUser = await getUserFromCookies();
-    if (!localUser?.id) {
-      const { data: auth, error: authError } = await supabase.auth.getUser();
-      if (authError || !auth?.user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      const data = await loadDashboardData(supabase, auth.user.id, currentMonth);
-      const updated = await updateClosingBalance(
-        supabase,
-        auth.user.id,
-        currentMonth,
-        Number(startingBalance),
-        data.credits,
-        data.expenses,
-        data.investments,
-        { updateStarting: true }
-      );
-      return NextResponse.json({ ok: true, balance: updated });
-    }
+    const { currentMonth, startingBalance } = validate(
+      startingBalanceSchema,
+      await request.json()
+    );
 
-    const data = await loadDashboardData(supabase, localUser.id, currentMonth);
+    const supabase = await createSupabaseServerClient();
+    const { userId } = await requireUser(supabase);
+
+    const data = await loadDashboardData(supabase, userId, currentMonth);
     const updated = await updateClosingBalance(
       supabase,
-      localUser.id,
+      userId,
       currentMonth,
       Number(startingBalance),
       data.credits,
@@ -90,11 +60,9 @@ export async function PUT(request: Request) {
       data.investments,
       { updateStarting: true }
     );
+
     return NextResponse.json({ ok: true, balance: updated });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to update balance.";
-    const status = message === "Unauthorized" ? 401 : 400;
-    return NextResponse.json({ error: message }, { status });
+    return handleError(error);
   }
 }

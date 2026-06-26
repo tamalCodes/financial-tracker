@@ -1,33 +1,25 @@
 import { applyBalanceDelta } from "@/lib/api/balances";
 import { rateLimit } from "@/lib/api/rateLimit";
+import { handleError, tooManyRequests } from "@/lib/api/responses";
+import {
+  mutationCreateSchema,
+  mutationUpdateSchema,
+  validate,
+} from "@/lib/api/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
-
-const tooManyRequests = (resetMs: number) =>
-  NextResponse.json(
-    { error: "Too many requests. Please try again shortly." },
-    { status: 429, headers: { "Retry-After": String(Math.ceil(resetMs / 1000)) } }
-  );
-
-const handleError = (error: unknown) => {
-  if (error instanceof NextResponse) return error; // 401 from requireUser
-  const message = error instanceof Error ? error.message : "Request failed.";
-  return NextResponse.json({ error: message }, { status: 400 });
-};
 
 export async function POST(request: Request) {
   const limit = rateLimit(request, "credits:post", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
-  const payload = await request.json();
-  const { currentMonth, description, amount, carry_forward } = payload ?? {};
-
-  if (!currentMonth || !description || amount === undefined) {
-    return NextResponse.json({ error: "Missing fields." }, { status: 400 });
-  }
-
   try {
+    const { currentMonth, description, amount, carry_forward } = validate(
+      mutationCreateSchema,
+      await request.json()
+    );
+
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
@@ -64,14 +56,12 @@ export async function PUT(request: Request) {
   const limit = rateLimit(request, "credits:put", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
-  const payload = await request.json();
-  const { id, description, amount, carry_forward } = payload ?? {};
-
-  if (!id || !description || amount === undefined) {
-    return NextResponse.json({ error: "Missing fields." }, { status: 400 });
-  }
-
   try {
+    const { id, description, amount, carry_forward } = validate(
+      mutationUpdateSchema,
+      await request.json()
+    );
+
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 

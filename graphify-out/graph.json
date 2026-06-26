@@ -215,13 +215,31 @@
       "norm_label": "postcss.config.mjs"
     },
     {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/next-env.d.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_next_env_d_ts",
+      "community": 33,
+      "norm_label": "next-env.d.ts"
+    },
+    {
       "label": "tailwind.config.ts",
       "file_type": "code",
       "source_file": "next-ver/tailwind.config.ts",
       "source_location": "L1",
       "id": "next_ver_tailwind_config_ts",
-      "community": 33,
+      "community": 34,
       "norm_label": "tailwind.config.ts"
+    },
+    {
+      "label": "vitest.config.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/vitest.config.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_vitest_config_ts",
+      "community": 35,
+      "norm_label": "vitest.config.ts"
     },
     {
       "label": "eslint.config.mjs",
@@ -229,16 +247,16 @@
       "source_file": "next-ver/eslint.config.mjs",
       "source_location": "L1",
       "id": "next_ver_eslint_config_mjs",
-      "community": 34,
+      "community": 36,
       "norm_label": "eslint.config.mjs"
     },
     {
       "label": "next.config.ts",
       "file_type": "code",
-      "source_file": "next-ver/next.config.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/next.config.ts",
       "source_location": "L1",
-      "id": "next_ver_next_config_ts",
-      "community": 35,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_next_config_ts",
+      "community": 37,
       "norm_label": "next.config.ts"
     },
     {
@@ -247,22 +265,22 @@
       "source_file": "next-ver/public/sw.js",
       "source_location": "L1",
       "id": "next_ver_public_sw_js",
-      "community": 36,
+      "community": 38,
       "norm_label": "sw.js"
     },
     {
       "label": "middleware.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/middleware.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/middleware.ts",
       "source_location": "L1",
-      "id": "next_ver_src_middleware_ts",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_middleware_ts",
       "community": 13,
       "norm_label": "middleware.ts"
     },
     {
       "label": "middleware()",
       "file_type": "code",
-      "source_file": "next-ver/src/middleware.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/middleware.ts",
       "source_location": "L4",
       "id": "middleware_middleware",
       "community": 13,
@@ -328,16 +346,16 @@
       "source_file": "next-ver/src/app/api/auth/signup/route.ts",
       "source_location": "L1",
       "id": "next_ver_src_app_api_auth_signup_route_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
       "label": "POST()",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/investments/route.ts",
-      "source_location": "L6",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts",
+      "source_location": "L12",
       "id": "route_post",
-      "community": 1,
+      "community": 0,
       "norm_label": "post()"
     },
     {
@@ -346,7 +364,7 @@
       "source_file": "next-ver/src/app/api/auth/logout/route.ts",
       "source_location": "L1",
       "id": "next_ver_src_app_api_auth_logout_route_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
@@ -355,16 +373,16 @@
       "source_file": "next-ver/src/app/api/auth/me/route.ts",
       "source_location": "L1",
       "id": "next_ver_src_app_api_auth_me_route_ts",
-      "community": 5,
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
       "label": "GET()",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/dashboard/route.ts",
-      "source_location": "L6",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
+      "source_location": "L8",
       "id": "route_get",
-      "community": 5,
+      "community": 0,
       "norm_label": "get()"
     },
     {
@@ -373,52 +391,52 @@
       "source_file": "next-ver/src/app/api/auth/login/route.ts",
       "source_location": "L1",
       "id": "next_ver_src_app_api_auth_login_route_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
       "label": "route.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
       "source_location": "L1",
-      "id": "next_ver_src_app_api_expenses_route_ts",
-      "community": 1,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
       "label": "PUT()",
       "file_type": "code",
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L63",
+      "source_location": "L55",
       "id": "route_put",
-      "community": 1,
+      "community": 0,
       "norm_label": "put()"
     },
     {
       "label": "DELETE()",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/investments/route.ts",
-      "source_location": "L54",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts",
+      "source_location": "L55",
       "id": "route_delete",
-      "community": 1,
+      "community": 0,
       "norm_label": "delete()"
     },
     {
       "label": "route.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/dashboard/route.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
       "source_location": "L1",
-      "id": "next_ver_src_app_api_dashboard_route_ts",
-      "community": 5,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_dashboard_route_ts",
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
       "label": "route.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/balances/route.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/balances/route.ts",
       "source_location": "L1",
-      "id": "next_ver_src_app_api_balances_route_ts",
-      "community": 1,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_balances_route_ts",
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
@@ -427,34 +445,16 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
       "source_location": "L1",
       "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "route.ts"
-    },
-    {
-      "label": "tooManyRequests()",
-      "file_type": "code",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L7",
-      "id": "route_toomanyrequests",
-      "community": 1,
-      "norm_label": "toomanyrequests()"
-    },
-    {
-      "label": "handleError()",
-      "file_type": "code",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L13",
-      "id": "route_handleerror",
-      "community": 1,
-      "norm_label": "handleerror()"
     },
     {
       "label": "route.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/app/api/investments/route.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts",
       "source_location": "L1",
-      "id": "next_ver_src_app_api_investments_route_ts",
-      "community": 1,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_investments_route_ts",
+      "community": 0,
       "norm_label": "route.ts"
     },
     {
@@ -553,7 +553,7 @@
       "source_file": "next-ver/src/features/dashboard/Dashboard.tsx",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_dashboard_tsx",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboard.tsx"
     },
     {
@@ -562,7 +562,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L562",
       "id": "dashboard_handleopenstartingbalanceform",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleopenstartingbalanceform()"
     },
     {
@@ -571,7 +571,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L569",
       "id": "dashboard_handleclosestartingbalanceform",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleclosestartingbalanceform()"
     },
     {
@@ -580,7 +580,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L604",
       "id": "dashboard_handlesetstartingbalance",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlesetstartingbalance()"
     },
     {
@@ -589,7 +589,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L574",
       "id": "dashboard_handleupdatestartingbalance",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleupdatestartingbalance()"
     },
     {
@@ -598,7 +598,7 @@
       "source_file": "next-ver/src/features/dashboard/Dashboard.tsx",
       "source_location": "L207",
       "id": "dashboard_async",
-      "community": 0,
+      "community": 1,
       "norm_label": "async()"
     },
     {
@@ -607,7 +607,7 @@
       "source_file": "next-ver/src/features/dashboard/types/types.ts",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_types_types_ts",
-      "community": 37,
+      "community": 39,
       "norm_label": "types.ts"
     },
     {
@@ -616,7 +616,7 @@
       "source_file": "next-ver/src/features/dashboard/utils/dates.ts",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_utils_dates_ts",
-      "community": 6,
+      "community": 5,
       "norm_label": "dates.ts"
     },
     {
@@ -625,7 +625,7 @@
       "source_file": "next-ver/src/features/dashboard/utils/dates.ts",
       "source_location": "L1",
       "id": "dates_formatmonthkey",
-      "community": 6,
+      "community": 5,
       "norm_label": "formatmonthkey()"
     },
     {
@@ -634,7 +634,7 @@
       "source_file": "next-ver/src/features/dashboard/utils/dates.ts",
       "source_location": "L8",
       "id": "dates_parsemonthkey",
-      "community": 6,
+      "community": 5,
       "norm_label": "parsemonthkey()"
     },
     {
@@ -643,7 +643,7 @@
       "source_file": "next-ver/src/features/dashboard/utils/dates.ts",
       "source_location": "L15",
       "id": "dates_shiftmonthkey",
-      "community": 6,
+      "community": 5,
       "norm_label": "shiftmonthkey()"
     },
     {
@@ -652,7 +652,7 @@
       "source_file": "next-ver/src/features/dashboard/utils/dates.ts",
       "source_location": "L21",
       "id": "dates_formatexpensedate",
-      "community": 6,
+      "community": 5,
       "norm_label": "formatexpensedate()"
     },
     {
@@ -679,7 +679,7 @@
       "source_file": "next-ver/src/features/dashboard/components/BalancePanel.tsx",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_components_balancepanel_tsx",
-      "community": 38,
+      "community": 40,
       "norm_label": "balancepanel.tsx"
     },
     {
@@ -688,7 +688,7 @@
       "source_file": "next-ver/src/features/dashboard/components/StartingBalanceModal.tsx",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_components_startingbalancemodal_tsx",
-      "community": 39,
+      "community": 41,
       "norm_label": "startingbalancemodal.tsx"
     },
     {
@@ -697,7 +697,7 @@
       "source_file": "next-ver/src/features/dashboard/components/TransactionSection.tsx",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_components_transactionsection_tsx",
-      "community": 40,
+      "community": 42,
       "norm_label": "transactionsection.tsx"
     },
     {
@@ -757,10 +757,10 @@
     {
       "label": "TransactionList.tsx",
       "file_type": "code",
-      "source_file": "next-ver/src/features/dashboard/components/TransactionList.tsx",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/features/dashboard/components/TransactionList.tsx",
       "source_location": "L1",
-      "id": "next_ver_src_features_dashboard_components_transactionlist_tsx",
-      "community": 41,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_features_dashboard_components_transactionlist_tsx",
+      "community": 43,
       "norm_label": "transactionlist.tsx"
     },
     {
@@ -769,7 +769,7 @@
       "source_file": "next-ver/src/features/dashboard/components/MonthHeader.tsx",
       "source_location": "L1",
       "id": "next_ver_src_features_dashboard_components_monthheader_tsx",
-      "community": 42,
+      "community": 44,
       "norm_label": "monthheader.tsx"
     },
     {
@@ -827,12 +827,21 @@
       "norm_label": "serviceworkerregister()"
     },
     {
+      "label": "database.types.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/database.types.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_database_types_ts",
+      "community": 45,
+      "norm_label": "database.types.ts"
+    },
+    {
       "label": "server.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/lib/supabase/server.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/server.ts",
       "source_location": "L1",
-      "id": "next_ver_src_lib_supabase_server_ts",
-      "community": 43,
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_server_ts",
+      "community": 46,
       "norm_label": "server.ts"
     },
     {
@@ -841,7 +850,7 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts",
       "source_location": "L1",
       "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_auth_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "auth.ts"
     },
     {
@@ -850,7 +859,7 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts",
       "source_location": "L6",
       "id": "auth_getprojectref",
-      "community": 1,
+      "community": 0,
       "norm_label": "getprojectref()"
     },
     {
@@ -859,7 +868,7 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts",
       "source_location": "L12",
       "id": "auth_extractaccesstoken",
-      "community": 1,
+      "community": 0,
       "norm_label": "extractaccesstoken()"
     },
     {
@@ -868,7 +877,7 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts",
       "source_location": "L27",
       "id": "auth_getuserfromcookies",
-      "community": 1,
+      "community": 0,
       "norm_label": "getuserfromcookies()"
     },
     {
@@ -877,23 +886,23 @@
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/auth.ts",
       "source_location": "L81",
       "id": "auth_requireuser",
-      "community": 1,
+      "community": 0,
       "norm_label": "requireuser()"
     },
     {
       "label": "cookies.ts",
       "file_type": "code",
-      "source_file": "next-ver/src/lib/supabase/cookies.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/cookies.ts",
       "source_location": "L1",
-      "id": "next_ver_src_lib_supabase_cookies_ts",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_cookies_ts",
       "community": 4,
       "norm_label": "cookies.ts"
     },
     {
       "label": "createSupabaseServerClient()",
       "file_type": "code",
-      "source_file": "next-ver/src/lib/supabase/cookies.ts",
-      "source_location": "L4",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/cookies.ts",
+      "source_location": "L5",
       "id": "cookies_createsupabaseserverclient",
       "community": 4,
       "norm_label": "createsupabaseserverclient()"
@@ -904,7 +913,7 @@
       "source_file": "next-ver/src/lib/api/balances.ts",
       "source_location": "L1",
       "id": "next_ver_src_lib_api_balances_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "balances.ts"
     },
     {
@@ -913,7 +922,7 @@
       "source_file": "next-ver/src/lib/api/balances.ts",
       "source_location": "L4",
       "id": "balances_calculateclosingbalance",
-      "community": 1,
+      "community": 0,
       "norm_label": "calculateclosingbalance()"
     },
     {
@@ -922,7 +931,7 @@
       "source_file": "next-ver/src/lib/api/balances.ts",
       "source_location": "L25",
       "id": "balances_updateclosingbalance",
-      "community": 1,
+      "community": 0,
       "norm_label": "updateclosingbalance()"
     },
     {
@@ -931,7 +940,7 @@
       "source_file": "next-ver/src/lib/api/balances.ts",
       "source_location": "L59",
       "id": "balances_createstartingbalance",
-      "community": 1,
+      "community": 0,
       "norm_label": "createstartingbalance()"
     },
     {
@@ -940,8 +949,71 @@
       "source_file": "next-ver/src/lib/api/balances.ts",
       "source_location": "L77",
       "id": "balances_applybalancedelta",
-      "community": 1,
+      "community": 0,
       "norm_label": "applybalancedelta()"
+    },
+    {
+      "label": "balances.test.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "community": 6,
+      "norm_label": "balances.test.ts"
+    },
+    {
+      "label": "credit()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L5",
+      "id": "balances_test_credit",
+      "community": 6,
+      "norm_label": "credit()"
+    },
+    {
+      "label": "expense()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L11",
+      "id": "balances_test_expense",
+      "community": 6,
+      "norm_label": "expense()"
+    },
+    {
+      "label": "investment()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L17",
+      "id": "balances_test_investment",
+      "community": 6,
+      "norm_label": "investment()"
+    },
+    {
+      "label": "mockSupabase()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L56",
+      "id": "balances_test_mocksupabase",
+      "community": 6,
+      "norm_label": "mocksupabase()"
+    },
+    {
+      "label": "schemas.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/schemas.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_schemas_ts",
+      "community": 0,
+      "norm_label": "schemas.ts"
+    },
+    {
+      "label": "validate()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/schemas.ts",
+      "source_location": "L40",
+      "id": "schemas_validate",
+      "community": 0,
+      "norm_label": "validate()"
     },
     {
       "label": "dashboard.ts",
@@ -949,7 +1021,7 @@
       "source_file": "next-ver/src/lib/api/dashboard.ts",
       "source_location": "L1",
       "id": "next_ver_src_lib_api_dashboard_ts",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboard.ts"
     },
     {
@@ -958,7 +1030,7 @@
       "source_file": "next-ver/src/lib/api/dashboard.ts",
       "source_location": "L21",
       "id": "dashboard_loaddashboarddata",
-      "community": 0,
+      "community": 1,
       "norm_label": "loaddashboarddata()"
     },
     {
@@ -967,7 +1039,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L375",
       "id": "dashboard_ensurecarryforwardexpenses",
-      "community": 0,
+      "community": 1,
       "norm_label": "ensurecarryforwardexpenses()"
     },
     {
@@ -976,7 +1048,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L443",
       "id": "dashboard_ensurecarryforwardcredits",
-      "community": 0,
+      "community": 1,
       "norm_label": "ensurecarryforwardcredits()"
     },
     {
@@ -985,7 +1057,7 @@
       "source_file": "next-ver/src/lib/api/rateLimit.ts",
       "source_location": "L1",
       "id": "next_ver_src_lib_api_ratelimit_ts",
-      "community": 5,
+      "community": 0,
       "norm_label": "ratelimit.ts"
     },
     {
@@ -994,7 +1066,7 @@
       "source_file": "next-ver/src/lib/api/rateLimit.ts",
       "source_location": "L13",
       "id": "ratelimit_getclientid",
-      "community": 5,
+      "community": 0,
       "norm_label": "getclientid()"
     },
     {
@@ -1003,8 +1075,35 @@
       "source_file": "next-ver/src/lib/api/rateLimit.ts",
       "source_location": "L21",
       "id": "ratelimit_ratelimit",
-      "community": 5,
+      "community": 0,
       "norm_label": "ratelimit()"
+    },
+    {
+      "label": "responses.ts",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/responses.ts",
+      "source_location": "L1",
+      "id": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_responses_ts",
+      "community": 0,
+      "norm_label": "responses.ts"
+    },
+    {
+      "label": "tooManyRequests()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/responses.ts",
+      "source_location": "L4",
+      "id": "responses_toomanyrequests",
+      "community": 0,
+      "norm_label": "toomanyrequests()"
+    },
+    {
+      "label": "handleError()",
+      "file_type": "code",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/responses.ts",
+      "source_location": "L15",
+      "id": "responses_handleerror",
+      "community": 0,
+      "norm_label": "handleerror()"
     },
     {
       "label": "sw.js",
@@ -1012,7 +1111,7 @@
       "source_file": "public/sw.js",
       "source_location": "L1",
       "id": "public_sw_js",
-      "community": 44,
+      "community": 47,
       "norm_label": "sw.js"
     },
     {
@@ -1039,7 +1138,7 @@
       "source_file": "src/vite-env.d.ts",
       "source_location": "L1",
       "id": "src_vite_env_d_ts",
-      "community": 45,
+      "community": 48,
       "norm_label": "vite-env.d.ts"
     },
     {
@@ -1084,7 +1183,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L1",
       "id": "src_components_dashboard_tsx",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboard.tsx"
     },
     {
@@ -1093,7 +1192,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L18",
       "id": "dashboard_formatmonthkey",
-      "community": 0,
+      "community": 1,
       "norm_label": "formatmonthkey()"
     },
     {
@@ -1102,7 +1201,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L25",
       "id": "dashboard_parsemonthkey",
-      "community": 0,
+      "community": 1,
       "norm_label": "parsemonthkey()"
     },
     {
@@ -1111,7 +1210,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L32",
       "id": "dashboard_shiftmonthkey",
-      "community": 0,
+      "community": 1,
       "norm_label": "shiftmonthkey()"
     },
     {
@@ -1120,7 +1219,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L131",
       "id": "dashboard_getpreviousmonth",
-      "community": 0,
+      "community": 1,
       "norm_label": "getpreviousmonth()"
     },
     {
@@ -1129,7 +1228,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L134",
       "id": "dashboard_getnextmonth",
-      "community": 0,
+      "community": 1,
       "norm_label": "getnextmonth()"
     },
     {
@@ -1138,7 +1237,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L135",
       "id": "dashboard_handlechangemonth",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlechangemonth()"
     },
     {
@@ -1147,7 +1246,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L323",
       "id": "dashboard_updateclosingbalance",
-      "community": 0,
+      "community": 1,
       "norm_label": "updateclosingbalance()"
     },
     {
@@ -1156,7 +1255,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L511",
       "id": "dashboard_handlecreateexpense",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlecreateexpense()"
     },
     {
@@ -1165,7 +1264,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L517",
       "id": "dashboard_handlecreatecredit",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlecreatecredit()"
     },
     {
@@ -1174,7 +1273,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L523",
       "id": "dashboard_handlecreateinvestment",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlecreateinvestment()"
     },
     {
@@ -1183,7 +1282,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L528",
       "id": "dashboard_handleselectcredit",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleselectcredit()"
     },
     {
@@ -1192,7 +1291,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L535",
       "id": "dashboard_handleclosecreditform",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleclosecreditform()"
     },
     {
@@ -1201,7 +1300,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L540",
       "id": "dashboard_handlecreditformsuccess",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlecreditformsuccess()"
     },
     {
@@ -1210,7 +1309,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L545",
       "id": "dashboard_handleselectexpense",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleselectexpense()"
     },
     {
@@ -1219,7 +1318,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L552",
       "id": "dashboard_handlecloseexpenseform",
-      "community": 0,
+      "community": 1,
       "norm_label": "handlecloseexpenseform()"
     },
     {
@@ -1228,7 +1327,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L557",
       "id": "dashboard_handleexpenseformsuccess",
-      "community": 0,
+      "community": 1,
       "norm_label": "handleexpenseformsuccess()"
     },
     {
@@ -1237,7 +1336,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L625",
       "id": "dashboard_handledeletecredit",
-      "community": 1,
+      "community": 0,
       "norm_label": "handledeletecredit()"
     },
     {
@@ -1246,7 +1345,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L630",
       "id": "dashboard_handledeleteexpense",
-      "community": 1,
+      "community": 0,
       "norm_label": "handledeleteexpense()"
     },
     {
@@ -1255,7 +1354,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L635",
       "id": "dashboard_handledeleteinvestment",
-      "community": 0,
+      "community": 1,
       "norm_label": "handledeleteinvestment()"
     },
     {
@@ -1264,7 +1363,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L643",
       "id": "dashboard_formatcurrency",
-      "community": 0,
+      "community": 1,
       "norm_label": "formatcurrency()"
     },
     {
@@ -1273,7 +1372,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L651",
       "id": "dashboard_formatexpensedate",
-      "community": 0,
+      "community": 1,
       "norm_label": "formatexpensedate()"
     },
     {
@@ -1282,7 +1381,7 @@
       "source_file": "src/components/Dashboard.tsx",
       "source_location": "L669",
       "id": "dashboard_getmonthname",
-      "community": 0,
+      "community": 1,
       "norm_label": "getmonthname()"
     },
     {
@@ -1318,7 +1417,7 @@
       "source_file": "src/components/TransactionList.tsx",
       "source_location": "L1",
       "id": "src_components_transactionlist_tsx",
-      "community": 46,
+      "community": 49,
       "norm_label": "transactionlist.tsx"
     },
     {
@@ -1336,7 +1435,7 @@
       "source_file": "src/lib/supabase.ts",
       "source_location": "L1",
       "id": "src_lib_supabase_ts",
-      "community": 47,
+      "community": 50,
       "norm_label": "supabase.ts"
     },
     {
@@ -1504,7 +1603,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 51,
       "norm_label": "document/file icon",
       "id": "file_document_icon"
     },
@@ -1543,7 +1642,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 49,
+      "community": 52,
       "norm_label": "globe icon",
       "id": "globe_globe_icon"
     },
@@ -1556,7 +1655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 53,
       "norm_label": "browser window icon",
       "id": "window_browser_window_icon"
     },
@@ -1677,12 +1776,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/middleware.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/middleware.ts",
       "source_location": "L4",
       "weight": 1.0,
-      "_src": "next_ver_src_middleware_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_middleware_ts",
       "_tgt": "middleware_middleware",
-      "source": "next_ver_src_middleware_ts",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_middleware_ts",
       "target": "middleware_middleware",
       "confidence_score": 1.0
     },
@@ -1785,32 +1884,32 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
-      "source_location": "L6",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L16",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_expenses_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "_tgt": "route_post",
       "source": "route_post",
-      "target": "next_ver_src_app_api_expenses_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/balances/route.ts",
-      "source_location": "L10",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/balances/route.ts",
+      "source_location": "L13",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_balances_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_balances_route_ts",
       "_tgt": "route_post",
       "source": "route_post",
-      "target": "next_ver_src_app_api_balances_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_balances_route_ts",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L19",
+      "source_location": "L13",
       "weight": 1.0,
       "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
       "_tgt": "route_post",
@@ -1819,39 +1918,15 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_src": "route_post",
-      "_tgt": "route_toomanyrequests",
-      "source": "route_post",
-      "target": "route_toomanyrequests",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L59",
-      "weight": 1.0,
-      "_src": "route_post",
-      "_tgt": "route_handleerror",
-      "source": "route_post",
-      "target": "route_handleerror",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/investments/route.ts",
-      "source_location": "L6",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts",
+      "source_location": "L12",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_investments_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_investments_route_ts",
       "_tgt": "route_post",
       "source": "route_post",
-      "target": "next_ver_src_app_api_investments_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_investments_route_ts",
       "confidence_score": 1.0
     },
     {
@@ -1882,13 +1957,37 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
-      "source_location": "L15",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L18",
       "weight": 1.0,
       "_src": "route_post",
-      "_tgt": "auth_getuserfromcookies",
+      "_tgt": "responses_toomanyrequests",
       "source": "route_post",
-      "target": "auth_getuserfromcookies"
+      "target": "responses_toomanyrequests"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "route_post",
+      "_tgt": "schemas_validate",
+      "source": "route_post",
+      "target": "schemas_validate"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "route_post",
+      "_tgt": "auth_requireuser",
+      "source": "route_post",
+      "target": "auth_requireuser"
     },
     {
       "relation": "calls",
@@ -1906,6 +2005,18 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_src": "route_post",
+      "_tgt": "responses_handleerror",
+      "source": "route_post",
+      "target": "responses_handleerror"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "next-ver/src/app/api/balances/route.ts",
       "source_location": "L26",
       "weight": 1.0,
@@ -1918,13 +2029,13 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L32",
+      "source_file": "next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L15",
       "weight": 1.0,
       "_src": "route_post",
-      "_tgt": "auth_requireuser",
+      "_tgt": "auth_getuserfromcookies",
       "source": "route_post",
-      "target": "auth_requireuser"
+      "target": "auth_getuserfromcookies"
     },
     {
       "relation": "contains",
@@ -1941,13 +2052,13 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/dashboard/route.ts",
-      "source_location": "L6",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
+      "source_location": "L8",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_dashboard_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_dashboard_route_ts",
       "_tgt": "route_get",
       "source": "route_get",
-      "target": "next_ver_src_app_api_dashboard_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_dashboard_route_ts",
       "confidence_score": 1.0
     },
     {
@@ -2002,6 +2113,30 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "route_get",
+      "_tgt": "responses_toomanyrequests",
+      "source": "route_get",
+      "target": "responses_toomanyrequests"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "route_get",
+      "_tgt": "auth_requireuser",
+      "source": "route_get",
+      "target": "auth_requireuser"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "next-ver/src/app/api/dashboard/route.ts",
       "source_location": "L18",
       "weight": 1.0,
@@ -2009,6 +2144,18 @@
       "_tgt": "dashboard_loaddashboarddata",
       "source": "route_get",
       "target": "dashboard_loaddashboarddata"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/dashboard/route.ts",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "route_get",
+      "_tgt": "responses_handleerror",
+      "source": "route_get",
+      "target": "responses_handleerror"
     },
     {
       "relation": "calls",
@@ -2025,44 +2172,44 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
-      "source_location": "L53",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L58",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_expenses_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "_tgt": "route_put",
-      "source": "next_ver_src_app_api_expenses_route_ts",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "target": "route_put",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
       "source_location": "L112",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_expenses_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "_tgt": "route_delete",
-      "source": "next_ver_src_app_api_expenses_route_ts",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_expenses_route_ts",
       "target": "route_delete",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/balances/route.ts",
-      "source_location": "L52",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/balances/route.ts",
+      "source_location": "L39",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_balances_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_balances_route_ts",
       "_tgt": "route_put",
       "source": "route_put",
-      "target": "next_ver_src_app_api_balances_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_balances_route_ts",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L63",
+      "source_location": "L55",
       "weight": 1.0,
       "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
       "_tgt": "route_put",
@@ -2072,27 +2219,39 @@
     },
     {
       "relation": "calls",
-      "confidence": "EXTRACTED",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L65",
+      "source_location": "L64",
       "weight": 1.0,
       "_src": "route_put",
-      "_tgt": "route_toomanyrequests",
+      "_tgt": "ratelimit_ratelimit",
       "source": "route_put",
-      "target": "route_toomanyrequests",
-      "confidence_score": 1.0
+      "target": "ratelimit_ratelimit"
     },
     {
       "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L115",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L60",
       "weight": 1.0,
       "_src": "route_put",
-      "_tgt": "route_handleerror",
+      "_tgt": "responses_toomanyrequests",
       "source": "route_put",
-      "target": "route_handleerror",
-      "confidence_score": 1.0
+      "target": "responses_toomanyrequests"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L63",
+      "weight": 1.0,
+      "_src": "route_put",
+      "_tgt": "schemas_validate",
+      "source": "route_put",
+      "target": "schemas_validate"
     },
     {
       "relation": "calls",
@@ -2110,13 +2269,13 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
-      "source_location": "L62",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
+      "source_location": "L76",
       "weight": 1.0,
       "_src": "route_put",
-      "_tgt": "auth_getuserfromcookies",
+      "_tgt": "auth_requireuser",
       "source": "route_put",
-      "target": "auth_getuserfromcookies"
+      "target": "auth_requireuser"
     },
     {
       "relation": "calls",
@@ -2129,6 +2288,18 @@
       "_tgt": "balances_applybalancedelta",
       "source": "route_put",
       "target": "balances_applybalancedelta"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L108",
+      "weight": 1.0,
+      "_src": "route_put",
+      "_tgt": "responses_handleerror",
+      "source": "route_put",
+      "target": "responses_handleerror"
     },
     {
       "relation": "calls",
@@ -2158,31 +2329,19 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L64",
+      "source_file": "next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L62",
       "weight": 1.0,
       "_src": "route_put",
-      "_tgt": "ratelimit_ratelimit",
+      "_tgt": "auth_getuserfromcookies",
       "source": "route_put",
-      "target": "ratelimit_ratelimit"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L76",
-      "weight": 1.0,
-      "_src": "route_put",
-      "_tgt": "auth_requireuser",
-      "source": "route_put",
-      "target": "auth_requireuser"
+      "target": "auth_getuserfromcookies"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L119",
+      "source_location": "L109",
       "weight": 1.0,
       "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
       "_tgt": "route_delete",
@@ -2191,40 +2350,40 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L121",
-      "weight": 1.0,
-      "_src": "route_delete",
-      "_tgt": "route_toomanyrequests",
-      "source": "route_delete",
-      "target": "route_toomanyrequests",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L164",
-      "weight": 1.0,
-      "_src": "route_delete",
-      "_tgt": "route_handleerror",
-      "source": "route_delete",
-      "target": "route_handleerror",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/app/api/investments/route.ts",
-      "source_location": "L54",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts",
+      "source_location": "L55",
       "weight": 1.0,
-      "_src": "next_ver_src_app_api_investments_route_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_investments_route_ts",
       "_tgt": "route_delete",
       "source": "route_delete",
-      "target": "next_ver_src_app_api_investments_route_ts",
+      "target": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_investments_route_ts",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "_src": "route_delete",
+      "_tgt": "ratelimit_ratelimit",
+      "source": "route_delete",
+      "target": "ratelimit_ratelimit"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L114",
+      "weight": 1.0,
+      "_src": "route_delete",
+      "_tgt": "responses_toomanyrequests",
+      "source": "route_delete",
+      "target": "responses_toomanyrequests"
     },
     {
       "relation": "calls",
@@ -2242,13 +2401,13 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "next-ver/src/app/api/expenses/route.ts",
-      "source_location": "L121",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
+      "source_location": "L132",
       "weight": 1.0,
       "_src": "route_delete",
-      "_tgt": "auth_getuserfromcookies",
+      "_tgt": "auth_requireuser",
       "source": "route_delete",
-      "target": "auth_getuserfromcookies"
+      "target": "auth_requireuser"
     },
     {
       "relation": "calls",
@@ -2266,25 +2425,13 @@
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L120",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L157",
       "weight": 1.0,
       "_src": "route_delete",
-      "_tgt": "ratelimit_ratelimit",
+      "_tgt": "responses_handleerror",
       "source": "route_delete",
-      "target": "ratelimit_ratelimit"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L132",
-      "weight": 1.0,
-      "_src": "route_delete",
-      "_tgt": "auth_requireuser",
-      "source": "route_delete",
-      "target": "auth_requireuser"
+      "target": "responses_handleerror"
     },
     {
       "relation": "calls",
@@ -2311,28 +2458,16 @@
       "target": "dashboard_handledeleteexpense"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L7",
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "next-ver/src/app/api/expenses/route.ts",
+      "source_location": "L121",
       "weight": 1.0,
-      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
-      "_tgt": "route_toomanyrequests",
-      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
-      "target": "route_toomanyrequests",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/credits/route.ts",
-      "source_location": "L13",
-      "weight": 1.0,
-      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
-      "_tgt": "route_handleerror",
-      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_app_api_credits_route_ts",
-      "target": "route_handleerror",
-      "confidence_score": 1.0
+      "_src": "route_delete",
+      "_tgt": "auth_getuserfromcookies",
+      "source": "route_delete",
+      "target": "auth_getuserfromcookies"
     },
     {
       "relation": "contains",
@@ -2877,12 +3012,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "next-ver/src/lib/supabase/cookies.ts",
-      "source_location": "L4",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/cookies.ts",
+      "source_location": "L5",
       "weight": 1.0,
-      "_src": "next_ver_src_lib_supabase_cookies_ts",
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_cookies_ts",
       "_tgt": "cookies_createsupabaseserverclient",
-      "source": "next_ver_src_lib_supabase_cookies_ts",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_supabase_cookies_ts",
       "target": "cookies_createsupabaseserverclient",
       "confidence_score": 1.0
     },
@@ -2957,6 +3092,66 @@
       "_tgt": "dashboard_loaddashboarddata",
       "source": "balances_calculateclosingbalance",
       "target": "dashboard_loaddashboarddata"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "_tgt": "balances_test_credit",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "target": "balances_test_credit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "_tgt": "balances_test_expense",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "target": "balances_test_expense",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "_tgt": "balances_test_investment",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "target": "balances_test_investment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/balances.test.ts",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "_tgt": "balances_test_mocksupabase",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_balances_test_ts",
+      "target": "balances_test_mocksupabase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/schemas.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_schemas_ts",
+      "_tgt": "schemas_validate",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_schemas_ts",
+      "target": "schemas_validate",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -3124,6 +3319,30 @@
       "_tgt": "ratelimit_getclientid",
       "source": "ratelimit_getclientid",
       "target": "ratelimit_ratelimit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/responses.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_responses_ts",
+      "_tgt": "responses_toomanyrequests",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_responses_ts",
+      "target": "responses_toomanyrequests",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/api/responses.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_responses_ts",
+      "_tgt": "responses_handleerror",
+      "source": "users_tamalcodes_gh_financial_tracker_next_ver_src_lib_api_responses_ts",
+      "target": "responses_handleerror",
       "confidence_score": 1.0
     },
     {

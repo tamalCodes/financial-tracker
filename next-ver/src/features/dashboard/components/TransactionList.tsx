@@ -9,7 +9,7 @@ interface Transaction {
   description: string;
   amount: number;
   created_at?: string;
-  carry_forward?: boolean;
+  carry_forward?: boolean | null;
 }
 
 interface TransactionListProps {

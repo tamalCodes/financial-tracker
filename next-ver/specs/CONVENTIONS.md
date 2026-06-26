@@ -14,20 +14,22 @@ So the handler body is wrapped in `try/catch`, and the catch re-returns that res
 
 ```ts
 import { requireUser } from "@/lib/supabase/auth";
+import { handleError } from "@/lib/api/responses";
 
 try {
   const supabase = await createSupabaseServerClient();
   const { userId } = await requireUser(supabase);
   // ...work scoped by userId...
 } catch (e) {
-  if (e instanceof NextResponse) return e; // the 401 thrown by requireUser
-  const message = e instanceof Error ? e.message : "Request failed.";
-  return NextResponse.json({ error: message }, { status: 400 });
+  return handleError(e); // re-returns the 401 from requireUser; else 400 + message
 }
 ```
 
-> Legacy routes (`expenses`, `investments`, `dashboard`, `balances`) still inline the old
-> block. Migrate them to `requireUser` when you touch them.
+`handleError` / `tooManyRequests` live in `src/lib/api/responses.ts` — import them, don't
+re-define. For read endpoints pass `handleError(e, 500)` so server errors aren't masked as 400.
+
+> All five data routes (`credits`, `expenses`, `investments`, `dashboard`, `balances`) and all
+> auth routes now follow this pattern. Keep it that way.
 
 ## 2. Error / response shapes — `src/app/api/*/route.ts`
 - Error: `NextResponse.json({ error: "<msg>" }, { status })`.
@@ -37,8 +39,7 @@ try {
   **429** rate-limited · **500** unexpected (e.g. dashboard GET catch-all).
 
 ## 3. Rate limiting — `src/lib/api/rateLimit.ts`, `src/app/api/auth/login/route.ts`
-Historically applied only to `/api/auth/*`. **New routes SHOULD apply it** as the first
-lines of the handler (before body parse):
+Applied to every route as the first lines of the handler (before body parse):
 
 ```ts
 const limit = rateLimit(request, "credits:post", { limit: 30, windowMs: 60_000 });
@@ -49,7 +50,7 @@ if (!limit.ok) {
   );
 }
 ```
-Limits seen: login 10, signup 6, logout 30, me 60, credits 30 (per 60s window). In-memory
+Limits in use: login 10, signup 6, logout 30, me 60, dashboard 60, all mutations 30 (per 60s). In-memory
 Map keyed by `<prefix>:<client-ip>` — resets on server restart; fine for a single instance.
 
 ## 4. Balance-delta rule — `src/lib/api/balances.ts`, `src/app/api/credits/route.ts`
@@ -73,10 +74,27 @@ edits), use `updateClosingBalance(...)` instead — see `src/app/api/balances/ro
 Always `.eq("user_id", userId)` on select/update/delete. There is no row-level security
 assumed in code — ownership is enforced in the query. Ref: `credits/route.ts` PUT/DELETE.
 
-## 6. Validation
-- Validate required fields immediately, before any DB call → `400 { error: "Missing fields." }`.
-  POST/PUT read JSON body; DELETE reads `id` from `searchParams` → `400 { error: "Missing id." }`.
-- Coerce amounts with `Number(...)`, booleans with `Boolean(...)`.
+## 6. Validation — zod (`src/lib/api/schemas.ts`)
+JSON bodies are validated with a zod schema via `validate(schema, data)`, which throws a
+`400 { error: "Missing or invalid fields." }` on failure (caught by `handleError`). Call it
+first inside the try block:
+
+```ts
+import { mutationCreateSchema, validate } from "@/lib/api/schemas";
+
+const { currentMonth, description, amount, carry_forward } = validate(
+  mutationCreateSchema,
+  await request.json()
+);
+```
+Reusable schemas: `mutationCreateSchema` (POST credit/expense/investment),
+`mutationUpdateSchema` (PUT credit/expense), `startingBalanceSchema` (balances). Add a new
+schema here rather than hand-rolling `if (!x)` checks. `amount`/`startingBalance` are
+`z.coerce.number()` + finite — already numeric after validate (no extra `Number(...)` needed,
+though existing `Number(...)` calls remain harmless).
+
+Query params (DELETE `?id=`, dashboard `?month=`) are still checked inline →
+`400 { error: "Missing id." }` / `"Missing month."` (not worth a schema).
 
 ## 7. Style
 - **Imports**: `@/...` absolute only. Order seen: lib helpers, supabase clients, `next/server`.

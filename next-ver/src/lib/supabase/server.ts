@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/database.types";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey =
@@ -10,7 +11,7 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Missing SUPABASE_URL or SUPABASE_*_KEY env variables.");
 }
 
-export const supabaseServer = createClient(supabaseUrl, supabaseKey, {
+export const supabaseServer = createClient<Database>(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false,
   },

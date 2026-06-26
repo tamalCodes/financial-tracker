@@ -1,9 +1,14 @@
 import { loadDashboardData } from "@/lib/api/dashboard";
+import { rateLimit } from "@/lib/api/rateLimit";
+import { handleError, tooManyRequests } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
-import { getUserFromCookies } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  const limit = rateLimit(request, "dashboard:get", { limit: 60, windowMs: 60_000 });
+  if (!limit.ok) return tooManyRequests(limit.resetMs);
+
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month");
 
@@ -13,24 +18,11 @@ export async function GET(request: Request) {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const localUser = await getUserFromCookies();
-    if (localUser?.id) {
-      const data = await loadDashboardData(supabase, localUser.id, month);
-      return NextResponse.json(data);
-    }
-
-    const { data: auth, error: authError } = await supabase.auth.getUser();
-    const userId = auth?.user?.id;
-    if (authError || !userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    const { userId } = await requireUser(supabase);
     const data = await loadDashboardData(supabase, userId, month);
     return NextResponse.json(data);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to load dashboard data.";
-    const status = message === "Unauthorized" ? 401 : 500;
-    return NextResponse.json({ error: message }, { status });
+    // Read endpoint: don't mask unexpected server errors as 400.
+    return handleError(error, 500);
   }
 }

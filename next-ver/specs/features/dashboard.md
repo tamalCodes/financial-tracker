@@ -26,8 +26,7 @@ Writes `monthly_balances` (seed on rollover, self-heal closing, starting-balance
 - `{ currentMonth, startingBalance }` → `loadDashboardData` then `updateClosingBalance(...,
   { updateStarting: true })` → recomputes closing from full lists. → `{ ok: true, balance }`.
 
-- **TODO (migrate)**: dashboard + balances inline old auth block, no `rateLimit`. Move to
-  `requireUser` + add rate limits when touched.
+- Auth via `requireUser`; rate limits `dashboard:get` 60, `balances:{post,put}` 30 (per 60s).
 
 ## Balances invariant
 `closing = starting + Σcredits − Σexpenses − Σinvestments` (DATA_MODEL). Hot-path mutations

@@ -21,8 +21,7 @@ created_at`. Mutations adjust `monthly_balances.closing_balance`.
 - **No PUT** today.
 - Errors: 400 / 401 / 404 / 429.
 - `select`: `"id, description, amount, carry_forward, start_month, created_at, is_active"`.
-- **TODO (migrate to standard)**: inlines old auth block, no `rateLimit`. Switch to
-  `requireUser` + add `investments:{verb}` rate limits when touched.
+- Rate limit: `investments:{post,delete}` `{ limit: 30, windowMs: 60_000 }`. Auth via `requireUser`.
 
 ## Carry-forward (NOT copied)
 Read filter: `lte("start_month", currentMonth)` + `is_active=true`, then keep rows where
