@@ -10,6 +10,7 @@ export interface Expense {
   created_at: string;
   carry_forward?: boolean;
   carried_from_month?: string | null;
+  tags?: string[];
 }
 
 export interface Investment {

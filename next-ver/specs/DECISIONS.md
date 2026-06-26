@@ -42,3 +42,16 @@ multi-instance — swap the Map for a shared store behind the same `rateLimit()`
 No migrations existed; both files are best-effort from the queries and marked as such. Treat
 `supabase gen types` output as the source of truth once available, and replace the hand-written
 `Database` type. Until then, column assumptions carry some risk — see DATA_MODEL "_(inferred)_".
+
+## D8 — Shared UI primitives over per-modal Tailwind (`features/shared/ui/`)
+The four transaction modals had each grown their own styling (different heading sizes,
+`gap-10` vs `gap-5`, raw checkbox vs toggle, some missing `max-w`/safe-area, `z-50` losing to
+app chrome). Unified onto `Modal` / `Field` / `TextField` / `Button` / `ToggleCard`. New dialogs
+reuse these — see DESIGN_SYSTEM.md. Trade-off: one more indirection layer, but the visual
+language now lives in one place instead of being copy-pasted (and re-drifting) per form.
+
+## D9 — AmountInput totals instantly, no artificial delay
+The amount field previously played a ~1.75s fake "thinking" shimmer + "Adding it up…" beat
+before resolving `900+300`. It read as sluggish for a field the user wants answered now. Removed
+the delay/shimmer (and the dead `ai-shimmer`/`ai-thinking` CSS); it now totals on blur
+immediately, keeping only a quiet inline hint. Arithmetic eval (`evaluateExpression`) unchanged.

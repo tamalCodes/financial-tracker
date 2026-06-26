@@ -35,9 +35,12 @@ create table if not exists public.expenses (
   amount              numeric not null,
   carry_forward       boolean not null default false,
   carried_from_month  text,
+  tags                text[] not null default '{}',
   created_at          timestamptz not null default now()
 );
 create index if not exists expenses_user_month_idx on public.expenses (user_id, month);
+-- Migration for existing DBs (run once):
+--   alter table public.expenses add column if not exists tags text[] not null default '{}';
 
 -- investments -----------------------------------------------------------------
 create table if not exists public.investments (

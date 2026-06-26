@@ -84,7 +84,7 @@ export const loadDashboardData = async (
     supabase
       .from("expenses")
       .select(
-        "id, description, amount, created_at, carry_forward, carried_from_month"
+        "id, description, amount, created_at, carry_forward, carried_from_month, tags"
       )
       .eq("user_id", userId)
       .eq("month", currentMonth)
@@ -148,7 +148,7 @@ const ensureCarryForwardExpenses = async (
 ) => {
   const { data: recurringExpenses } = await supabase
     .from("expenses")
-    .select("id, description, amount, carry_forward")
+    .select("id, description, amount, carry_forward, tags")
     .eq("user_id", userId)
     .eq("month", previousMonth)
     .eq("carry_forward", true);
@@ -181,6 +181,7 @@ const ensureCarryForwardExpenses = async (
       amount: item.amount,
       carry_forward: true,
       carried_from_month: previousMonth,
+      tags: item.tags ?? [],
     }));
 
   if (insertPayload.length > 0) {

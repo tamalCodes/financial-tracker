@@ -104,3 +104,8 @@ Query params (DELETE `?id=`, dashboard `?month=`) are still checked inline →
 - **Month key format**: `YYYY-MM-01` (string, day always `01`). Helpers in
   `features/dashboard/utils/dates.ts` (`formatMonthKey`, `parseMonthKey`, `shiftMonthKey`).
 - **Locale**: dates/currency formatted `en-IN` (₹). See `utils/format.ts`.
+
+## 8. UI — shared primitives (`src/features/shared/ui/`)
+Don't hand-roll modal/input/button Tailwind. Compose `Modal`, `Field` + `TextField`, `Button` +
+`ButtonRow`, `ToggleCard`. Tokens and the canonical form recipe live in **DESIGN_SYSTEM.md** —
+read it before adding a dialog. All four transaction modals follow that recipe; keep them aligned.

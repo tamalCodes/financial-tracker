@@ -15,6 +15,7 @@ import StartingBalanceModal from "@/features/dashboard/components/StartingBalanc
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useLockBodyScroll } from "@/features/shared/hooks/useLockBodyScroll";
+import { evaluateExpression } from "@/features/dashboard/utils/expression";
 
 export default function Dashboard() {
   const {
@@ -90,8 +91,8 @@ export default function Dashboard() {
     e.preventDefault();
     if (!canEditCurrentMonth) return;
 
-    const amount = parseFloat(startingBalanceInput);
-    if (Number.isNaN(amount)) return;
+    const amount = evaluateExpression(startingBalanceInput);
+    if (amount === null) return;
 
     const res = await fetch("/api/balances", {
       method: "POST",
@@ -115,8 +116,8 @@ export default function Dashboard() {
     if (!balance || !canEditCurrentMonth) return;
 
     setStartingBalanceError("");
-    const amount = parseFloat(startingBalanceInput);
-    if (Number.isNaN(amount)) {
+    const amount = evaluateExpression(startingBalanceInput);
+    if (amount === null) {
       setStartingBalanceError("Please enter a valid number.");
       return;
     }

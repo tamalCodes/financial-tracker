@@ -8,12 +8,17 @@ const amount = z.coerce
   .number()
   .refine((n) => Number.isFinite(n), { message: "amount must be a number" });
 
+// Free-form labels (expenses only). The form trims/dedupes/caps; the schema
+// just bounds count + length so a bad client can't blow up a row.
+const tags = z.array(z.string().trim().min(1).max(32)).max(20).optional();
+
 /** POST body for credits / expenses / investments. */
 export const mutationCreateSchema = z.object({
   currentMonth: month,
   description: z.string().min(1),
   amount,
   carry_forward: z.boolean().optional(),
+  tags,
 });
 
 /** PUT body for credits / expenses. */
@@ -22,6 +27,7 @@ export const mutationUpdateSchema = z.object({
   description: z.string().min(1),
   amount,
   carry_forward: z.boolean().optional(),
+  tags,
 });
 
 /** POST/PUT body for balances. */

@@ -11,14 +11,14 @@ import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
 const SELECT =
-  "id, description, amount, created_at, carry_forward, carried_from_month";
+  "id, description, amount, created_at, carry_forward, carried_from_month, tags";
 
 export async function POST(request: Request) {
   const limit = rateLimit(request, "expenses:post", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { currentMonth, description, amount, carry_forward } = validate(
+    const { currentMonth, description, amount, carry_forward, tags } = validate(
       mutationCreateSchema,
       await request.json()
     );
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
         description,
         amount,
         carry_forward: Boolean(carry_forward),
+        tags: tags ?? [],
       })
       .select(SELECT)
       .single();
@@ -60,7 +61,7 @@ export async function PUT(request: Request) {
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { id, description, amount, carry_forward } = validate(
+    const { id, description, amount, carry_forward, tags } = validate(
       mutationUpdateSchema,
       await request.json()
     );
@@ -85,6 +86,7 @@ export async function PUT(request: Request) {
         description,
         amount,
         carry_forward: Boolean(carry_forward),
+        tags: tags ?? [],
       })
       .eq("id", id)
       .eq("user_id", userId)

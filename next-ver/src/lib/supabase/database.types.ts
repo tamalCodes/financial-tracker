@@ -14,6 +14,7 @@ type MoneyRow = {
   amount: number;
   carry_forward: boolean;
   carried_from_month: string | null;
+  tags: string[] | null; // expenses only; credits ignore it
   created_at: string;
 };
 
@@ -25,6 +26,7 @@ type MoneyInsert = {
   amount: number;
   carry_forward?: boolean;
   carried_from_month?: string | null;
+  tags?: string[] | null;
   created_at?: string;
 };
 
