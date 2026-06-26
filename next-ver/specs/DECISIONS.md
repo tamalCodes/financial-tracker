@@ -55,3 +55,44 @@ The amount field previously played a ~1.75s fake "thinking" shimmer + "Adding it
 before resolving `900+300`. It read as sluggish for a field the user wants answered now. Removed
 the delay/shimmer (and the dead `ai-shimmer`/`ai-thinking` CSS); it now totals on blur
 immediately, keeping only a quiet inline hint. Arithmetic eval (`evaluateExpression`) unchanged.
+
+## D10 — AmountInput: fast, focus-independent auto-resolve (supersedes D9's blur-only)
+D9 fixed the *sluggishness* but left totaling **blur-only** — you couldn't see `900+300` become
+`1200` without leaving the field. D10 brings back an auto-resolve that fires **while focused**,
+but fast and honest (not D9's ~1.75s fake "thinking"):
+- A `RESOLVE_DELAY` (600ms) debounce, re-armed per keystroke, only triggers when `isCalculation`,
+  `evaluateExpression` is non-null, the value isn't mid-token (no trailing operator), and the
+  result differs from the current value — so it never flashes errors on in-progress input.
+- Phase A (~350ms): indigo shimmer sweep + `aria-live` "Calculating…" microcopy in the freed
+  status slot. Phase B: `requestAnimationFrame` count-up tween to the result (~250ms ease-out,
+  `tabular-nums`) + ~140ms settle glow; the caret returns to the end. **Calc + reveal ≈ 740ms.**
+- `prefers-reduced-motion: reduce` skips the animation and sets the value directly. Blur still
+  resolves immediately (the existing path is kept). Timers/RAF are cleaned up on unmount and on
+  every value change; the parent sees a **single** `onChange` (the committed result), guarded by a
+  `committingRef` so the value-change effect doesn't tear down the closing glow.
+- The "Calculating…" microcopy uses `text-indigo-600` (not `-500`) to clear WCAG AA 4.5:1 on white.
+- Also removed the focus **ring** (`ring-4 ring-indigo-500/10`) from `AmountInput` *and* `TextField`
+  — it read as a second outer border. Focus is now a single `border-indigo-400` + `bg-white`. See
+  the DESIGN_SYSTEM "Field focus" token row.
+
+## D11 — Color is glass, not paint; indigo is the only solid accent
+Category tags (`TagInput`) first shipped as **opaque saturated gradients with white text**
+(deep orange/blue/pink). The user rejected this twice — they wanted **glassmorphism**:
+semi-transparent, frosted, see-through. So:
+- Tags now use the **Glass treatment** (DESIGN_SYSTEM §2): a translucent hue tint
+  (`rgb(h / 0.15–0.30)`) + `backdrop-filter: blur(14px) saturate(1.7)` + a translucent colored
+  border + a top white sheen, with **deep-family text** (700/800) for WCAG AA — never white-on-fill.
+- **Indigo (`indigo-500/600`) is the single solid brand accent.** No second solid brand hue;
+  anything "colorful" goes through glass. Decided with the user (palette = indigo-only).
+- Default frost intensity is the **stronger** preset (blur 14px), per user preference.
+- Tag set trimmed to **Food / Bills / Shopping** (dropped Transport/Health/Subscription — too many).
+This is now a house rule, captured in DESIGN_SYSTEM Principles §0 so design skills inherit it.
+
+## D12 — Flat focus: no box-shadow / settle glow on inputs
+D10 removed the focus *ring*; D11's AmountInput still ended its reveal with a ~140ms indigo
+**settle glow** (`box-shadow: 0 0 0 3px indigo/0.18`). The user flagged that residual halo and asked
+for it gone. Removed the settle phase entirely — Phase B now commits the result and returns the
+caret with **no glow**. Inputs focus by **border color only** (`border-indigo-400` + `bg-white`),
+no `box-shadow`/ring/glow anywhere. Also dropped the malformed `transition-[colors,box-shadow]`
+(invalid property list) back to `transition-colors`. New house rule in DESIGN_SYSTEM Principle §0.5.
+Calc + reveal is now ≈ 600ms (350ms calc + 250ms count-up).

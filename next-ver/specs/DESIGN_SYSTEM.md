@@ -1,36 +1,89 @@
 # DESIGN_SYSTEM — next-ver
 
-The shared visual language for the app's UI. Before styling a new screen or dialog,
-**reuse the primitives in `src/features/shared/ui/`** rather than hand-rolling Tailwind.
-This file is the source of truth for tokens and component APIs.
+The shared visual language for the app's UI and the **source of truth** for color, type, and
+components. Before styling a new screen or dialog, **reuse the primitives in
+`src/features/shared/ui/`** rather than hand-rolling Tailwind, and pull color/type from here.
 
 > Context: the four transaction modals (expense/credit/investment/starting-balance) had each
 > drifted into its own look (different heading sizes, `gap-10` vs `gap-5`, raw checkbox vs
 > toggle, missing max-width). They were unified onto the primitives below. Keep them unified.
 
-## Tokens
+## 0. Principles (read first)
+
+1. **One accent: indigo.** `indigo-500/600` is the *only* brand hue — toggles, focus, active
+   state, the AmountInput cue. Don't introduce a second solid brand color.
+2. **Color comes through glass, not paint.** When something needs to read as "colorful"
+   (category tags, status pills), use the **Glass treatment** (§2): a translucent tint + frost +
+   deep-family text. **Never opaque, saturated fills with white text** — that look was explicitly
+   rejected. Glassy / semi-transparent is the house style. (See DECISIONS D11.)
+3. **Neutral by default.** Surfaces and text are `slate-*`. Most of the UI is white + slate;
+   indigo and glass are accents, used sparingly.
+4. **No layout shift, no fake delay.** Reserve slot heights; motion is fast and honest (D9/D10).
+5. **Flat focus.** Inputs focus by **border color only** — no `box-shadow`, no ring, no glow
+   (D12). The whole UI avoids drop shadows on controls; depth comes from surface/border, not glow.
+
+## 1. Tokens — color & layout
 
 | Category | Value | Notes |
 |----------|-------|-------|
-| Accent | `indigo-500` / `indigo-600` | Brand accent: toggles, focus ring, active chips. |
+| Accent (brand) | `indigo-500` / `indigo-600` | **The only** brand hue: toggles, focus, active chips, AmountInput cue. |
 | Neutral | `slate-*` | Surfaces & text. |
 | Text — primary | `slate-900` | Headings, input values. |
 | Text — body | `slate-600/700` | Labels, secondary buttons. |
 | Text — muted | `slate-500` | Subtitles. **Not** `slate-400` (contrast). |
 | Text — placeholder | `slate-400` | Placeholders, hints only. |
 | Field surface | `bg-slate-50` + `border-slate-200` | Idle input. |
-| Field focus | `border-indigo-400` + `ring-4 ring-indigo-500/10` + `bg-white` | All inputs. |
+| Field focus | `border-indigo-400` + `bg-white` (no ring, **no box-shadow**) | All inputs. Border-color change only. Ring removed D10; the AmountInput settle glow removed D12. |
+| Semantic — error | `bg-red-50` + `text-red-600` | Inline error row only. |
 | Radius — control | `rounded-xl` | Inputs, buttons, chips containers. |
+| Radius — pill | `rounded-full` | Tags, quick-pick chips. |
 | Radius — surface | `rounded-3xl` (sheet/card) | Modal shell. |
 | Field gap | `gap-5` (20px) | Vertical rhythm between form fields. |
 | Section padding | `px-6` (24px) | Modal body horizontal. |
 | Heading | `text-2xl font-semibold` Bricolage Grotesque | Modal title. |
 | Label | `text-sm font-medium text-slate-600` | Field label. |
 
-Fonts: Bricolage Grotesque (headings + form controls, forced in `globals.css`), with the
-Next/Geist fallback. Currency/locale is `en-IN` (₹).
+## 2. Glass treatment (the colorful layer)
 
-## Primitives (`src/features/shared/ui/`)
+The house aesthetic for anything that carries a category color: **glassmorphism**, not solid
+paint. Frosted, semi-transparent, the surface behind shows through. Default intensity is the
+**stronger-frost** preset below.
+
+Per-hue recipe (`rgb` = the hue's 0-255 triple; `text` = its deep shade for WCAG AA on the tint):
+
+```css
+color: <text>;                                  /* deep family shade, e.g. orange-800 #9a3412 */
+background-image: linear-gradient(135deg,
+  rgb(<rgb> / 0.30) 0%, rgb(<rgb> / 0.15) 100%); /* translucent tint, slight gradient */
+border: 1px solid rgb(<rgb> / 0.45);            /* translucent colored hairline */
+backdrop-filter: blur(14px) saturate(1.7);      /* the frost — also -webkit- */
+box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.6),  /* top sheen */
+            0 1px 2px 0 rgb(15 23 42 / 0.06);        /* faint lift */
+```
+
+Reference hues (used by category tags — `TagInput`):
+
+| Token | Hue rgb | Text | Use |
+|-------|---------|------|-----|
+| glass-food | `234 88 12` (orange) | `#9a3412` | "Food" |
+| glass-bills | `37 99 235` (blue) | `#1e40af` | "Bills" |
+| glass-shopping | `219 39 119` (pink) | `#9d174d` | "Shopping" |
+| glass-neutral | `71 85 105` (slate) | `#334155` | Fallback / custom |
+
+Rules: text is always the **deep family shade** (700/800), never white-on-tint. Keep tints in the
+`0.15–0.30` alpha band so the deep text clears ≥4.5:1 over white. Implementation lives in
+`TagInput.tsx` (`glassTagStyle`) — reuse/extend it; don't reinvent the math per component.
+
+## 3. Fonts & locale
+
+- **Bricolage Grotesque** — headings *and* form controls (forced in `globals.css` on
+  `input/textarea/select/button/label`), with the Next/Geist sans fallback. This gives the app its
+  distinct, slightly characterful voice on both display and controls.
+- **Body / system text** — `font-sans` (Geist) where Bricolage isn't forced.
+- Numerals in amounts/totals use `tabular-nums` for stable width.
+- **Locale**: `en-IN`, currency `₹`. Formatting helpers in `utils/format.ts`.
+
+## 4. Primitives (`src/features/shared/ui/`)
 
 ### `Modal` — `Modal.tsx`
 The one dialog shell. **Every modal uses it; do not re-implement a backdrop.**
@@ -56,10 +109,27 @@ Replaces the bare `<input type=checkbox>`. Props: `icon` (Lucide), `title`, `des
 `checked`, `onChange`.
 
 ### `AmountInput` — `features/dashboard/components/AmountInput.tsx`
-₹-prefixed amount field that accepts arithmetic (`900+300`) and totals **on blur, instantly**.
-A quiet hint advertises the feature. (See D8 — the earlier fake "thinking" delay was removed.)
+₹-prefixed amount field that accepts arithmetic (`900+300`) and totals to its result.
+- **Focus-independent auto-resolve** (D10): while focused, a `RESOLVE_DELAY` (600ms) debounce
+  fires on each keystroke; once the value is a valid, complete calculation (no trailing operator,
+  result ≠ current) it resolves *without needing a blur* — a ~350ms indigo shimmer sweep +
+  `aria-live` "Calculating…" microcopy, then a `requestAnimationFrame` count-up tween to the
+  result (~250ms ease-out, `tabular-nums`), then caret returns to end. **No settle glow / box-shadow**
+  (D12). Calc + reveal ≈ 600ms — snappy; **not** the old ~1.75s beat (D9).
+- **Blur still resolves instantly** (the original path). **Caret**: `caret-indigo-500`, autofocus
+  places the caret *after* any prefilled value (no full selection).
+- **Status slot**: the single-line slot under the field is the `aria-live="polite"` region
+  (empty when idle; "Calculating…" during Phase A). No static tip — and no layout shift.
+- **`prefers-reduced-motion: reduce`** → skips all animation, sets the value directly.
+- Focus styling matches all inputs: single `border-indigo-400`, **no ring** (see token table).
 
-## Form recipe
+### `TagInput` — `features/dashboard/components/TagInput.tsx`
+Chip-style tag entry (type + Enter/comma to commit, Backspace to remove last). Category tags use
+the **Glass treatment** (§2): committed chips and the quick-pick suggestion row both render glass,
+colored by tag. Default suggestions: **Food / Bills / Shopping** (glass orange/blue/pink). Unknown
+or custom tags get the slate glass fallback. `glassTagStyle(tag)` is the single source of the look.
+
+## 5. Form recipe
 
 ```tsx
 <Modal title="Add expense" subtitle="Record what you spent this month." onClose={onClose}>

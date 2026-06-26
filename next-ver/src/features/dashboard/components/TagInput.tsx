@@ -13,14 +13,33 @@ interface TagInputProps {
   max?: number;
 }
 
-const DEFAULT_SUGGESTIONS = [
-  "Food",
-  "Transport",
-  "Bills",
-  "Shopping",
-  "Health",
-  "Subscription",
-];
+const DEFAULT_SUGGESTIONS = ["Food", "Bills", "Shopping"];
+
+/**
+ * Per-tag GLASS treatment (glassmorphism — see DESIGN_SYSTEM.md "Glass"): a
+ * translucent hue tint + frost (backdrop-blur) + translucent border + top sheen,
+ * with deep-family text (≥4.5:1 on the pale tint over white). `rgb` is the hue's
+ * 0-255 triple; `text` is its deep shade. Unknown/custom tags fall back to slate.
+ */
+const TAG_GLASS: Record<string, { rgb: string; text: string }> = {
+  food: { rgb: "234 88 12", text: "#9a3412" }, // orange
+  bills: { rgb: "37 99 235", text: "#1e40af" }, // blue
+  shopping: { rgb: "219 39 119", text: "#9d174d" }, // pink
+};
+const FALLBACK_GLASS = { rgb: "71 85 105", text: "#334155" }; // slate
+
+const glassTagStyle = (tag: string): React.CSSProperties => {
+  const c = TAG_GLASS[tag.toLowerCase()] ?? FALLBACK_GLASS;
+  return {
+    color: c.text,
+    backgroundImage: `linear-gradient(135deg, rgb(${c.rgb} / 0.30) 0%, rgb(${c.rgb} / 0.15) 100%)`,
+    border: `1px solid rgb(${c.rgb} / 0.45)`,
+    backdropFilter: "blur(14px) saturate(1.7)",
+    WebkitBackdropFilter: "blur(14px) saturate(1.7)",
+    boxShadow:
+      "inset 0 1px 0 0 rgb(255 255 255 / 0.6), 0 1px 2px 0 rgb(15 23 42 / 0.06)",
+  };
+};
 
 /**
  * Chip-style tag entry. Type a label and press Enter (or comma) to commit it;
@@ -69,14 +88,15 @@ export default function TagInput({
         {value.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="inline-flex items-center gap-1 rounded-full bg-indigo-50 py-1 pl-3 pr-1.5 text-sm font-medium text-indigo-700"
+            style={glassTagStyle(tag)}
+            className="inline-flex items-center gap-1 rounded-full py-1 pl-3 pr-1.5 text-sm font-medium"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeAt(i)}
               aria-label={`Remove ${tag}`}
-              className="grid h-4 w-4 place-items-center rounded-full text-indigo-400 transition-colors hover:bg-indigo-100 hover:text-indigo-700"
+              className="grid h-4 w-4 place-items-center rounded-full text-current opacity-60 transition hover:bg-black/10 hover:opacity-100"
             >
               <X className="h-3 w-3" />
             </button>
@@ -101,7 +121,8 @@ export default function TagInput({
               key={s}
               type="button"
               onClick={() => add(s)}
-              className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700"
+              style={glassTagStyle(s)}
+              className="rounded-full px-3 py-1 text-sm font-medium transition hover:brightness-105"
             >
               + {s}
             </button>

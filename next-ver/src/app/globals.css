@@ -21,3 +21,19 @@ label {
 h2 {
   font-family: "Bricolage Grotesque", sans-serif;
 }
+
+/* AmountInput auto-resolve "calculating" shimmer sweep (Phase A). */
+@keyframes amount-sweep {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .amount-sweep {
+    animation: none;
+  }
+}

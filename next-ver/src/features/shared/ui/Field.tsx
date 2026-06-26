@@ -34,7 +34,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <input
         ref={ref}
-        className={`w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 ${className}`}
+        className={`w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white ${className}`}
         {...props}
       />
     );

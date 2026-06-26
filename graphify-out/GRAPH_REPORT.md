@@ -1,12 +1,12 @@
 # Graph Report - /Users/tamalcodes/Gh/financial-tracker  (2026-06-27)
 
 ## Corpus Check
-- 86 files · ~49,881 words
+- 86 files · ~54,333 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 202 nodes · 215 edges · 61 communities detected
-- Extraction: 69% EXTRACTED · 31% INFERRED · 0% AMBIGUOUS · INFERRED: 66 edges (avg confidence: 0.8)
+- 213 nodes · 229 edges · 62 communities detected
+- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 66 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -71,6 +71,7 @@
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
+- [[_COMMUNITY_Community 61|Community 61]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `POST()` - 16 edges
@@ -87,14 +88,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `Financial Tracker (Vite App Shell)` --conceptually_related_to--> `Rupee Currency App Icon (root public)`  [INFERRED]
   index.html → public/icon.svg
-- `POST()` --calls--> `createStartingBalance()`  [INFERRED]
-  /Users/tamalcodes/Gh/financial-tracker/next-ver/src/app/api/investments/route.ts → next-ver/src/lib/api/balances.ts
 - `Google Fonts (Bricolage Grotesque, Inter)` --semantically_similar_to--> `next/font and Geist Font`  [INFERRED] [semantically similar]
   index.html → next-ver/README.md
 - `Rupee Currency App Icon` --semantically_similar_to--> `Rupee Currency App Icon (root public)`  [INFERRED] [semantically similar]
   next-ver/public/icon.svg → public/icon.svg
 - `Home()` --calls--> `useAuth()`  [INFERRED]
   next-ver/src/app/page.tsx → src/contexts/AuthContext.tsx
+- `DashboardPage()` --calls--> `createSupabaseServerClient()`  [INFERRED]
+  next-ver/src/app/(app)/dashboard/page.tsx → /Users/tamalcodes/Gh/financial-tracker/next-ver/src/lib/supabase/cookies.ts
 
 ## Hyperedges (group relationships)
 - **PWA App Shell (Vite Financial Tracker)** — index_financial_tracker, index_service_worker, index_pwa_manifest, index_main_tsx [INFERRED 0.85]
@@ -103,56 +104,56 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.1
-Nodes (19): extractAccessToken(), getProjectRef(), getUserFromCookies(), requireUser(), createSupabaseServerClient(), handleDeleteCredit(), handleDeleteExpense(), DashboardPage() (+11 more)
+Cohesion: 0.12
+Nodes (19): extractAccessToken(), getProjectRef(), getUserFromCookies(), requireUser(), applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance() (+11 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.1
 Nodes (14): ensureCarryForwardCredits(), ensureCarryForwardExpenses(), formatMonthKey(), getNextMonth(), getPreviousMonth(), handleChangeMonth(), handleCloseStartingBalanceForm(), handleOpenStartingBalanceForm() (+6 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.17
-Nodes (11): AmountInput(), handleSubmit(), handleSubmit(), applyUnary(), evalRpn(), evaluateExpression(), isCalculation(), normalize() (+3 more)
-
-### Community 3 - "Community 3"
 Cohesion: 0.16
 Nodes (14): Rupee Currency App Icon, Rupee Currency App Icon (root public), Financial Tracker (Vite App Shell), Google Fonts (Bricolage Grotesque, Inter), main.tsx Entry Module, PWA Web App Manifest, Service Worker (sw.js) Registration, Next.js Wordmark Logo (+6 more)
 
+### Community 3 - "Community 3"
+Cohesion: 0.22
+Nodes (9): handleSubmit(), handleSubmit(), applyUnary(), evalRpn(), evaluateExpression(), normalize(), tokenize(), toRpn() (+1 more)
+
 ### Community 4 - "Community 4"
+Cohesion: 0.19
+Nodes (6): cancelTimers(), decimalsOf(), handleBlur(), resetPhase(), startReveal(), isCalculation()
+
+### Community 5 - "Community 5"
 Cohesion: 0.17
 Nodes (6): AuthProvider(), useAuth(), CreditForm(), ExpenseForm(), InvestmentForm(), Home()
 
-### Community 5 - "Community 5"
-Cohesion: 0.5
-Nodes (4): applyBalanceDelta(), calculateClosingBalance(), createStartingBalance(), updateClosingBalance()
-
 ### Community 6 - "Community 6"
+Cohesion: 0.25
+Nodes (4): createSupabaseServerClient(), DashboardPage(), LoginPage(), SignupPage()
+
+### Community 7 - "Community 7"
 Cohesion: 0.6
 Nodes (3): formatMonthKey(), parseMonthKey(), shiftMonthKey()
 
-### Community 7 - "Community 7"
-Cohesion: 0.4
-Nodes (0): 
-
 ### Community 8 - "Community 8"
-Cohesion: 0.83
+Cohesion: 0.6
 Nodes (3): add(), handleKeyDown(), removeAt()
 
 ### Community 9 - "Community 9"
-Cohesion: 0.67
-Nodes (4): Android Adaptive Icon (Expo Placeholder), Favicon 3D Cube Logo, App Icon (Expo Placeholder), Splash Screen Icon (Expo Placeholder)
+Cohesion: 0.4
+Nodes (0): 
 
 ### Community 10 - "Community 10"
 Cohesion: 0.67
-Nodes (1): App()
+Nodes (4): Android Adaptive Icon (Expo Placeholder), Favicon 3D Cube Logo, App Icon (Expo Placeholder), Splash Screen Icon (Expo Placeholder)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.67
-Nodes (1): useLockBodyScroll()
+Nodes (1): App()
 
 ### Community 12 - "Community 12"
-Cohesion: 1.0
-Nodes (0): 
+Cohesion: 0.67
+Nodes (1): useLockBodyScroll()
 
 ### Community 13 - "Community 13"
 Cohesion: 1.0
@@ -336,127 +337,131 @@ Nodes (0):
 
 ### Community 58 - "Community 58"
 Cohesion: 1.0
-Nodes (1): Document/File Icon
+Nodes (0): 
 
 ### Community 59 - "Community 59"
 Cohesion: 1.0
-Nodes (1): Globe Icon
+Nodes (1): Document/File Icon
 
 ### Community 60 - "Community 60"
+Cohesion: 1.0
+Nodes (1): Globe Icon
+
+### Community 61 - "Community 61"
 Cohesion: 1.0
 Nodes (1): Browser Window Icon
 
 ## Knowledge Gaps
 - **9 isolated node(s):** `main.tsx Entry Module`, `create-next-app`, `Rupee Currency App Icon`, `Document/File Icon`, `Vercel Triangle Logo` (+4 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 12`** (2 nodes): `AuthScreen.tsx`, `AuthScreen()`
+- **Thin community `Community 13`** (2 nodes): `AuthScreen.tsx`, `AuthScreen()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 13`** (2 nodes): `AuthToggle.tsx`, `AuthToggle()`
+- **Thin community `Community 14`** (2 nodes): `AuthToggle.tsx`, `AuthToggle()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (2 nodes): `AuthForm.tsx`, `AuthForm()`
+- **Thin community `Community 15`** (2 nodes): `AuthForm.tsx`, `AuthForm()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (2 nodes): `middleware()`, `middleware.ts`
+- **Thin community `Community 16`** (2 nodes): `middleware()`, `middleware.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 16`** (2 nodes): `RootLayout()`, `layout.tsx`
+- **Thin community `Community 17`** (2 nodes): `RootLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (2 nodes): `handleSubmit()`, `AuthForm.tsx`
+- **Thin community `Community 18`** (2 nodes): `handleSubmit()`, `AuthForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (2 nodes): `Field()`, `Field.tsx`
+- **Thin community `Community 19`** (2 nodes): `Field()`, `Field.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (2 nodes): `Button()`, `Button.tsx`
+- **Thin community `Community 20`** (2 nodes): `Button()`, `Button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (2 nodes): `onKey()`, `Modal.tsx`
+- **Thin community `Community 21`** (2 nodes): `onKey()`, `Modal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (2 nodes): `formatCurrency()`, `format.ts`
+- **Thin community `Community 22`** (2 nodes): `formatCurrency()`, `format.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (2 nodes): `useDashboardData.ts`, `useDashboardData()`
+- **Thin community `Community 23`** (2 nodes): `useDashboardData.ts`, `useDashboardData()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (2 nodes): `useDashboardState.ts`, `useDashboardState()`
+- **Thin community `Community 24`** (2 nodes): `useDashboardState.ts`, `useDashboardState()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (2 nodes): `ServiceWorkerRegister.tsx`, `ServiceWorkerRegister()`
+- **Thin community `Community 25`** (2 nodes): `ServiceWorkerRegister.tsx`, `ServiceWorkerRegister()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (2 nodes): `App.tsx`, `main.tsx`
+- **Thin community `Community 26`** (2 nodes): `App.tsx`, `main.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (2 nodes): `handleSubmit()`, `Auth.tsx`
+- **Thin community `Community 27`** (2 nodes): `handleSubmit()`, `Auth.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `tailwind.config.js`
+- **Thin community `Community 28`** (1 nodes): `tailwind.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `eslint.config.js`
+- **Thin community `Community 29`** (1 nodes): `eslint.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (1 nodes): `vite.config.ts`
+- **Thin community `Community 30`** (1 nodes): `vite.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 31`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 32`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (1 nodes): `nativewind-env.d.ts`
+- **Thin community `Community 33`** (1 nodes): `nativewind-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `metro.config.js`
+- **Thin community `Community 34`** (1 nodes): `metro.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `babel.config.js`
+- **Thin community `Community 35`** (1 nodes): `babel.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (1 nodes): `SocialButton.tsx`
+- **Thin community `Community 36`** (1 nodes): `SocialButton.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (1 nodes): `FormField.tsx`
+- **Thin community `Community 37`** (1 nodes): `FormField.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (1 nodes): `postcss.config.mjs`
+- **Thin community `Community 38`** (1 nodes): `postcss.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (1 nodes): `next-env.d.ts`
+- **Thin community `Community 39`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 40`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (1 nodes): `vitest.config.ts`
+- **Thin community `Community 41`** (1 nodes): `vitest.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (1 nodes): `eslint.config.mjs`
+- **Thin community `Community 42`** (1 nodes): `eslint.config.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (1 nodes): `next.config.ts`
+- **Thin community `Community 43`** (1 nodes): `next.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `sw.js`
+- **Thin community `Community 44`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `ToggleCard.tsx`
+- **Thin community `Community 45`** (1 nodes): `ToggleCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `types.ts`
+- **Thin community `Community 46`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `expression.test.ts`
+- **Thin community `Community 47`** (1 nodes): `expression.test.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `BalancePanel.tsx`
+- **Thin community `Community 48`** (1 nodes): `BalancePanel.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `StartingBalanceModal.tsx`
+- **Thin community `Community 49`** (1 nodes): `StartingBalanceModal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `TransactionSection.tsx`
+- **Thin community `Community 50`** (1 nodes): `TransactionSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `TransactionList.tsx`
+- **Thin community `Community 51`** (1 nodes): `TransactionList.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `MonthHeader.tsx`
+- **Thin community `Community 52`** (1 nodes): `MonthHeader.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `database.types.ts`
+- **Thin community `Community 53`** (1 nodes): `database.types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `server.ts`
+- **Thin community `Community 54`** (1 nodes): `server.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `sw.js`
+- **Thin community `Community 55`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `vite-env.d.ts`
+- **Thin community `Community 56`** (1 nodes): `vite-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `TransactionList.tsx`
+- **Thin community `Community 57`** (1 nodes): `TransactionList.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `supabase.ts`
+- **Thin community `Community 58`** (1 nodes): `supabase.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `Document/File Icon`
+- **Thin community `Community 59`** (1 nodes): `Document/File Icon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `Globe Icon`
+- **Thin community `Community 60`** (1 nodes): `Globe Icon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Browser Window Icon`
+- **Thin community `Community 61`** (1 nodes): `Browser Window Icon`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `evaluateExpression()` connect `Community 2` to `Community 1`?**
-  _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `PUT()` connect `Community 0` to `Community 1`, `Community 5`?**
-  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `evaluateExpression()` connect `Community 3` to `Community 1`, `Community 4`?**
+  _High betweenness centrality (0.089) - this node is a cross-community bridge._
+- **Why does `handleUpdateStartingBalance()` connect `Community 1` to `Community 3`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Why does `updateClosingBalance()` connect `Community 1` to `Community 0`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+  _High betweenness centrality (0.062) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `POST()` (e.g. with `rateLimit()` and `createSupabaseServerClient()`) actually correct?**
   _`POST()` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 10 inferred relationships involving `PUT()` (e.g. with `rateLimit()` and `tooManyRequests()`) actually correct?**
