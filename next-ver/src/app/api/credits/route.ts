@@ -1,4 +1,3 @@
-import { applyBalanceDelta } from "@/lib/api/balances";
 import { rateLimit } from "@/lib/api/rateLimit";
 import { handleError, tooManyRequests } from "@/lib/api/responses";
 import {
@@ -10,12 +9,16 @@ import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
+// Per-month income. No balance side-effects — "Left in bank" is computed cumulatively
+// on read (DECISIONS D13). Canonical route conventions: CONVENTIONS §1–§7.
+const SELECT = "id, description, amount, created_at";
+
 export async function POST(request: Request) {
   const limit = rateLimit(request, "credits:post", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { currentMonth, description, amount, carry_forward } = validate(
+    const { currentMonth, description, amount } = validate(
       mutationCreateSchema,
       await request.json()
     );
@@ -25,28 +28,15 @@ export async function POST(request: Request) {
 
     const { data: inserted, error } = await supabase
       .from("credits")
-      .insert({
-        user_id: userId,
-        month: currentMonth,
-        description,
-        amount,
-        carry_forward: Boolean(carry_forward),
-      })
-      .select("id, description, amount, created_at, carry_forward")
+      .insert({ user_id: userId, month: currentMonth, description, amount })
+      .select(SELECT)
       .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      currentMonth,
-      Number(amount)
-    );
-
-    return NextResponse.json({ item: inserted, balance });
+    return NextResponse.json({ item: inserted });
   } catch (error) {
     return handleError(error);
   }
@@ -57,7 +47,7 @@ export async function PUT(request: Request) {
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { id, description, amount, carry_forward } = validate(
+    const { id, description, amount } = validate(
       mutationUpdateSchema,
       await request.json()
     );
@@ -65,42 +55,22 @@ export async function PUT(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("credits")
-      .select("amount, month")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: "Credit not found." }, { status: 404 });
-    }
-
     const { data: updated, error } = await supabase
       .from("credits")
-      .update({
-        description,
-        amount,
-        carry_forward: Boolean(carry_forward),
-      })
+      .update({ description, amount })
       .eq("id", id)
       .eq("user_id", userId)
-      .select("id, description, amount, created_at, carry_forward")
+      .select(SELECT)
       .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    if (!updated) {
+      return NextResponse.json({ error: "Credit not found." }, { status: 404 });
+    }
 
-    const delta = Number(amount) - Number(existing.amount);
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      existing.month,
-      delta
-    );
-
-    return NextResponse.json({ item: updated, balance });
+    return NextResponse.json({ item: updated });
   } catch (error) {
     return handleError(error);
   }
@@ -121,17 +91,6 @@ export async function DELETE(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("credits")
-      .select("amount, month")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: "Credit not found." }, { status: 404 });
-    }
-
     const { error } = await supabase
       .from("credits")
       .delete()
@@ -142,14 +101,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      existing.month,
-      -Number(existing.amount)
-    );
-
-    return NextResponse.json({ ok: true, balance });
+    return NextResponse.json({ ok: true });
   } catch (error) {
     return handleError(error);
   }

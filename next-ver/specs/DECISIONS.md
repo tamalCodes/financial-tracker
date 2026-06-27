@@ -96,3 +96,32 @@ caret with **no glow**. Inputs focus by **border color only** (`border-indigo-40
 no `box-shadow`/ring/glow anywhere. Also dropped the malformed `transition-[colors,box-shadow]`
 (invalid property list) back to `transition-colors`. New house rule in DESIGN_SYSTEM Principle §0.5.
 Calc + reveal is now ≈ 600ms (350ms calc + 250ms count-up).
+
+## D13 — Cumulative "Left in bank" replaces starting/closing balance (mobile redesign)
+The per-month `monthly_balances` (starting/closing, `applyBalanceDelta`, self-heal, rollover
+seed, carry-forward of credits/expenses) was **removed**. Balance is now a single **cumulative**
+figure computed on read: `leftInBank(month) = Σ_{m ≤ month}(earned_m − spent_m − invested_m)`.
+The three HeroBalance tiles show only the current month. Rationale (owner): the user wants a
+running bank balance that piles up across months, with per-month earned/spent/invested resetting —
+not a reconciled opening/closing ledger. `monthly_balances` is kept but deprecated (D7 risk moot
+for it now). Supersedes **D1** (incremental balance) and **D4** (carry-forward copies). See
+DATA_MODEL.md money model.
+
+## D14 — Bills are a separate ledger but paid bills count toward spend
+`bills` is its own table, not expenses. Paying a bill does **not** create an expense row and bills
+never appear in Recent payments — but a **paid** bill is added to `spent_m` (and thus reduces
+Left-in-bank). Unpaid bills are future obligations and excluded. Owner decision: bills should be
+tracked distinctly (their own card, Pay action, "Paid this month") yet still affect the month's
+real spend. No overdue state (the cloth handoff removed it).
+
+## D15 — Investments split into per-month FLOW vs manual PORTFOLIO; recurring model removed
+Two distinct concepts now:
+- **Flow** (`investments` table, simplified): plain per-month rows that drive the "Invested" tile +
+  Left-in-bank. The old recurring model (D3: `start_month` + `lte` filter + `is_active` soft delete +
+  `carry_forward`) was **removed** — manual per-month entries, hard delete. Supersedes **D3**.
+- **Portfolio panel** (`holdings`, `sips`, `portfolio_totals`): manual, display-only reference (FD
+  rate/maturity, mutual-fund current value, static SIP monthly/paid, a manual portfolio number).
+  Does **not** affect the money model.
+Owner decision: no automation/valuation feeds exist, so everything is manual; the panel is
+reference, the tile is cash flow. Open sub-decision (assumed NO): SIP payments do not feed the
+monthly Invested tile — log them as flow entries if that changes.

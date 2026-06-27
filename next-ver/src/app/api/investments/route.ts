@@ -1,20 +1,25 @@
-import { applyBalanceDelta } from "@/lib/api/balances";
 import { rateLimit } from "@/lib/api/rateLimit";
 import { handleError, tooManyRequests } from "@/lib/api/responses";
-import { mutationCreateSchema, validate } from "@/lib/api/schemas";
+import {
+  mutationCreateSchema,
+  mutationUpdateSchema,
+  validate,
+} from "@/lib/api/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
-const SELECT =
-  "id, description, amount, carry_forward, start_month, created_at, is_active";
+// Per-month investment FLOW (drives invested_m + Left-in-bank). The recurring/soft-delete
+// model was removed in the redesign (DECISIONS D15): plain per-month rows, hard delete.
+// The Investments PANEL (holdings/sips/portfolio) is a separate, manual concern.
+const SELECT = "id, description, amount, month, created_at";
 
 export async function POST(request: Request) {
   const limit = rateLimit(request, "investments:post", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { currentMonth, description, amount, carry_forward } = validate(
+    const { currentMonth, description, amount } = validate(
       mutationCreateSchema,
       await request.json()
     );
@@ -24,14 +29,7 @@ export async function POST(request: Request) {
 
     const { data: inserted, error } = await supabase
       .from("investments")
-      .insert({
-        user_id: userId,
-        start_month: currentMonth,
-        description,
-        amount,
-        is_active: true,
-        carry_forward: Boolean(carry_forward),
-      })
+      .insert({ user_id: userId, month: currentMonth, description, amount })
       .select(SELECT)
       .single();
 
@@ -39,14 +37,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      currentMonth,
-      -Number(amount)
+    return NextResponse.json({ item: inserted });
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function PUT(request: Request) {
+  const limit = rateLimit(request, "investments:put", { limit: 30, windowMs: 60_000 });
+  if (!limit.ok) return tooManyRequests(limit.resetMs);
+
+  try {
+    const { id, description, amount } = validate(
+      mutationUpdateSchema,
+      await request.json()
     );
 
-    return NextResponse.json({ item: inserted, balance });
+    const supabase = await createSupabaseServerClient();
+    const { userId } = await requireUser(supabase);
+
+    const { data: updated, error } = await supabase
+      .from("investments")
+      .update({ description, amount })
+      .eq("id", id)
+      .eq("user_id", userId)
+      .select(SELECT)
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (!updated) {
+      return NextResponse.json({ error: "Investment not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ item: updated });
   } catch (error) {
     return handleError(error);
   }
@@ -67,23 +92,9 @@ export async function DELETE(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("investments")
-      .select("amount, start_month")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (fetchError || !existing) {
-      return NextResponse.json(
-        { error: "Investment not found." },
-        { status: 404 }
-      );
-    }
-
     const { error } = await supabase
       .from("investments")
-      .update({ is_active: false })
+      .delete()
       .eq("id", id)
       .eq("user_id", userId);
 
@@ -91,14 +102,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      existing.start_month,
-      Number(existing.amount)
-    );
-
-    return NextResponse.json({ ok: true, balance });
+    return NextResponse.json({ ok: true });
   } catch (error) {
     return handleError(error);
   }

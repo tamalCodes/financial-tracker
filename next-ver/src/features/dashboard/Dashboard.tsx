@@ -318,7 +318,7 @@ export default function Dashboard() {
                   id: editingCredit.id,
                   description: editingCredit.description,
                   amount: Number(editingCredit.amount),
-                  carry_forward: editingCredit.carry_forward ?? false,
+                  carry_forward: false, // DEPRECATED (D13); legacy form prop, replaced in PART C
                 }
               : undefined
           }
@@ -343,7 +343,7 @@ export default function Dashboard() {
                   id: editingExpense.id,
                   description: editingExpense.description,
                   amount: Number(editingExpense.amount),
-                  carry_forward: editingExpense.carry_forward ?? false,
+                  carry_forward: false, // DEPRECATED (D13); legacy form prop, replaced in PART C
                 }
               : undefined
           }

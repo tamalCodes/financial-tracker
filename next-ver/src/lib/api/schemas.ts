@@ -8,16 +8,26 @@ const amount = z.coerce
   .number()
   .refine((n) => Number.isFinite(n), { message: "amount must be a number" });
 
-// Free-form labels (expenses only). The form trims/dedupes/caps; the schema
+// Free-form labels (expenses only, legacy). The form trims/dedupes/caps; the schema
 // just bounds count + length so a bad client can't blow up a row.
 const tags = z.array(z.string().trim().min(1).max(32)).max(20).optional();
 
-/** POST body for credits / expenses / investments. */
+/** Expense category enum (mobile redesign). Optional on the wire; defaults to 'other'. */
+export const expenseCategory = z.enum([
+  "food",
+  "shopping",
+  "transport",
+  "health",
+  "groceries",
+  "other",
+]);
+
+/** POST body for credits / expenses / investments. `category` used by expenses only. */
 export const mutationCreateSchema = z.object({
   currentMonth: month,
   description: z.string().min(1),
   amount,
-  carry_forward: z.boolean().optional(),
+  category: expenseCategory.optional(),
   tags,
 });
 
@@ -26,16 +36,8 @@ export const mutationUpdateSchema = z.object({
   id: z.string().min(1),
   description: z.string().min(1),
   amount,
-  carry_forward: z.boolean().optional(),
+  category: expenseCategory.optional(),
   tags,
-});
-
-/** POST/PUT body for balances. */
-export const startingBalanceSchema = z.object({
-  currentMonth: month,
-  startingBalance: z.coerce
-    .number()
-    .refine((n) => Number.isFinite(n), { message: "startingBalance must be a number" }),
 });
 
 /**

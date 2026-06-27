@@ -1,4 +1,3 @@
-import { applyBalanceDelta } from "@/lib/api/balances";
 import { rateLimit } from "@/lib/api/rateLimit";
 import { handleError, tooManyRequests } from "@/lib/api/responses";
 import {
@@ -10,15 +9,16 @@ import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { requireUser } from "@/lib/supabase/auth";
 import { NextResponse } from "next/server";
 
-const SELECT =
-  "id, description, amount, created_at, carry_forward, carried_from_month, tags";
+// Per-month spend with a category enum (mobile redesign). No balance side-effects —
+// spent_m and Left-in-bank are computed on read (DECISIONS D13). `tags` kept (legacy).
+const SELECT = "id, description, amount, category, created_at, tags";
 
 export async function POST(request: Request) {
   const limit = rateLimit(request, "expenses:post", { limit: 30, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { currentMonth, description, amount, carry_forward, tags } = validate(
+    const { currentMonth, description, amount, category, tags } = validate(
       mutationCreateSchema,
       await request.json()
     );
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         month: currentMonth,
         description,
         amount,
-        carry_forward: Boolean(carry_forward),
+        category: category ?? "other",
         tags: tags ?? [],
       })
       .select(SELECT)
@@ -43,14 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      currentMonth,
-      -Number(amount)
-    );
-
-    return NextResponse.json({ item: inserted, balance });
+    return NextResponse.json({ item: inserted });
   } catch (error) {
     return handleError(error);
   }
@@ -61,7 +54,7 @@ export async function PUT(request: Request) {
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { id, description, amount, carry_forward, tags } = validate(
+    const { id, description, amount, category, tags } = validate(
       mutationUpdateSchema,
       await request.json()
     );
@@ -69,25 +62,12 @@ export async function PUT(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("expenses")
-      .select("amount, month")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: "Expense not found." }, { status: 404 });
-    }
+    const update: Record<string, unknown> = { description, amount, tags: tags ?? [] };
+    if (category) update.category = category;
 
     const { data: updated, error } = await supabase
       .from("expenses")
-      .update({
-        description,
-        amount,
-        carry_forward: Boolean(carry_forward),
-        tags: tags ?? [],
-      })
+      .update(update)
       .eq("id", id)
       .eq("user_id", userId)
       .select(SELECT)
@@ -96,16 +76,11 @@ export async function PUT(request: Request) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    if (!updated) {
+      return NextResponse.json({ error: "Expense not found." }, { status: 404 });
+    }
 
-    const delta = Number(existing.amount) - Number(amount);
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      existing.month,
-      delta
-    );
-
-    return NextResponse.json({ item: updated, balance });
+    return NextResponse.json({ item: updated });
   } catch (error) {
     return handleError(error);
   }
@@ -126,17 +101,6 @@ export async function DELETE(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data: existing, error: fetchError } = await supabase
-      .from("expenses")
-      .select("amount, month")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (fetchError || !existing) {
-      return NextResponse.json({ error: "Expense not found." }, { status: 404 });
-    }
-
     const { error } = await supabase
       .from("expenses")
       .delete()
@@ -147,14 +111,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const balance = await applyBalanceDelta(
-      supabase,
-      userId,
-      existing.month,
-      Number(existing.amount)
-    );
-
-    return NextResponse.json({ ok: true, balance });
+    return NextResponse.json({ ok: true });
   } catch (error) {
     return handleError(error);
   }
