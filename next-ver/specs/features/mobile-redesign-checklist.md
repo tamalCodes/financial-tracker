@@ -18,8 +18,8 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B2 | Expense category | ✅ done (folded) | `3edfc40` |
 | B3 | Bills route | ✅ done | `cc3997d` |
 | B4 | Investments per-month | ✅ done (folded) | `3edfc40` |
-| B5 | Portfolio routes (holdings/sips/total) | ✅ done | (this commit) |
-| B6 | Backend verify gate | ✅ done | (this commit) |
+| B5 | Portfolio routes (holdings/sips/total) | ✅ done | `e801101` |
+| B6 | Backend verify gate | ✅ done | `e801101` |
 | F0 | Tokens & fonts | ⬜ todo | — |
 | F1 | Greeting + HeroBalance | ⬜ todo | — |
 | F2 | Transactions card | ⬜ todo | — |
