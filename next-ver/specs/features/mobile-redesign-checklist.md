@@ -4,8 +4,16 @@ Companion to [mobile-redesign.md](./mobile-redesign.md) (the plan). **This is th
 truth for status.** Update checkboxes as work lands; keep the "Last updated" line current.
 Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked.
 
-**Last updated:** F2 done (Recent payments card + category pills). `verify` green. Next: F3.
+**Last updated:** Whole mobile UI rebuilt **pixel-from-DC** under `src/features/dashboard/mobile/`,
+driven by **in-memory demo data** (`mobile/data.ts` + `useFinanceDemo.ts`) — backend fully decoupled.
+F3–F6 UI complete (demo). `verify` green. Next: wire backend to replace demo data.
 **Branch:** `main` only (repo `CLAUDE.md` — never branch).
+
+> **Demo-first pivot (user-directed):** build the entire frontend pixel-perfect against the
+> handoff `.dc.html` with demo data first, THEN connect the backend. New self-contained set lives
+> in `src/features/dashboard/mobile/` (inline styles translated 1:1 from the DC files for exact
+> fidelity). The legacy backend-wired components/hooks/forms remain in the repo for the wiring step.
+> `Dashboard.tsx` now renders `mobile/MobileHome`. No-auth preview at `/demo`.
 
 ---
 
@@ -23,10 +31,15 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | F0 | Tokens & fonts | ✅ done | `abe76b8` |
 | F1 | Greeting + HeroBalance | ✅ done | `abe76b8` |
 | F2 | Transactions card | ✅ done | `7498ffe` |
-| F3 | Floating bar + AddSheet | ⬜ todo | — |
-| F4 | Bills & EMIs card | ⬜ todo | — |
-| F5 | Investments panel | ⬜ todo | — |
-| F6 | Compose home + verify | ⬜ todo | — |
+| F3 | Floating bar + AddSheet | ✅ UI (demo) · ⏳ backend | — |
+| F4 | Bills & EMIs card | ✅ UI (demo) · ⏳ backend | — |
+| F5 | Investments panel | ✅ UI (demo) · ⏳ backend | — |
+| F6 | Compose home + verify | ✅ UI (demo) · ⏳ a11y/screenshots | — |
+
+> **Note:** F2's `Transactions` was also re-done in `mobile/` (no trash icon — matches the DC
+> reference exactly; the earlier always-visible trash + oversized "Other" pill are gone).
+> "✅ UI (demo)" = pixel-perfect against the `.dc.html`, fed by demo data. "⏳ backend" = the
+> AddSheet/Pay/portfolio mutations are local-only; real `/api/*` wiring is the next phase.
 
 **Blockers / external:**
 - [x] ✅ Migration `001_mobile_redesign.sql` applied to live Supabase (verified: `expenses.category` + `bills`/`holdings`/`sips`/`portfolio_totals` present).
