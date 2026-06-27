@@ -2,24 +2,34 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Bill,
   Credit,
   Expense,
   Investment,
-  MonthlyBalance,
+  MonthSummary,
 } from "@/features/dashboard/types/types";
 
 interface DashboardData {
-  balance: MonthlyBalance | null;
+  summary: MonthSummary;
   credits: Credit[];
   expenses: Expense[];
   investments: Investment[];
+  bills: Bill[];
 }
 
+const EMPTY_SUMMARY: MonthSummary = {
+  leftInBank: 0,
+  earned: 0,
+  spent: 0,
+  invested: 0,
+};
+
 export const useDashboardData = (currentMonth: string) => {
-  const [balance, setBalance] = useState<MonthlyBalance | null>(null);
+  const [summary, setSummary] = useState<MonthSummary>(EMPTY_SUMMARY);
   const [credits, setCredits] = useState<Credit[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
+  const [bills, setBills] = useState<Bill[]>([]);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -47,10 +57,11 @@ export const useDashboardData = (currentMonth: string) => {
       }
       const payload = (await res.json()) as DashboardData;
       if (isMountedRef.current) {
-        setBalance(payload.balance ?? null);
+        setSummary(payload.summary ?? EMPTY_SUMMARY);
         setCredits(payload.credits ?? []);
         setExpenses(payload.expenses ?? []);
         setInvestments(payload.investments ?? []);
+        setBills(payload.bills ?? []);
       }
     } catch (error) {
       console.error(error);
@@ -70,14 +81,15 @@ export const useDashboardData = (currentMonth: string) => {
   }, [load]);
 
   return {
-    balance,
+    summary,
     credits,
     expenses,
     investments,
+    bills,
+    setBills,
     isBootstrapping,
     isRefreshing,
     reload: load,
-    setBalance,
     upsertCredit: (credit: Credit) => {
       setCredits((prev) => {
         const index = prev.findIndex((item) => item.id === credit.id);

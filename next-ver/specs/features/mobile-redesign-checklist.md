@@ -4,7 +4,7 @@ Companion to [mobile-redesign.md](./mobile-redesign.md) (the plan). **This is th
 truth for status.** Update checkboxes as work lands; keep the "Last updated" line current.
 Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked.
 
-**Last updated:** PART B (backend) complete — `npm run verify` green. Next: PART C frontend.
+**Last updated:** F0+F1 done (Geist+tokens, GreetingHeader+HeroBalance, starting-balance removed). `verify` green. Next: F2.
 **Branch:** `main` only (repo `CLAUDE.md` — never branch).
 
 ---
@@ -20,8 +20,8 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B4 | Investments per-month | ✅ done (folded) | `3edfc40` |
 | B5 | Portfolio routes (holdings/sips/total) | ✅ done | `e801101` |
 | B6 | Backend verify gate | ✅ done | `e801101` |
-| F0 | Tokens & fonts | ⬜ todo | — |
-| F1 | Greeting + HeroBalance | ⬜ todo | — |
+| F0 | Tokens & fonts | ✅ done | (this commit) |
+| F1 | Greeting + HeroBalance | ✅ done | (this commit) |
 | F2 | Transactions card | ⬜ todo | — |
 | F3 | Floating bar + AddSheet | ⬜ todo | — |
 | F4 | Bills & EMIs card | ⬜ todo | — |
@@ -106,20 +106,21 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 
 High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `screenshots/01..06`.
 
-## F0 — Tokens & fonts ⬜
-- [ ] load **Geist** (`next/font`), add `--font-body`
-- [ ] split `--color-investment` → violet `139,92,246` (text `#6d28d9`, deep `#5b21b6`)
-- [ ] category color tokens (Food/Shopping/Transport/Health/Groceries/Other — values in plan §F0)
-- [ ] glass-tile recipe util (gradient + border + inset highlight)
-- [ ] document credit/expense/investment + glass + category tokens INTO `DESIGN_SYSTEM.md` (currently omitted — WHATS_LEFT)
+## F0 — Tokens & fonts ✅
+- [x] load **Geist** (`next/font`) in `layout.tsx`; `--font-body` + `font-body` utility
+- [x] split `--color-investment` → violet (`--color-violet-600`)
+- [x] category color tokens: `--color-cat-*` (text) + `--cat-*` RGB triplets (tints) in `globals.css`
+- [x] glass-tile recipe: `@utility glass-tile` (set `--tile-rgb`)
+- [~] document tokens INTO `DESIGN_SYSTEM.md` — deferred to F6 doc pass
 
-## F1 — Greeting header + HeroBalance ⬜
-- [ ] `GreetingHeader` (greeting + name + month pill + AK avatar; name/avatar from auth user)
-- [ ] `HeroBalance` (reskin `BalancePanel`): cumulative `₹{leftInBank}` 36px + 3 glass tiles (Earned/Spent/Invested = per-month from `summary`)
-- [ ] month stepper wired to `handleChangeMonth`
-- [ ] **remove** `StartingBalanceModal` + starting-balance flow from `Dashboard.tsx` (model gone)
-- [ ] `useDashboardData` reads `summary` (not `balance`); drop `setBalance`/`MonthlyBalance`
-- [ ] retire deprecated `MonthlyBalance` type once unused
+## F1 — Greeting header + HeroBalance ✅
+- [x] `GreetingHeader.tsx` (time-based greeting + name/initials from auth email + month pill + avatar)
+- [x] `HeroBalance.tsx`: cumulative `₹{leftInBank}` 36px (handles negative) + 3 glass tiles from `summary`; month stepper → `handleChangeMonth`, next disabled past current
+- [x] **deleted** `BalancePanel.tsx`, `MonthHeader.tsx`, `StartingBalanceModal.tsx` (replaced)
+- [x] `useDashboardData` reads `summary` + `bills`; dropped `balance`/`setBalance`
+- [x] `Dashboard.tsx` rewired: GreetingHeader + HeroBalance + (legacy TransactionSections kept for F2); mutations `upsert + reload()` to recompute cumulative summary
+- [ ] retire deprecated `MonthlyBalance` type — still used by 3 legacy forms (retire in F3)
+- [~] starting-balance state still in `useDashboardState` (unused) — prune in F6
 
 ## F2 — Transactions (Recent payments) ⬜
 - [ ] reskin expenses list: count subtitle, red total pill, no minus sign

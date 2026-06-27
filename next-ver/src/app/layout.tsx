@@ -1,11 +1,17 @@
 import { AuthProvider } from "@/features/auth/AuthContext";
 import ServiceWorkerRegister from "@/features/pwa/ServiceWorkerRegister";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-heading",
+  subsets: ["latin"],
+});
+
+// Body / secondary text per the mobile handoff (Geist). Display stays Bricolage.
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -34,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${bricolageGrotesque.variable} ${bricolageGrotesque.className} antialiased`}
+        className={`${bricolageGrotesque.variable} ${geist.variable} ${bricolageGrotesque.className} antialiased`}
       >
         <AuthProvider>
           {children}

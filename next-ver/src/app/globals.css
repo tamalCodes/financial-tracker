@@ -26,7 +26,18 @@
   /* Semantic transaction palette (user-confirmed; not glass, not collapsible to accent) */
   --color-credit: var(--color-emerald-600);
   --color-expense: var(--color-red-600);
-  --color-investment: var(--color-indigo-600); /* currently aliases accent; can split to violet later */
+  --color-investment: var(--color-violet-600); /* split from indigo → violet (mobile redesign, handoff §8) */
+
+  /* Body / secondary font (Geist); display stays Bricolage via --font-heading */
+  --font-body: var(--font-geist), system-ui, sans-serif;
+
+  /* Expense category text colors (deep family for WCAG; tints via --cat-*-rgb below) */
+  --color-cat-food: #b45309;
+  --color-cat-shopping: #6d28d9;
+  --color-cat-transport: #0369a1;
+  --color-cat-health: #047857;
+  --color-cat-groceries: #0f766e;
+  --color-cat-other: #475569;
 
   /* Inline error row */
   --color-danger: var(--color-red-600);
@@ -42,10 +53,37 @@
   --spacing-section: 1.5rem;  /* 24px — modal body horizontal padding */
 }
 
+/* Category tint RGB triplets (for glass pills: rgb(var(--cat-*) / <alpha>)). Mobile handoff §8. */
+:root {
+  --cat-food: 245 158 11;
+  --cat-shopping: 139 92 246;
+  --cat-transport: 14 165 233;
+  --cat-health: 16 185 129;
+  --cat-groceries: 20 184 166;
+  --cat-other: 100 116 139;
+}
+
 @layer base {
   html {
     @apply font-sans;
   }
+}
+
+/*
+ * Glass tile recipe (mobile redesign, handoff §8): translucent hue gradient + frost +
+ * matching border + inset white sheen. Set --tile-rgb on the element; deep-family text
+ * via color. Never opaque saturated fill (DESIGN_SYSTEM §0.2 / D11).
+ */
+@utility glass-tile {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--tile-rgb) / 0.3),
+    rgb(var(--tile-rgb) / 0.15)
+  );
+  border: 1px solid rgb(var(--tile-rgb) / 0.45);
+  backdrop-filter: blur(14px) saturate(1.7);
+  -webkit-backdrop-filter: blur(14px) saturate(1.7);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(15 23 42 / 0.04);
 }
 
 body {
