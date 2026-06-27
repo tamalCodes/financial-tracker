@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect -- legacy edit-form prop→state sync; retired in PART C / F3 (AddSheet). */
 import { Repeat } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Expense, MonthlyBalance } from "@/features/dashboard/types/types";

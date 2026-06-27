@@ -54,6 +54,35 @@ export const billPatchSchema = z.object({
   paid: z.boolean(),
 });
 
+// Portfolio panel — manual reference data (no money-model effect; DECISIONS D15).
+export const holdingKind = z.enum(["fd", "mutual_fund"]);
+
+export const holdingCreateSchema = z.object({
+  kind: holdingKind,
+  name: z.string().min(1),
+  current_value: amount,
+  rate: amount.optional(),
+  maturity_date: z.string().trim().max(32).optional(),
+});
+
+export const holdingUpdateSchema = holdingCreateSchema
+  .partial()
+  .extend({ id: z.string().min(1) });
+
+export const sipCreateSchema = z.object({
+  name: z.string().min(1),
+  monthly: amount,
+  due_date: z.string().trim().max(32).optional(),
+  paid_total: amount.optional(),
+});
+
+export const sipUpdateSchema = sipCreateSchema
+  .partial()
+  .extend({ id: z.string().min(1) });
+
+/** PUT body for the manual portfolio total. */
+export const portfolioTotalSchema = z.object({ value: amount });
+
 /**
  * Parse `data` against `schema`. On failure, throws a 400 NextResponse
  * (caught by handleError, keeping the standard error shape). On success,

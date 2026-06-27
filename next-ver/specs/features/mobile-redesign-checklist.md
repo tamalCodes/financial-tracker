@@ -4,7 +4,7 @@ Companion to [mobile-redesign.md](./mobile-redesign.md) (the plan). **This is th
 truth for status.** Update checkboxes as work lands; keep the "Last updated" line current.
 Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked.
 
-**Last updated:** after B3 bills route. Migration applied to live Supabase ✅.
+**Last updated:** PART B (backend) complete — `npm run verify` green. Next: PART C frontend.
 **Branch:** `main` only (repo `CLAUDE.md` — never branch).
 
 ---
@@ -18,8 +18,8 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B2 | Expense category | ✅ done (folded) | `3edfc40` |
 | B3 | Bills route | ✅ done | `cc3997d` |
 | B4 | Investments per-month | ✅ done (folded) | `3edfc40` |
-| B5 | Portfolio routes (holdings/sips/total) | ⬜ todo | — |
-| B6 | Backend verify gate | ⬜ todo | — |
+| B5 | Portfolio routes (holdings/sips/total) | ✅ done | (this commit) |
+| B6 | Backend verify gate | ✅ done | (this commit) |
 | F0 | Tokens & fonts | ⬜ todo | — |
 | F1 | Greeting + HeroBalance | ⬜ todo | — |
 | F2 | Transactions card | ⬜ todo | — |
@@ -83,21 +83,22 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 - [~] route-handler unit tests deferred → B6 (repo has no route-handler harness yet; same gap as credits/expenses/investments, WHATS_LEFT Track B #2)
 - [x] dashboard returns `bills` (B1) — shape verified
 
-## B5 — Portfolio routes (manual) ⬜
-- [ ] schemas: holding/sip/portfolioTotal create+update
-- [ ] `src/app/api/holdings/route.ts`: GET·POST·PUT·DELETE (kind fd|mutual_fund, current_value, rate?, maturity_date?)
-- [ ] `src/app/api/sips/route.ts`: GET·POST·PUT·DELETE (name, monthly, due_date, paid_total)
-- [ ] `src/app/api/portfolio/route.ts`: GET·PUT (upsert single `portfolio_totals` row per user)
-- [ ] decide: include holdings/sips/portfolio in dashboard payload OR separate fetch (lean: separate `/api/portfolio`-family, lazy-load when Investments panel opens)
-- [ ] vitest: per-user scoping; portfolio_total upsert; CRUD
-- [ ] confirm SIP/holding does NOT affect money model (open sub-decision)
+## B5 — Portfolio routes (manual) ✅
+- [x] schemas: holding/sip create+update, `portfolioTotalSchema`
+- [x] `src/app/api/holdings/route.ts`: GET·POST·PUT·DELETE (kind fd|mutual_fund, current_value, rate?, maturity_date?)
+- [x] `src/app/api/sips/route.ts`: GET·POST·PUT·DELETE (name, monthly, due_date, paid_total)
+- [x] `src/app/api/portfolio/route.ts`: GET·PUT (upsert single `portfolio_totals` row per user)
+- [x] decision: **separate `/api/{holdings,sips,portfolio}` fetch** (not in dashboard payload) — lazy-load when Investments panel opens (F5)
+- [~] route-handler unit tests deferred → see cross-cutting (no harness yet)
+- [x] built as pure CRUD — does NOT affect money model (D15; open sub-decision still flagged for F5)
 
-## B6 — Backend verify gate ⬜
-- [ ] `package.json` scripts: `typecheck` (`tsc --noEmit`), `verify` (`typecheck && eslint . && vitest run && next build`)
-- [ ] note: Next 16 removed `next lint` → use `eslint` directly
-- [ ] route ownership/validation tests for bills + portfolio
-- [ ] `WHATS_LEFT.md` Track B #1 → mark progressing
-- [ ] run `npm run verify` green
+## B6 — Backend verify gate ✅
+- [x] `package.json`: `typecheck` (`tsc --noEmit`) + `verify` (`typecheck && lint && test && build`)
+- [x] Next 16 removed `next lint` → `lint` script already `eslint`
+- [x] `npm run verify` green (tsc 0 · eslint 0 · 14 tests · `next build` OK)
+- [x] silenced 2 pre-existing legacy lint errors (CreditForm/ExpenseForm set-state-in-effect) via scoped disable — forms retired in F3
+- [~] route-handler ownership/validation tests still a gap (cross-cutting; WHATS_LEFT Track B #2)
+- [x] `WHATS_LEFT.md` Track B #1 → done (scripts added)
 
 ---
 

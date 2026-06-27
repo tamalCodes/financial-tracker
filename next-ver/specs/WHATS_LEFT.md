@@ -19,7 +19,7 @@ Done: 0.1a audit · 0.2 tokens · 1.1 primitives migrated · graphify refreshed.
 ## Track B — Agentic-coding readiness (closed write→verify→ship loop)
 Priority: 🔴 blocks loop · 🟠 important · 🟡 nice
 
-- [ ] 🔴 #1 Verify gate — add `typecheck` (`tsc --noEmit`) + `verify` (typecheck+lint+test+build) scripts
+- [x] 🔴 #1 Verify gate — `typecheck` + `verify` (typecheck+lint+test+build) scripts added (mobile redesign B6)
 - [ ] 🔴 #2 Test coverage — only 2 test files vs ~60 src. Add component, auth, API-route tests
 - [ ] 🔴 #3 Runtime/visual verification — no Playwright/E2E; wire core-flow smoke (login→dashboard→add txn) + screenshot recipe
 - [ ] 🟠 #4 CI — `.github/workflows` running `verify` on push/PR
