@@ -42,30 +42,30 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl shadow-slate-900/10 sm:max-w-md sm:rounded-3xl"
+        className="flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-surface bg-surface shadow-2xl shadow-slate-900/10 sm:max-w-md sm:rounded-surface"
       >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-1">
+        <div className="flex items-start justify-between gap-4 px-section pt-6 pb-1">
           <div className="min-w-0">
-            <h2 className="truncate text-2xl font-semibold tracking-tight text-slate-900">
+            <h2 className="truncate text-2xl font-semibold tracking-tight text-ink">
               {title}
             </h2>
             {subtitle && (
-              <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
+              <p className="mt-0.5 text-sm text-muted">{subtitle}</p>
             )}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="-mr-2 -mt-1 shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="-mr-2 -mt-1 shrink-0 rounded-lg p-2 text-faint transition-colors hover:bg-slate-100 hover:text-body"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Scrollable body — safe-area padding keeps actions off the home bar. */}
-        <div className="overflow-y-auto px-6 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="overflow-y-auto px-section pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {children}
         </div>
       </div>

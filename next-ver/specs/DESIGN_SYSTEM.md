@@ -148,3 +148,45 @@ or custom tags get the slate glass fallback. `glassTagStyle(tag)` is the single 
 
 All four modals (`ExpenseForm`, `CreditForm`, `InvestmentForm`, `StartingBalanceModal`) follow
 this exact shape. Adding a new modal? Copy it.
+
+## 6. Mobile standards
+
+This is a **mobile-first PWA** (`en-IN`, installable). Phone is the primary target; larger screens
+are an uplift, not the baseline. Design for the small screen first, then add `sm:` overrides.
+
+### Breakpoints (Tailwind default scale)
+- **Base (no prefix) = phone.** Write the phone layout with unprefixed utilities.
+- **`sm:` (≥640px) = the phone→tablet/desktop switch.** This is the app's main breakpoint
+  (e.g. `Modal`: bottom sheet on base, centered card at `sm:`). Prefer `sm:` for the layout shift.
+- `md:` (≥768px) / `lg:` (≥1024px) only when a third tier genuinely helps. Don't over-tier.
+
+### Touch targets
+- **Minimum 44×44px** for any interactive control (Apple HIG; comfortable for thumb). Use `min-h-11`
+  (44px) where padding alone doesn't reach it.
+- Text buttons clear this already (`Button` is `py-3` → ~48px). ✓
+- **Icon-only buttons are the risk.** A 20px icon with `p-2` is only ~36px — below 44. Either bump
+  padding or add hit-slop with negative margin (e.g. `-m-1`) so the tap area ≥44 while the visual
+  stays compact. *(Known gap: `Modal` close button — fix in migration 1.2.)*
+- Space adjacent tap targets ≥8px apart so thumbs don't mis-hit.
+
+### Inputs & iOS
+- **Inputs must be ≥16px text** (`text-base`) — smaller triggers iOS auto-zoom on focus. All current
+  fields comply (`TextField` `text-base`, `AmountInput` `text-2xl`). Keep it.
+- Set honest `inputMode` / `autocomplete` (`AmountInput` uses `inputMode="text"` for arithmetic).
+- Numerals use `tabular-nums` (see §3).
+
+### Safe areas (notch / home bar)
+- Respect `env(safe-area-inset-*)`. Bottom sheets pad the bottom:
+  `pb-[max(1.5rem,env(safe-area-inset-bottom))]` (`Modal` does this). Any fixed top chrome should
+  pad the top inset likewise.
+- `viewport-fit=cover` must be set for insets to resolve (verify in `app/layout.tsx` viewport meta).
+
+### Interaction
+- **No hover-only affordances.** Anything reachable by hover on desktop must be visible/tappable on
+  touch. Use `active:` + `transition-colors` for press feedback; don't rely on `:hover`.
+- Backdrop-tap and Escape both close modals (`Modal` ✓). Swipe-to-dismiss not implemented — future.
+- Respect `prefers-reduced-motion` (e.g. `AmountInput` skips animation). Required for new motion.
+
+### Layout
+- Single-column on phone; reserve slot heights to avoid layout shift (D9/D10).
+- Bottom sheets for primary actions (thumb reach) — already the `Modal` default on base.

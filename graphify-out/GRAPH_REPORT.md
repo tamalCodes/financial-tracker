@@ -1,7 +1,7 @@
 # Graph Report - /Users/tamalcodes/Gh/financial-tracker  (2026-06-27)
 
 ## Corpus Check
-- 86 files · ~54,333 words
+- 86 files · ~55,095 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

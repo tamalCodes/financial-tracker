@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+/*
+ * Semantic design tokens (source of meaning; values map to Tailwind palette).
+ * Spec: specs/DESIGN_SYSTEM.md. Migration log: specs/DESIGN_SYSTEM_MIGRATION.md.
+ * These ADD utilities (text-ink, bg-surface, border-line, text-credit, rounded-control...).
+ * Raw palette utilities (slate, indigo, etc) still work; components migrate to these in Phase 1.1.
+ */
+@theme {
+  /* Text */
+  --color-ink: var(--color-slate-900);      /* primary: headings, input values */
+  --color-body: var(--color-slate-600);     /* body, labels, secondary buttons */
+  --color-muted: var(--color-slate-500);    /* subtitles. NOT slate-400 (contrast) */
+  --color-faint: var(--color-slate-400);    /* placeholders, hints only */
+
+  /* Surfaces & lines */
+  --color-surface: #ffffff;                 /* cards, focused field bg */
+  --color-field: var(--color-slate-50);     /* idle input bg */
+  --color-line: var(--color-slate-200);     /* default borders */
+
+  /* Brand accent (indigo only) */
+  --color-accent: var(--color-indigo-500);
+  --color-accent-strong: var(--color-indigo-600);
+  --color-focus: var(--color-indigo-400);   /* flat focus: border-color only, no ring (D12) */
+
+  /* Semantic transaction palette (user-confirmed; not glass, not collapsible to accent) */
+  --color-credit: var(--color-emerald-600);
+  --color-expense: var(--color-red-600);
+  --color-investment: var(--color-indigo-600); /* currently aliases accent; can split to violet later */
+
+  /* Inline error row */
+  --color-danger: var(--color-red-600);
+  --color-danger-surface: var(--color-red-50);
+
+  /* Radius (spec: control=xl, surface=3xl, pill=full; rounded-2xl drift deferred to redesign) */
+  --radius-control: var(--radius-xl);
+  --radius-surface: var(--radius-3xl);
+  --radius-pill: 9999px;
+
+  /* Spacing rhythm */
+  --spacing-field: 1.25rem;   /* 20px — vertical gap between form fields */
+  --spacing-section: 1.5rem;  /* 24px — modal body horizontal padding */
+}
+
 @layer base {
   html {
     @apply font-sans;

@@ -188,7 +188,7 @@ export default function AmountInput({
   return (
     <div>
       <div className="relative">
-        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl font-medium text-slate-400">
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl font-medium text-faint">
           ₹
         </span>
         <input
@@ -205,12 +205,12 @@ export default function AmountInput({
           onChange={(e) => onChange(e.target.value)}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-9 pr-4 text-2xl font-semibold tabular-nums text-slate-900 caret-indigo-500 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white"
+          className="w-full rounded-control border border-line bg-field py-3.5 pl-9 pr-4 text-2xl font-semibold tabular-nums text-ink caret-indigo-500 outline-none transition-colors duration-150 placeholder:text-faint focus:border-focus focus:bg-surface"
         />
         {calculating && (
           <span
             aria-hidden="true"
-            className="amount-sweep pointer-events-none absolute inset-0 rounded-xl"
+            className="amount-sweep pointer-events-none absolute inset-0 rounded-control"
             style={{
               backgroundImage:
                 "linear-gradient(100deg, transparent 30%, rgb(99 102 241 / 0.14) 50%, transparent 70%)",
@@ -223,7 +223,7 @@ export default function AmountInput({
 
       <p
         aria-live="polite"
-        className="mt-2 h-4 text-sm text-indigo-600 tabular-nums"
+        className="mt-2 h-4 text-sm text-accent-strong tabular-nums"
       >
         {status}
       </p>

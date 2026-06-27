@@ -16,10 +16,10 @@ export function Field({ id, label, hint, children }: FieldProps) {
     <div>
       <label
         htmlFor={id}
-        className="mb-1.5 block text-sm font-medium text-slate-600"
+        className="mb-1.5 block text-sm font-medium text-body"
       >
         {label}
-        {hint && <span className="ml-1 font-normal text-slate-400">{hint}</span>}
+        {hint && <span className="ml-1 font-normal text-faint">{hint}</span>}
       </label>
       {children}
     </div>
@@ -34,7 +34,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <input
         ref={ref}
-        className={`w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white ${className}`}
+        className={`w-full rounded-control border border-line bg-field px-4 py-3 text-base text-ink outline-none transition-colors placeholder:text-faint focus:border-focus focus:bg-surface ${className}`}
         {...props}
       />
     );

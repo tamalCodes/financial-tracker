@@ -84,19 +84,19 @@ export default function TagInput({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition-colors focus-within:border-slate-400 focus-within:bg-white">
+      <div className="flex flex-wrap items-center gap-2 rounded-control border border-line bg-field px-3 py-2.5 transition-colors focus-within:border-faint focus-within:bg-surface">
         {value.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
             style={glassTagStyle(tag)}
-            className="inline-flex items-center gap-1 rounded-full py-1 pl-3 pr-1.5 text-sm font-medium"
+            className="inline-flex items-center gap-1 rounded-pill py-1 pl-3 pr-1.5 text-sm font-medium"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeAt(i)}
               aria-label={`Remove ${tag}`}
-              className="grid h-4 w-4 place-items-center rounded-full text-current opacity-60 transition hover:bg-black/10 hover:opacity-100"
+              className="grid h-4 w-4 place-items-center rounded-pill text-current opacity-60 transition hover:bg-black/10 hover:opacity-100"
             >
               <X className="h-3 w-3" />
             </button>
@@ -110,7 +110,7 @@ export default function TagInput({
           onKeyDown={handleKeyDown}
           onBlur={() => add(draft)}
           placeholder={value.length === 0 ? placeholder : ""}
-          className="min-w-[6rem] flex-1 bg-transparent py-1 text-base outline-none placeholder:text-slate-400"
+          className="min-w-[6rem] flex-1 bg-transparent py-1 text-base outline-none placeholder:text-faint"
         />
       </div>
 
@@ -122,7 +122,7 @@ export default function TagInput({
               type="button"
               onClick={() => add(s)}
               style={glassTagStyle(s)}
-              className="rounded-full px-3 py-1 text-sm font-medium transition hover:brightness-105"
+              className="rounded-pill px-3 py-1 text-sm font-medium transition hover:brightness-105"
             >
               + {s}
             </button>
