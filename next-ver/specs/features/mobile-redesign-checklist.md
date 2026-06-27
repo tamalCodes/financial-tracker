@@ -22,7 +22,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B6 | Backend verify gate | ✅ done | `e801101` |
 | F0 | Tokens & fonts | ✅ done | `abe76b8` |
 | F1 | Greeting + HeroBalance | ✅ done | `abe76b8` |
-| F2 | Transactions card | ✅ done | (this commit) |
+| F2 | Transactions card | ✅ done | `7498ffe` |
 | F3 | Floating bar + AddSheet | ⬜ todo | — |
 | F4 | Bills & EMIs card | ⬜ todo | — |
 | F5 | Investments panel | ⬜ todo | — |
