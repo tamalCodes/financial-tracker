@@ -16,7 +16,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B0 | Schema & migrations | ✅ done | `3edfc40` |
 | B1 | Money-model rewrite | ✅ done | `3edfc40` |
 | B2 | Expense category | ✅ done (folded) | `3edfc40` |
-| B3 | Bills route | ✅ done | `65e4bf1` |
+| B3 | Bills route | ✅ done | `cc3997d` |
 | B4 | Investments per-month | ✅ done (folded) | `3edfc40` |
 | B5 | Portfolio routes (holdings/sips/total) | ⬜ todo | — |
 | B6 | Backend verify gate | ⬜ todo | — |
