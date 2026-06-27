@@ -4,7 +4,7 @@ Companion to [mobile-redesign.md](./mobile-redesign.md) (the plan). **This is th
 truth for status.** Update checkboxes as work lands; keep the "Last updated" line current.
 Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked.
 
-**Last updated:** F0+F1 done (Geist+tokens, GreetingHeader+HeroBalance, starting-balance removed). `verify` green. Next: F2.
+**Last updated:** F2 done (Recent payments card + category pills). `verify` green. Next: F3.
 **Branch:** `main` only (repo `CLAUDE.md` — never branch).
 
 ---
@@ -22,7 +22,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B6 | Backend verify gate | ✅ done | `e801101` |
 | F0 | Tokens & fonts | ✅ done | `abe76b8` |
 | F1 | Greeting + HeroBalance | ✅ done | `abe76b8` |
-| F2 | Transactions card | ⬜ todo | — |
+| F2 | Transactions card | ✅ done | (this commit) |
 | F3 | Floating bar + AddSheet | ⬜ todo | — |
 | F4 | Bills & EMIs card | ⬜ todo | — |
 | F5 | Investments panel | ⬜ todo | — |
@@ -122,10 +122,14 @@ High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `s
 - [ ] retire deprecated `MonthlyBalance` type — still used by 3 legacy forms (retire in F3)
 - [~] starting-balance state still in `useDashboardState` (unused) — prune in F6
 
-## F2 — Transactions (Recent payments) ⬜
-- [ ] reskin expenses list: count subtitle, red total pill, no minus sign
-- [ ] category pill from `expense.category` (glass tint per category)
-- [ ] `TransactionList`/`TransactionSection` reuse or replace
+## F2 — Transactions (Recent payments) ✅
+- [x] `Transactions.tsx` card: "Recent payments" + "{count} this month · newest first" + red total pill, **no minus sign**
+- [x] category pill from `expense.category` via `--color-cat-*` / `--cat-*` glass tint
+- [x] `formatTxnDate` ("Today" / "25 Jun") added to `dates.ts`
+- [x] row tap → edit (ExpenseForm); subtle trash → delete + reload
+- [x] wired into `Dashboard.tsx` (replaced Expenses `TransactionSection`)
+- [~] Credits + Investments `TransactionSection`s still rendered below (legacy) — removed in F6 compose (not in cloth home)
+- [~] old `TransactionList`/`TransactionSection` retire after F6
 
 ## F3 — Floating bar + AddSheet (unify 3 forms) ⬜
 - [ ] `FloatingActionBar` (fixed bottom-center frosted pill, 3 circular buttons, safe-area)

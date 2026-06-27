@@ -18,6 +18,21 @@ export const shiftMonthKey = (key: string, delta: number) => {
   return formatMonthKey(date);
 };
 
+// Mobile handoff style: "Today" for today, else "25 Jun" (no ordinal suffix).
+export const formatTxnDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return "";
+  const now = new Date();
+  if (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  ) {
+    return "Today";
+  }
+  return `${date.getDate()} ${date.toLocaleDateString("en-IN", { month: "short" })}`;
+};
+
 export const formatExpenseDate = (isoDate: string) => {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) {

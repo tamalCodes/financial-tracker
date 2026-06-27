@@ -3,6 +3,7 @@
 import { useState } from "react";
 import GreetingHeader from "@/features/dashboard/components/GreetingHeader";
 import HeroBalance from "@/features/dashboard/components/HeroBalance";
+import Transactions from "@/features/dashboard/components/Transactions";
 import TransactionSection from "@/features/dashboard/components/TransactionSection";
 import TransactionList from "@/features/dashboard/components/TransactionList";
 import CreditForm from "@/features/dashboard/components/CreditForm";
@@ -10,7 +11,7 @@ import ExpenseForm from "@/features/dashboard/components/ExpenseForm";
 import InvestmentForm from "@/features/dashboard/components/InvestmentForm";
 import { formatCurrency } from "@/features/dashboard/utils/format";
 import { formatExpenseDate } from "@/features/dashboard/utils/dates";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useLockBodyScroll } from "@/features/shared/hooks/useLockBodyScroll";
@@ -73,38 +74,23 @@ export default function Dashboard() {
               onPrev={() => handleChangeMonth("prev")}
               onNext={() => handleChangeMonth("next")}
             />
-            <TransactionSection
-              title="Expenses"
-              icon={<TrendingDown className="h-5 w-5 text-red-600" />}
-              canEdit={canEditCurrentMonth}
-              onAdd={() => {
-                setEditingExpense(null);
+            <Transactions
+              expenses={expenses}
+              onSelect={(id) => {
+                const expenseToEdit = expenses.find((item) => item.id === id);
+                if (!expenseToEdit || !canEditCurrentMonth) return;
+                setEditingExpense(expenseToEdit);
                 setShowExpenseForm(true);
               }}
-              isEmpty={expenses.length === 0}
-              emptyText="No expenses recorded"
-            >
-              <TransactionList
-                items={expenses}
-                type="expense"
-                onDelete={async (id) => {
-                  const res = await fetch(`/api/expenses?id=${id}`, {
-                    method: "DELETE",
-                  });
-                  if (!res.ok) return;
-                  removeExpense(id);
-                  reload();
-                }}
-                formatCurrency={formatCurrency}
-                onSelect={(id) => {
-                  const expenseToEdit = expenses.find((item) => item.id === id);
-                  if (!expenseToEdit) return;
-                  setEditingExpense(expenseToEdit);
-                  setShowExpenseForm(true);
-                }}
-                formatDate={formatExpenseDate}
-              />
-            </TransactionSection>
+              onDelete={async (id) => {
+                const res = await fetch(`/api/expenses?id=${id}`, {
+                  method: "DELETE",
+                });
+                if (!res.ok) return;
+                removeExpense(id);
+                reload();
+              }}
+            />
             <TransactionSection
               title="Credits"
               icon={<TrendingUp className="h-5 w-5 text-emerald-600" />}
