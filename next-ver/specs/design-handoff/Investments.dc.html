@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Geist:wght@400..600&display=swap" rel="stylesheet">
+</helmet>
+<div style="font-family:'Geist',system-ui,sans-serif;background:#fff;border:1px solid #e2e8f0;border-radius:28px;box-shadow:0 1px 2px rgba(15,23,42,0.04),0 14px 30px -22px rgba(15,23,42,0.30);padding:24px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span style="font:500 12.5px 'Geist';color:#64748b">Portfolio value</span>
+    <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:30px;letter-spacing:-0.025em;color:#0f172a;font-variant-numeric:tabular-nums">₹{{ portfolioTotal }}</span>
+  </div>
+
+  <div style="display:flex;gap:4px;background:#f1f5f9;border-radius:13px;padding:4px">
+    <button onClick="{{ selHoldings }}" style="flex:1;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:12.5px;border:none;border-radius:9px;padding:9px 0;transition:all .15s;{{ holdingsBtn }}">Holdings</button>
+    <button onClick="{{ selSips }}" style="flex:1;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:12.5px;border:none;border-radius:9px;padding:9px 0;transition:all .15s;{{ sipsBtn }}">Active SIPs</button>
+  </div>
+
+  <sc-if value="{{ showHoldings }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <span style="font:600 11px 'Bricolage Grotesque';letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8">Fixed Deposits</span>
+        <sc-for list="{{ fds }}" as="fd" hint-placeholder-count="1">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;border-bottom:1px solid #f1f5f9">
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <span style="font:600 13.5px 'Geist';color:#0f172a">{{ fd.name }}</span>
+              <span style="font:500 11px 'Geist';color:#94a3b8">{{ fd.sub }}</span>
+            </div>
+            <span style="font:600 14px 'Bricolage Grotesque';color:#0f172a;font-variant-numeric:tabular-nums;flex:none">₹{{ fd.amount }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <span style="font:600 11px 'Bricolage Grotesque';letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8">Mutual Funds</span>
+        <sc-for list="{{ funds }}" as="fund" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;border-bottom:1px solid #f1f5f9">
+            <span style="font:600 13.5px 'Geist';color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ fund.name }}</span>
+            <span style="font:600 14px 'Bricolage Grotesque';color:#0f172a;font-variant-numeric:tabular-nums;flex:none">₹{{ fund.current }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showSips }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <span style="font:600 11px 'Bricolage Grotesque';letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8">Active SIPs</span>
+      <sc-for list="{{ sips }}" as="sip" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;border-bottom:1px solid #f1f5f9">
+          <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+            <span style="font:600 13.5px 'Geist';color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sip.name }}</span>
+            <span style="font:500 11px 'Geist';color:#94a3b8">Due {{ sip.due }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none">
+            <span style="font:600 14px 'Bricolage Grotesque';color:#0f172a;font-variant-numeric:tabular-nums">₹{{ sip.monthly }}/mo</span>
+            <span style="font:500 11px 'Geist';color:#94a3b8;font-variant-numeric:tabular-nums">Paid ₹{{ sip.paid }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:480},&quot;portfolioTotal&quot;:{&quot;default&quot;:&quot;6,51,500&quot;},&quot;fds&quot;:{&quot;editor&quot;:null},&quot;funds&quot;:{&quot;editor&quot;:null},&quot;sips&quot;:{&quot;editor&quot;:null}}">
+class Component extends DCLogic {
+  state = { tab: 'holdings' };
+  renderVals() {
+    const tab = this.state.tab;
+    const active = 'background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,0.12)';
+    const idle = 'background:transparent;color:#64748b';
+    return {
+      portfolioTotal: this.props.portfolioTotal ?? '6,51,500',
+      fds: this.props.fds ?? [],
+      funds: this.props.funds ?? [],
+      sips: this.props.sips ?? [],
+      showHoldings: tab === 'holdings',
+      showSips: tab === 'sips',
+      holdingsBtn: tab === 'holdings' ? active : idle,
+      sipsBtn: tab === 'sips' ? active : idle,
+      selHoldings: () => this.setState({ tab: 'holdings' }),
+      selSips: () => this.setState({ tab: 'sips' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

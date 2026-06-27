@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Geist:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:#e9edf2}
+  button{font-family:inherit}
+  input{font-family:inherit}
+  ::-webkit-scrollbar{width:0;height:0}
+</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef);padding:44px 18px 80px;display:flex;flex-direction:column;align-items:center;gap:46px;font-family:'Geist',system-ui,sans-serif">
+
+  <!-- ============ MOBILE ============ -->
+  <sc-if value="{{ showPhone }}" hint-placeholder-val="{{ true }}">
+    <div style="width:412px;max-width:100%;display:flex;flex-direction:column;gap:11px">
+      <span style="font:600 12px 'Bricolage Grotesque';letter-spacing:0.04em;color:#64748b;padding-left:6px">MOBILE · primary PWA</span>
+      <div style="position:relative;width:100%;background:#0f172a;border-radius:52px;padding:11px;box-shadow:0 40px 80px -30px rgba(15,23,42,0.45)">
+        <div style="position:relative;background:#f1f5f9;border-radius:42px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 6px">
+            <span style="font:600 14px 'Geist';color:#0f172a;font-variant-numeric:tabular-nums">9:41</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <svg width="17" height="12" viewBox="0 0 17 12" fill="#0f172a"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1"/><rect x="9" y="2" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.35"/></svg>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#0f172a" stroke-width="1.4" stroke-linecap="round"><path d="M1 4.5c4-3.2 10-3.2 14 0"/><path d="M3.5 7c2.8-2.1 6.2-2.1 9 0"/><path d="M8 9.7h.01"/></svg>
+              <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#0f172a" opacity="0.4"/><rect x="2" y="2" width="16" height="8" rx="1.5" fill="#0f172a"/><rect x="23" y="4" width="1.5" height="4" rx="0.75" fill="#0f172a" opacity="0.4"/></svg>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px 14px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <span style="font:500 12.5px 'Geist';color:#94a3b8">Good evening</span>
+              <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:19px;letter-spacing:-0.01em;color:#0f172a">Arjun Kapoor</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="display:flex;align-items:center;gap:5px;font:600 12px 'Bricolage Grotesque';color:#4338ca;background:linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10));border:1px solid rgba(99,102,241,0.36);border-radius:999px;padding:6px 11px;white-space:nowrap">{{ month }}</span>
+              <span style="width:40px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:600 14px 'Bricolage Grotesque';color:#4338ca;background:linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16));border:1px solid rgba(99,102,241,0.45)">AK</span>
+            </div>
+          </div>
+          <div style="padding:4px 16px 104px;display:flex;flex-direction:column;gap:16px">
+            <dc-import name="HeroBalance" style="display:block" net="{{ netStr }}" month="{{ month }}" on-prev="{{ prevMonth }}" on-next="{{ nextMonth }}" earned="{{ earnedStr }}" spent="{{ spentStr }}" invested="{{ investedStr }}" hint-size="100%,190px"></dc-import>
+            <dc-import name="Transactions" style="display:block" transactions="{{ txView }}" count="{{ txCount }}" logged="{{ loggedStr }}" hint-size="100%,360px"></dc-import>
+            <dc-import name="BillsEmis" style="display:block" bills="{{ bills }}" due-total="{{ dueTotal }}" paid-total="{{ paidTotal }}" hint-size="100%,430px"></dc-import>
+            <dc-import name="Investments" style="display:block" portfolio-total="6,51,500" fds="{{ fds }}" funds="{{ funds }}" sips="{{ sips }}" hint-size="100%,490px"></dc-import>
+            <div style="position:absolute;left:0;right:0;bottom:34px;z-index:40;display:flex;justify-content:center;pointer-events:none">
+              <div style="pointer-events:auto;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.82);backdrop-filter:blur(18px) saturate(1.8);-webkit-backdrop-filter:blur(18px) saturate(1.8);border:1px solid rgba(226,232,240,0.95);border-radius:999px;padding:9px;box-shadow:0 22px 48px -14px rgba(15,23,42,0.45),0 2px 8px rgba(15,23,42,0.06)">
+                <button onClick="{{ addExpense }}" style="cursor:pointer;display:flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:999px;background:linear-gradient(135deg,rgba(239,68,68,0.26),rgba(239,68,68,0.13));border:1px solid rgba(239,68,68,0.42)"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v12"/><path d="M5 11l5 5 5-5"/></svg></button>
+                <button onClick="{{ addIncome }}" style="cursor:pointer;display:flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:999px;background:linear-gradient(135deg,rgba(16,185,129,0.28),rgba(16,185,129,0.14));border:1px solid rgba(16,185,129,0.45)"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16V4"/><path d="M5 9l5-5 5 5"/></svg></button>
+                <button onClick="{{ addInvest }}" style="cursor:pointer;display:flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:999px;background:linear-gradient(135deg,rgba(139,92,246,0.26),rgba(139,92,246,0.13));border:1px solid rgba(139,92,246,0.42)"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14l5-5 3 3 6-7"/><path d="M14 5h4v4"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;padding:7px 0 9px;background:#fff;border-top:1px solid #f1f5f9"><span style="width:128px;height:5px;border-radius:999px;background:#cbd5e1"></span></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ DESKTOP ============ -->
+  <sc-if value="{{ showDesktop }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1180px;max-width:100%;display:flex;flex-direction:column;gap:11px">
+      <span style="font:600 12px 'Bricolage Grotesque';letter-spacing:0.04em;color:#64748b;padding-left:6px">DESKTOP · uplift</span>
+      <div style="position:relative;background:#f1f5f9;border-radius:26px;border:1px solid #e2e8f0;box-shadow:0 40px 80px -38px rgba(15,23,42,0.40);padding:26px 28px 30px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:22px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16));border:1px solid rgba(99,102,241,0.45)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4338ca" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l4-4 3 3 5-6"/></svg></span>
+            <div style="display:flex;flex-direction:column;gap:1px">
+              <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;letter-spacing:-0.01em;color:#0f172a">Overview</span>
+              <span style="font:500 12.5px 'Geist';color:#94a3b8">Good evening, Arjun · {{ month }}</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font:600 12.5px 'Bricolage Grotesque';color:#4338ca;background:linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.09));border:1px solid rgba(99,102,241,0.34);border-radius:999px;padding:8px 14px">{{ month }}</span>
+            <span style="width:42px;height:42px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:600 14px 'Bricolage Grotesque';color:#4338ca;background:linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16));border:1px solid rgba(99,102,241,0.45)">AK</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.32fr 1fr;gap:20px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <dc-import name="HeroBalance" style="display:block" net="{{ netStr }}" month="{{ month }}" on-prev="{{ prevMonth }}" on-next="{{ nextMonth }}" earned="{{ earnedStr }}" spent="{{ spentStr }}" invested="{{ investedStr }}" hint-size="100%,190px"></dc-import>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <span style="font:600 11px 'Bricolage Grotesque';letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8;padding-left:2px">Quick actions</span>
+              <dc-import name="QuickActions" style="display:block" on-action="{{ onAction }}" hint-size="100%,96px"></dc-import>
+            </div>
+            <dc-import name="Transactions" style="display:block" transactions="{{ txView }}" count="{{ txCount }}" logged="{{ loggedStr }}" hint-size="100%,360px"></dc-import>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <dc-import name="BillsEmis" style="display:block" bills="{{ bills }}" due-total="{{ dueTotal }}" paid-total="{{ paidTotal }}" hint-size="100%,430px"></dc-import>
+            <dc-import name="Investments" style="display:block" portfolio-total="6,51,500" fds="{{ fds }}" funds="{{ funds }}" sips="{{ sips }}" hint-size="100%,490px"></dc-import>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ ADD SHEET (single, fixed) ============ -->
+  <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSheet }}" style="position:fixed;inset:0;z-index:40;background:rgba(15,23,42,0.40);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center">
+      <div onClick="{{ stop }}" style="width:460px;max-width:100%;background:#fff;border-radius:30px 30px 0 0;box-shadow:0 -18px 60px -18px rgba(15,23,42,0.45)">
+        <dc-import name="AddSheet" style="display:block" title="{{ sheetTitle }}" save-label="{{ sheetSave }}" note-label="{{ noteLabel }}" note-placeholder="{{ notePh }}" is-expense="{{ isExpense }}" amount="{{ formAmount }}" note="{{ formNote }}" categories="{{ categories }}" on-amount="{{ setAmount }}" on-note="{{ setNote }}" on-save="{{ saveEntry }}" on-close="{{ closeSheet }}" hint-size="100%,520px"></dc-import>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:900},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Phone&quot;,&quot;Desktop&quot;,&quot;Both&quot;],&quot;default&quot;:&quot;Phone&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;monthlySalary&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:184500,&quot;min&quot;:60000,&quot;max&quot;:500000,&quot;step&quot;:5000,&quot;unit&quot;:&quot;₹&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Money model&quot;},&quot;autoInvest&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:30000,&quot;min&quot;:0,&quot;max&quot;:120000,&quot;step&quot;:2500,&quot;unit&quot;:&quot;₹&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Money model&quot;}}">
+class Component extends DCLogic {
+  state = {
+    paid: {},
+    sheet: null,
+    formAmount: '',
+    formNote: '',
+    formCat: 'food',
+    extraIncome: 0,
+    extraInvest: 0,
+    monthIdx: 3,
+    txs: [
+      { merchant: 'Swiggy Instamart', cat: 'food',      amount: 642,  date: 'Today' },
+      { merchant: 'Myntra',           cat: 'shopping',  amount: 3499, date: '25 Jun' },
+      { merchant: 'Uber',             cat: 'transport', amount: 318,  date: '25 Jun' },
+      { merchant: 'Apollo Pharmacy',  cat: 'health',    amount: 1240, date: '24 Jun' },
+      { merchant: 'Zomato',           cat: 'food',      amount: 880,  date: '22 Jun' },
+      { merchant: 'Reliance Trends',  cat: 'shopping',  amount: 4200, date: '21 Jun' },
+    ],
+  };
+
+  CATS = [
+    { key: 'food',      label: 'Food',      rgb: '245,158,11',  text: '#b45309' },
+    { key: 'shopping',  label: 'Shopping',  rgb: '139,92,246',  text: '#6d28d9' },
+    { key: 'transport', label: 'Transport', rgb: '14,165,233',  text: '#0369a1' },
+    { key: 'health',    label: 'Health',    rgb: '16,185,129',  text: '#047857' },
+    { key: 'groceries', label: 'Groceries', rgb: '20,184,166',  text: '#0f766e' },
+    { key: 'other',     label: 'Other',     rgb: '100,116,139', text: '#475569' },
+  ];
+
+  catOf(key) { return this.CATS.find(c => c.key === key) || this.CATS[5]; }
+
+  pay(id) { this.setState(s => ({ paid: { ...s.paid, [id]: true } })); }
+
+  saveEntry() {
+    const amt = parseInt((this.state.formAmount || '').replace(/[^0-9]/g, ''), 10);
+    if (!amt) return;
+    const mode = this.state.sheet;
+    const note = (this.state.formNote || '').trim();
+    if (mode === 'expense') {
+      const c = this.catOf(this.state.formCat);
+      const tx = { merchant: note || c.label, cat: c.key, amount: amt, date: 'Today' };
+      this.setState(s => ({ txs: [tx, ...s.txs], sheet: null, formAmount: '', formNote: '' }));
+    } else if (mode === 'income') {
+      this.setState(s => ({ extraIncome: s.extraIncome + amt, sheet: null, formAmount: '', formNote: '' }));
+    } else {
+      this.setState(s => ({ extraInvest: s.extraInvest + amt, sheet: null, formAmount: '', formNote: '' }));
+    }
+  }
+
+  renderVals() {
+    const fmt = n => new Intl.NumberFormat('en-IN').format(Math.max(0, Math.round(n)));
+    const salary = Number(this.props.monthlySalary ?? 184500);
+    const autoInvest = Number(this.props.autoInvest ?? 30000);
+    const view = this.props.view || 'Both';
+    const MONTHS = ['March 2026','April 2026','May 2026','June 2026','July 2026'];
+    const mi = Math.min(MONTHS.length - 1, Math.max(0, this.state.monthIdx));
+
+    const SPENT_BASE = 86461;
+    const loggedSum = this.state.txs.reduce((s, t) => s + t.amount, 0);
+    const earned = salary + this.state.extraIncome;
+    const invested = autoInvest + this.state.extraInvest;
+    const spent = SPENT_BASE + loggedSum;
+    const net = earned - spent - invested;
+
+    const txView = this.state.txs.map(t => {
+      const c = this.catOf(t.cat);
+      return { merchant: t.merchant, category: c.label, date: t.date, amount: fmt(t.amount), rgb: c.rgb, text: c.text };
+    });
+
+    const ICON = {
+      card: 'M3 6h14v8H3z M3 9h14',
+      bolt: 'M11 2 5 11h4l-1 5 6-8h-4l1-6z',
+      home: 'M3 9l7-5 7 5 M5 8v8h10V8',
+      car:  'M3 11l2-4h10l2 4 M3 11h14v3H3z',
+      wifi: 'M3 8c4-3 10-3 14 0 M6 11c2.5-2 5.5-2 8 0 M10 14h.01',
+      flame:'M10 3c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 2-3 2-5 1 1 2 1 2 2z',
+    };
+    const defs = [
+      { id:'cc',   name:'HDFC Credit Card', issuer:'HDFC Regalia', amount:14200, due:'25 Jun', overdue:true,  icon:ICON.card },
+      { id:'elec', name:'Electricity',      issuer:'BESCOM',       amount:2340,  due:'28 Jun', overdue:false, icon:ICON.bolt },
+      { id:'home', name:'Home Loan EMI',    issuer:'HDFC Bank',    amount:28450, due:'05 Jul', overdue:false, icon:ICON.home },
+      { id:'car',  name:'Car Loan EMI',     issuer:'ICICI Bank',   amount:11800, due:'07 Jul', overdue:false, icon:ICON.car },
+      { id:'net',  name:'Broadband',        issuer:'ACT Fibernet', amount:1199,  due:'02 Jul', overdue:false, icon:ICON.wifi },
+      { id:'gas',  name:'Piped Gas',        issuer:'GAIL Gas',     amount:620,   due:'18 Jun', overdue:false, icon:ICON.flame, paidDefault:true },
+    ];
+    const isPaid = b => this.state.paid[b.id] ?? !!b.paidDefault;
+    const bills = defs.map(b => {
+      const paid = isPaid(b);
+      return { id:b.id, name:b.name, due:b.due, icon:b.icon, amount: fmt(b.amount), paid, unpaid: !paid, onPay: () => this.pay(b.id) };
+    });
+    const due = defs.reduce((s,b) => isPaid(b) ? s : s + b.amount, 0);
+    const paidThisMonth = defs.reduce((s,b) => isPaid(b) ? s + b.amount : s, 0);
+
+    const fds = [
+      { name:'SBI Fixed Deposit',  sub:'7.10% p.a. · matures 14 Mar 2027', amount:'2,00,000' },
+      { name:'ICICI Tax-Saver FD', sub:'6.90% p.a. · matures 02 Aug 2028', amount:'1,50,000' },
+    ];
+    const funds = [
+      { name:'UTI Nifty 50 Index Fund', invested:'1,20,000', current:'1,38,400', pct:'15.3%', up:true,  down:false },
+      { name:'Parag Parikh Flexi Cap',  invested:'90,000',   current:'84,200',   pct:'6.4%',  up:false, down:true  },
+      { name:'Quant Small Cap',         invested:'60,000',   current:'78,900',   pct:'31.5%', up:true,  down:false },
+    ];
+    const sips = [
+      { name:'UTI Nifty 50 Index Fund', monthly:'10,000', due:'05 Jul', paid:'1,20,000' },
+      { name:'Parag Parikh Flexi Cap',  monthly:'7,500',  due:'10 Jul', paid:'90,000' },
+      { name:'Quant Small Cap',         monthly:'5,000',  due:'15 Jul', paid:'60,000' },
+    ];
+
+    const mode = this.state.sheet;
+    const titles = { expense:'Add expense', income:'Add income', investment:'Add investment' };
+    const saves  = { expense:'Add expense', income:'Add income', investment:'Add investment' };
+    const noteLabels = { expense:'Note', income:'Source', investment:'Fund' };
+    const notePhs = { expense:'e.g. Swiggy dinner', income:'e.g. June salary', investment:'e.g. UTI Nifty 50 SIP' };
+    const categories = this.CATS.map(c => ({
+      label: c.label, rgb: c.rgb, text: c.text,
+      selected: c.key === this.state.formCat,
+      idle: c.key !== this.state.formCat,
+      onSelect: () => this.setState({ formCat: c.key }),
+    }));
+
+    return {
+      showPhone: view !== 'Desktop',
+      showDesktop: view !== 'Phone',
+      netStr: fmt(net),
+      month: MONTHS[mi],
+      prevMonth: () => this.setState(s => ({ monthIdx: Math.max(0, s.monthIdx - 1) })),
+      nextMonth: () => this.setState(s => ({ monthIdx: Math.min(4, s.monthIdx + 1) })),
+      earnedStr: fmt(earned),
+      spentStr: fmt(spent),
+      investedStr: fmt(invested),
+      txView,
+      txCount: String(this.state.txs.length),
+      loggedStr: fmt(loggedSum),
+      bills,
+      dueTotal: fmt(due),
+      paidTotal: fmt(paidThisMonth),
+      fds, funds, sips,
+      onAction: (a) => this.setState({ sheet: a, formAmount: '', formNote: '' }),
+      addExpense: () => this.setState({ sheet: 'expense', formAmount: '', formNote: '' }),
+      addIncome: () => this.setState({ sheet: 'income', formAmount: '', formNote: '' }),
+      addInvest: () => this.setState({ sheet: 'investment', formAmount: '', formNote: '' }),
+      closeSheet: () => this.setState({ sheet: null }),
+      stop: (e) => e.stopPropagation(),
+      sheetOpen: !!mode,
+      sheetTitle: titles[mode] || '',
+      sheetSave: saves[mode] || 'Save',
+      noteLabel: noteLabels[mode] || 'Note',
+      notePh: notePhs[mode] || '',
+      isExpense: mode === 'expense',
+      formAmount: this.state.formAmount,
+      formNote: this.state.formNote,
+      categories,
+      setAmount: (e) => this.setState({ formAmount: e.target.value.replace(/[^0-9]/g, '') }),
+      setNote: (e) => this.setState({ formNote: e.target.value }),
+      saveEntry: () => this.saveEntry(),
+    };
+  }
+}
+</script>
+</body>
+</html>

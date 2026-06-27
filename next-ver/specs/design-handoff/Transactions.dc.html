@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Geist:wght@400..600&display=swap" rel="stylesheet">
+</helmet>
+<div style="font-family:'Geist',system-ui,sans-serif;background:#fff;border:1px solid #e2e8f0;border-radius:28px;box-shadow:0 1px 2px rgba(15,23,42,0.04),0 14px 30px -22px rgba(15,23,42,0.30);padding:22px 22px 10px;display:flex;flex-direction:column;gap:2px">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:8px">
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:16px;color:#0f172a">Recent payments</span>
+      <span style="font:500 12px 'Geist';color:#94a3b8">{{ count }} this month · newest first</span>
+    </div>
+    <span style="display:inline-flex;align-items:center;gap:5px;font:600 11.5px 'Bricolage Grotesque';color:#b91c1c;background:linear-gradient(135deg,rgba(239,68,68,0.18),rgba(239,68,68,0.09));border:1px solid rgba(239,68,68,0.34);border-radius:999px;padding:5px 10px;font-variant-numeric:tabular-nums;white-space:nowrap">₹{{ logged }}</span>
+  </div>
+  <sc-for list="{{ transactions }}" as="tx" hint-placeholder-count="5">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 1px;border-top:1px solid #f1f5f9">
+      <div style="display:flex;flex-direction:column;gap:5px;min-width:0">
+        <span style="font:600 14px 'Geist';color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tx.merchant }}</span>
+        <div style="display:flex;align-items:center;gap:7px;min-width:0">
+          <span style="flex:none;font:600 10.5px 'Bricolage Grotesque';color:{{ tx.text }};background:rgba({{ tx.rgb }},0.13);border:1px solid rgba({{ tx.rgb }},0.28);border-radius:999px;padding:2px 8px">{{ tx.category }}</span>
+          <span style="font:500 11.5px 'Geist';color:#94a3b8">{{ tx.date }}</span>
+        </div>
+      </div>
+      <span style="flex:none;font:600 14px 'Bricolage Grotesque';color:#b91c1c;font-variant-numeric:tabular-nums">₹{{ tx.amount }}</span>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:380},&quot;transactions&quot;:{&quot;editor&quot;:null},&quot;count&quot;:{&quot;default&quot;:&quot;6&quot;},&quot;logged&quot;:{&quot;default&quot;:&quot;10,779&quot;}}"></script>
+</body>
+</html>
