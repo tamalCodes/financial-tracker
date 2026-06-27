@@ -4,7 +4,7 @@ Companion to [mobile-redesign.md](./mobile-redesign.md) (the plan). **This is th
 truth for status.** Update checkboxes as work lands; keep the "Last updated" line current.
 Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked.
 
-**Last updated:** after commit `3edfc40` (backend money core).
+**Last updated:** after B3 bills route. Migration applied to live Supabase ✅.
 **Branch:** `main` only (repo `CLAUDE.md` — never branch).
 
 ---
@@ -16,7 +16,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | B0 | Schema & migrations | ✅ done | `3edfc40` |
 | B1 | Money-model rewrite | ✅ done | `3edfc40` |
 | B2 | Expense category | ✅ done (folded) | `3edfc40` |
-| B3 | Bills route | ⬜ todo | — |
+| B3 | Bills route | ✅ done | `65e4bf1` |
 | B4 | Investments per-month | ✅ done (folded) | `3edfc40` |
 | B5 | Portfolio routes (holdings/sips/total) | ⬜ todo | — |
 | B6 | Backend verify gate | ⬜ todo | — |
@@ -29,7 +29,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 | F6 | Compose home + verify | ⬜ todo | — |
 
 **Blockers / external:**
-- ⏸ **Migration `001_mobile_redesign.sql` NOT applied to live Supabase** — agent cannot apply (no creds; won't touch DB). User must run it before new routes/UI work end-to-end. New tables: `bills`, `holdings`, `sips`, `portfolio_totals`; altered: `expenses` (+category), `investments` (+month).
+- [x] ✅ Migration `001_mobile_redesign.sql` applied to live Supabase (verified: `expenses.category` + `bills`/`holdings`/`sips`/`portfolio_totals` present).
 - Open sub-decision (assumed NO): SIP/holding payments do **not** feed the monthly "Invested" tile (confirm before B5/F5).
 
 ---
@@ -50,7 +50,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 - [x] `src/features/dashboard/types/types.ts` (Bill/Holding/Sip/MonthSummary; Expense.category; Investment.month; MonthlyBalance kept deprecated)
 - [x] `specs/DATA_MODEL.md` rewritten (cumulative money model)
 - [x] `specs/DECISIONS.md` D13/D14/D15
-- [ ] **User: apply migration to live Supabase** ⏸
+- [x] **migration applied to live Supabase** ✅
 
 ## B1 — Money-model rewrite ✅
 - [x] delete `src/lib/api/balances.ts` (applyBalanceDelta/calculateClosingBalance/updateClosingBalance/createStartingBalance)
@@ -71,16 +71,17 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 - [x] `src/app/api/investments/route.ts`: per-month `month` insert; hard DELETE; added PUT; de-balanced; removed start_month/is_active/carry_forward logic
 - [x] `select` = `id, description, amount, month, created_at`
 
-## B3 — Bills route ⬜
-- [ ] `src/lib/api/schemas.ts`: `billCreateSchema` `{currentMonth, name, amount, due_date?}`, `billPatchSchema` `{id, paid}`
-- [ ] `src/app/api/bills/route.ts`:
-  - [ ] GET `?month=` (user-scoped, order due_date)
-  - [ ] POST create
-  - [ ] PATCH toggle `paid`
-  - [ ] DELETE `?id=`
-  - [ ] conventions: rateLimit `bills:{get,post,patch,delete}`, requireUser, validate, handleError, `.eq("user_id")`
-- [ ] vitest: pay toggles paid; paidTotal recompute; paid bill raises spent_m; unpaid excluded; ownership
-- [ ] dashboard already returns `bills` (B1) — verify shape
+## B3 — Bills route ✅
+- [x] `src/lib/api/schemas.ts`: `billCreateSchema` `{currentMonth, name, amount, due_date?}`, `billPatchSchema` `{id, paid}`
+- [x] `src/app/api/bills/route.ts`:
+  - [x] GET `?month=` (user-scoped, order due_date) → `{ items }`
+  - [x] POST create → `{ item }`
+  - [x] PATCH toggle `paid` → `{ item }` / 404
+  - [x] DELETE `?id=` → `{ ok: true }`
+  - [x] conventions: rateLimit `bills:{get,post,patch,delete}`, requireUser, validate, handleError, `.eq("user_id")`
+- [x] paid-bill → spent_m / Left-in-bank logic covered by `dashboard.test.ts` (4 cases)
+- [~] route-handler unit tests deferred → B6 (repo has no route-handler harness yet; same gap as credits/expenses/investments, WHATS_LEFT Track B #2)
+- [x] dashboard returns `bills` (B1) — shape verified
 
 ## B5 — Portfolio routes (manual) ⬜
 - [ ] schemas: holding/sip/portfolioTotal create+update

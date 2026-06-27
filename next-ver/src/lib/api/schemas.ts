@@ -40,6 +40,20 @@ export const mutationUpdateSchema = z.object({
   tags,
 });
 
+/** POST body for bills. `due_date` is a display string (e.g. '25 Jun'). */
+export const billCreateSchema = z.object({
+  currentMonth: month,
+  name: z.string().min(1),
+  amount,
+  due_date: z.string().trim().max(32).optional(),
+});
+
+/** PATCH body for bills — toggle paid. */
+export const billPatchSchema = z.object({
+  id: z.string().min(1),
+  paid: z.boolean(),
+});
+
 /**
  * Parse `data` against `schema`. On failure, throws a 400 NextResponse
  * (caught by handleError, keeping the standard error shape). On success,
