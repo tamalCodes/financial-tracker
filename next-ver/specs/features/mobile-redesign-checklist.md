@@ -30,7 +30,7 @@ Convention: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocke
 
 **Blockers / external:**
 - [x] ✅ Migration `001_mobile_redesign.sql` applied to live Supabase (verified: `expenses.category` + `bills`/`holdings`/`sips`/`portfolio_totals` present).
-- Open sub-decision (assumed NO): SIP/holding payments do **not** feed the monthly "Invested" tile (confirm before B5/F5).
+- [x] ✅ All design-gap decisions resolved (see "Design gaps surfaced — RESOLVED" below). PART C unblocked.
 
 ---
 
@@ -137,7 +137,8 @@ High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `s
 - [ ] `BillsEmis` card: unpaid row (line icon + name + Due + amount + Pay pill) / paid row (check + strikethrough + "Paid")
 - [ ] "Paid this month" total recomputes
 - [ ] optimistic Pay → PATCH `/api/bills`
-- [ ] add-bill entry point (sheet or inline) — **gap: handoff has no add-bill UI; needs design decision**
+- [ ] **add-bill: "+" on the Bills card header** → mini add form (name, amount, due_date) → POST `/api/bills` (DECIDED)
+- [ ] delete bill (long-press or edit affordance) → DELETE `/api/bills`
 - [ ] no overdue state
 
 ## F5 — Investments panel (tabbed) ⬜
@@ -145,7 +146,8 @@ High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `s
 - [ ] segmented Holdings/Active SIPs control (local UI state)
 - [ ] Holdings: FD section (rate/maturity) + Mutual Funds section (current value) → `/api/holdings`
 - [ ] Active SIPs: monthly/due/paid rows → `/api/sips`
-- [ ] manual add/edit entry points for holdings + sips — **gap: handoff has no add UI; needs design**
+- [ ] **portfolio value: tap-to-edit inline** → save on blur → PUT `/api/portfolio` (DECIDED)
+- [ ] **add/edit holdings + sips: "+" per section + tap-row-to-edit** via a small sheet → POST/PUT/DELETE `/api/holdings` `/api/sips` (DECIDED)
 
 ## F6 — Compose home + verify ⬜
 - [ ] rework `Dashboard.tsx` (mobile): GreetingHeader → HeroBalance → Transactions → BillsEmis → Investments, `flex-col gap-16px`, padding `4px 16px`, 104px bottom, bg `#f1f5f9`
@@ -165,7 +167,8 @@ High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `s
 - [ ] update feature specs `credits.md`/`expenses.md`/`investments.md`/`dashboard.md` to the new model (currently describe old balance system)
 - [ ] graphify refresh after frontend lands
 
-## New design gaps surfaced (need owner input)
-- [ ] **Add-bill UI**: cloth handoff shows Pay but no "add a bill" flow. How are bills created? (sheet mode? separate screen? seed-only?)
-- [ ] **Add/edit holdings & SIPs UI**: handoff shows display only. How does user add/update them?
-- [ ] **Portfolio value editor**: inline tap-to-edit vs a small form?
+## Design gaps surfaced — RESOLVED ✅
+- [x] **Add-bill UI** → "+" on the Bills & EMIs card header (mini add form). Built in F4.
+- [x] **Add/edit holdings & SIPs** → "+" per section + tap-row-to-edit (small sheet). Built in F5.
+- [x] **Portfolio value editor** → tap-to-edit inline, save on blur. Built in F5.
+- [x] **SIP/holding → money model** → NO. Portfolio panel is reference-only; Invested tile = per-month AddSheet 'Invest' entries (confirms D15; backend needs no rework).
