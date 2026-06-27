@@ -5,6 +5,8 @@ Source (vendored into repo): [`specs/design-handoff/`](../design-handoff/) — [
 Target app: `next-ver/` — Next 16 App Router, React 19, Tailwind v4, Supabase, lucide-react. Existing dashboard lives in `src/features/dashboard/`.
 
 > **Execution order is backend-first.** PART A = decisions + model. PART B = backend phases (B0–B6). PART C = frontend phases (F0–F6). Do not start frontend until backend phases verify green. One phase per commit on `main` (no branches — see repo `CLAUDE.md`).
+>
+> 📋 **Live status & exhaustive checklist:** [mobile-redesign-checklist.md](./mobile-redesign-checklist.md) — the source of truth for what's done / todo. Update it as work lands.
 
 ---
 
