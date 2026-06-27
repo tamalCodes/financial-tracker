@@ -4,155 +4,165 @@ Source (vendored into repo): [`specs/design-handoff/`](../design-handoff/) — [
 
 Target app: `next-ver/` — Next 16 App Router, React 19, Tailwind v4, Supabase, lucide-react. Existing dashboard lives in `src/features/dashboard/`.
 
+> **Execution order is backend-first.** PART A = decisions + model. PART B = backend phases (B0–B6). PART C = frontend phases (F0–F6). Do not start frontend until backend phases verify green. One phase per commit on `main` (no branches — see repo `CLAUDE.md`).
+
 ---
 
-## 0. Fit assessment (what already aligns)
+# PART A — Decisions & target model
 
-The cloth design is close to our existing house style — minimal token work needed:
+## A0. Fit assessment (what already aligns)
+
+The cloth design already matches house style — minimal token work:
 
 | Cloth spec | Already in next-ver | Action |
 |---|---|---|
-| Bricolage Grotesque display font | `globals.css` body/headings use it | reuse |
-| Geist body font | not loaded | add (Google Fonts / self-host) |
+| Bricolage Grotesque display | `globals.css` body/headings | reuse |
+| Geist body font | not loaded | add (`next/font` or Google Fonts) |
 | Indigo-only accent | `--color-accent` indigo-500/600 | reuse |
-| credit=green / expense=red / investment=purple | `--color-credit/expense/investment` tokens | reuse; investment currently aliases indigo — **split to violet `139,92,246`** to match spec |
-| `Intl.NumberFormat('en-IN')` | `utils/format.ts` `formatCurrency` | reuse (note: cloth shows bare `₹` no decimals — our `formatCurrency` already `maximumFractionDigits:0`) |
-| Glass/translucent tints | DESIGN_SYSTEM "color through glass" principle | perfect match — cloth IS glass treatment |
-| rounded-3xl surfaces, rounded-full pills | radius tokens exist | reuse; cloth cards are 26/28px ≈ `rounded-3xl` |
-| Modal/bottom-sheet primitive | `shared/ui/Modal.tsx`, `useLockBodyScroll` | reuse as AddSheet base |
+| credit=green / expense=red / investment=purple | `--color-credit/expense/investment` tokens | reuse; **split investment to violet `139,92,246`** (currently aliases indigo) |
+| `Intl.NumberFormat('en-IN')` | `utils/format.ts` `formatCurrency` (maxFractionDigits 0) | reuse |
+| Glass/translucent tints | DESIGN_SYSTEM "color through glass" (D11) | exact match |
+| rounded-3xl surfaces / rounded-full pills | radius tokens exist | reuse |
+| Bottom-sheet / modal primitive | `shared/ui/Modal.tsx`, `useLockBodyScroll` | reuse as AddSheet base |
+| Route/auth/validation patterns | CONVENTIONS §1–§7 (`requireUser`, `rateLimit`, zod `validate`, `handleError`, user_id scoping) | **all new routes follow these verbatim** |
 
-**House-style is already glassy + indigo + semantic colors → the cloth design drops in cleanly.** Main work is layout/composition + the new Bills and Holdings/SIPs structures, not a token rewrite.
+## A1. Gap decisions (owner-confirmed) ✅
 
----
-
-## 1. Gap analysis — DECIDED (owner-confirmed)
-
-All four resolved. This is now a real money-model change, not a mock reskin. Schema changes required.
-
-### G1 — New money model: cumulative "Left in bank" ✅
-- **Drop** starting/closing-balance tracking. `monthly_balances` table **stays in DB but goes unused** (no read/write; remove `applyBalanceDelta`, `calculateClosingBalance`, `updateClosingBalance`, and the self-heal/rollover paths from `lib/api/dashboard.ts` + `lib/api/balances.ts`).
-- **Per-month tiles** (HeroBalance) reset each month — they reflect *that month only*:
-  - `earned_m = Σcredits(month)`
-  - `spent_m  = Σexpenses(month) + Σ(paid bills in month)`  ← paid bills count toward Spent (see G2)
-  - `invested_m = Σinvestments(month)`
-- **"Left in bank" is cumulative** (keeps piling up across months):
+### G1 — New money model: cumulative "Left in bank"
+- **Drop** starting/closing-balance tracking. `monthly_balances` table **stays in DB, goes unused** (no read/write). Remove `applyBalanceDelta`, `calculateClosingBalance`, `updateClosingBalance`, `createStartingBalance`, self-heal + rollover-seed paths.
+- **Per-month tiles** (HeroBalance) reflect *that month only* and reset monthly:
+  - `earned_m  = Σ credits(month)`
+  - `spent_m   = Σ expenses(month) + Σ (bills paid in month)`   ← paid bills count (G2)
+  - `invested_m = Σ investments(month)`   ← per-month *flow* entries, not the portfolio panel (G3)
+- **"Left in bank" is cumulative** across all months ≤ current:
   ```
   leftInBank(month) = Σ_{m ≤ month} ( earned_m − spent_m − invested_m )
   ```
-  20 this month + 20 next month → displays 40 next month. The three tiles still show only the current month's figures.
-- **Remove carry-forward** for credits/expenses (the `carry_forward` / `carried_from_month` copy logic + `ensureCarryForward*`). Cumulative balance replaces the need for it.
-- Implementation: compute `leftInBank` by summing across all months ≤ current (single aggregate query per table, grouped/summed; or fetch all rows ≤ month and reduce in code). No per-month balance row needed.
+  20 this month + 20 next → 40 displayed next month. Tiles still show only the current month.
+- **Carry-forward removed** for credits/expenses (`ensureCarryForward*`, `carried_from_month`). Cumulative balance replaces it.
 
-### G2 — Bills & EMIs: new table ✅
-- **New `bills` table:** `{ id, user_id, month (YYYY-MM-01), name, amount, due_date, paid (bool), created_at }`.
-- **New `/api/bills` route:** GET (by month) · POST (add) · PATCH (toggle `paid`) · DELETE.
-- `paidTotal` = Σ amount where `paid`; rows render unpaid→Pay pill / paid→strikethrough+check (README §5.3). **No overdue state.**
-- Pay = PATCH `paid=true`, optimistic.
-- **Bills ledger is fully separate from expenses** — paying a bill does NOT create an expense row, and bills do NOT appear in the "Recent payments" (Transactions) list. Bills render only in their own card.
-- **BUT paid bills count toward the month's spend:** `spent_m` (Spent tile + Left-in-bank) includes Σ(paid bills in month). Unpaid bills do not count (future obligation). So the HeroBalance Spent total = expenses + paid bills, while Recent payments shows expenses only — the two intentionally differ.
+### G2 — Bills & EMIs: new table
+- **`bills`** table + **`/api/bills`** route (GET by month · POST · PATCH paid · DELETE).
+- Ledger **separate** from expenses — paying a bill creates NO expense row; bills never appear in Recent payments.
+- **Paid** bills feed `spent_m` + Left-in-bank (above). Unpaid excluded. **No overdue state** (handoff removed it).
 
-### G3 — Investments: fully manual, recurring model removed ✅
-- **Remove the recurring/auto model** from `investments`: drop `is_active`, `carry_forward`, `start_month` carry logic (the `lte(start_month) + is_active + carry_forward` filter in `lib/api/dashboard.ts`). Everything manual now.
-- **Three manual datasets** behind the Investments panel:
-  - **Holdings — Fixed Deposits:** `{ name, rate, maturity_date, amount }`, manually edited current value.
-  - **Holdings — Mutual Funds:** `{ name, current_value }`, manually edited.
-  - **Active SIPs:** `{ name, monthly, due_date, paid }` — **static monthly figure, NOT cumulative**.
-- **Portfolio value = manual field** (owner-chosen): a single user-editable number, independent of the holdings rows. Stored as its own value (e.g. a `portfolio_total` row/setting), edited manually.
-- Schema: add `kind` enum (`fd` | `mutual_fund` | `sip`) + nullable `rate` / `maturity_date` / `current_value` / `due_date` / `monthly` / `paid` columns to `investments` (or split into `holdings` + `sips` tables — decide at build, single-table-with-kind is simpler). `/api/investments` reworked for full manual CRUD per kind.
+### G3 — Investments: fully manual, recurring model removed — TWO concepts
+1. **Monthly investment flow** (drives the "Invested" tile + Left-in-bank): the existing `investments` table, **simplified** to plain per-month rows `{month, description, amount}` — drop `start_month`/`is_active`/`carry_forward` logic, drop soft-delete (hard delete), drop the `lte(start_month)` filter. AddSheet "Invest" mode POSTs here.
+2. **Portfolio panel (display-only, manual reference)** — NOT tied to the monthly tiles:
+   - **`holdings`** table: `kind ∈ {fd, mutual_fund}`, `name`, `current_value`, + FD-only `rate`/`maturity_date`. Manually edited.
+   - **`sips`** table: `name`, `monthly`, `due_date`, `paid_total`. Static, manually edited. **Not cumulative.**
+   - **`portfolio_total`**: a single manual user-editable number (its own row), independent of holdings.
+- **⚠ Sub-decision to confirm (assumed NO):** SIP payments / holdings do **not** flow into the monthly "Invested" tile or Left-in-bank — the panel is reference only, mirroring the cloth prototype. If you want SIP payment to reduce Left-in-bank, it should instead be logged as a monthly investment-flow entry.
 
-### G4 — Expense category column ✅
-- **Add `category` enum column** to `expenses`: `food | shopping | transport | health | groceries | other` (default `other`).
-- Drives the colored category pill (Transactions rows) + the AddSheet expense category picker (6 toggles, default Food). `tags?: string[]` can stay or be retired — pill now reads `category`, not tags.
+### G4 — Expense category column
+- Add **`category`** enum to `expenses`: `food | shopping | transport | health | groceries | other` (default `other`). Drives the colored pill (Transactions) + AddSheet expense picker (default Food). `tags` may stay or be retired; pill reads `category`.
 
-> **Net scope:** schema changes on `expenses` (+category), `investments` (+kind/manual cols), new `bills` table, new `portfolio_total` storage; `monthly_balances` orphaned (kept, unused). Major rework of `lib/api/dashboard.ts`, `lib/api/balances.ts`, `useDashboardData`. No mock data — all real.
+## A2. Net schema impact
+`expenses` +`category` · `investments` simplified · new `bills` · new `holdings` · new `sips` · new `portfolio_total` · `monthly_balances` orphaned. Major rewrite of `lib/api/dashboard.ts`, `lib/api/balances.ts`, `useDashboardData`, all five mutation routes (drop balance-delta calls). No mock data.
 
 ---
 
-## 2. Token / global setup (Phase 0)
+# PART B — Backend phases (do first, in order)
 
-1. Load **Geist** font (Google Fonts link or `next/font`) alongside Bricolage. Add `--font-body`.
-2. In `globals.css`: split `--color-investment` to violet `rgb(139,92,246)` family (text `#6d28d9`, deep `#5b21b6`) to match spec (currently aliases indigo).
-3. Add category color tokens (Food `245,158,11`/`#b45309`, Shopping `139,92,246`/`#6d28d9`, Transport `14,165,233`/`#0369a1`, Health `16,185,129`/`#047857`, Groceries `20,184,166`/`#0f766e`, Other `100,116,139`/`#475569`).
-4. Add the glass-tile helper pattern (gradient `linear-gradient(135deg, rgba(rgb,A), rgba(rgb,B))` + matching border + `inset 0 1px 0 rgba(255,255,255,0.6)`) — encode as a small util/className recipe (matches DESIGN_SYSTEM Glass §2).
-5. Document additions in `specs/DESIGN_SYSTEM.md` (it currently omits credit/expense/investment + glass — already flagged in WHATS_LEFT).
+Each phase: implement → `tsc --noEmit` + lint + vitest → commit on `main`. Conventions are non-negotiable (CONVENTIONS §1–§7; canonical route = `api/credits/route.ts`).
 
-All measurements (radii, shadows, alphas, font sizes) are in README §5 + §8 — treat as exact.
+## Phase B0 — Schema & migrations
+**Files:** `supabase/schema.sql`, new `supabase/migrations/00x_mobile_redesign.sql`, `src/lib/supabase/database.types.ts`, `specs/DATA_MODEL.md`, `specs/DECISIONS.md` (add D13/D14/D15).
+1. `expenses`: `add column category text not null default 'other'` (+ optional CHECK for the 6 values).
+2. `investments`: keep table; stop using `start_month`/`is_active`/`carry_forward`. Add `month text` (per-month flow) — backfill `month = start_month`. (Leave legacy columns nullable; document as deprecated.)
+3. `create table bills (id, user_id, month text, name text, amount numeric, due_date text, paid boolean default false, created_at timestamptz default now())` + index `(user_id, month)`.
+4. `create table holdings (id, user_id, kind text check (kind in ('fd','mutual_fund')), name text, current_value numeric, rate numeric null, maturity_date text null, created_at)` + index `(user_id)`.
+5. `create table sips (id, user_id, name text, monthly numeric, due_date text, paid_total numeric default 0, created_at)` + index `(user_id)`.
+6. `create table portfolio_totals (user_id uuid primary key references auth.users(id), value numeric not null default 0)`.
+7. `monthly_balances`: leave as-is; add a `-- DEPRECATED (unused since mobile redesign)` comment.
+8. Update `database.types.ts` + `types/types.ts` (new `Bill`, `Holding`, `Sip`; `Expense.category`; `Investment` loses recurring fields).
+9. DATA_MODEL.md: rewrite tables + the new money model; DECISIONS.md: D13 cumulative-balance-replaces-closing, D14 bills-separate-but-counted, D15 investments-manual-two-concepts.
 
----
+**Acceptance:** migration applies clean; types compile; docs reflect new model.
 
-## 2b. Schema & data layer (Phase 0.5 — do before wiring)
+## Phase B1 — Money-model rewrite (the core)
+**Files:** `src/lib/api/dashboard.ts`, `src/lib/api/balances.ts`, `src/app/api/dashboard/route.ts`, `src/app/api/balances/route.ts`.
+1. Delete from `balances.ts`: `applyBalanceDelta`, `calculateClosingBalance`, `updateClosingBalance`, `createStartingBalance`. (File may become empty → remove + its imports.)
+2. `dashboard.ts` `loadDashboardData(month)` rewrite:
+   - Remove carry-forward calls, balance seed/self-heal, investment `lte(start_month)` filter.
+   - Fetch current-month: `credits`, `expenses (+category)`, `investments (by month)`, `bills (by month)`.
+   - Compute `earned_m`, `spent_m` (= expenses + paid bills), `invested_m`.
+   - Compute `leftInBank`: sum `(credits − expenses − paidBills − investments)` across **all months ≤ current** for the user. Implementation: one grouped aggregate per table (or fetch rows ≤ month and reduce). Add a small `cumulativeLeftInBank(supabase, userId, month)` helper.
+   - Return `{ leftInBank, earned: earned_m, spent: spent_m, invested: invested_m, credits, expenses, investments, bills }`.
+3. `/api/dashboard` GET: new payload shape. `/api/balances` route: **remove** (no starting balance) — or keep as 410/deleted; update `dashboard.md` spec.
+4. Strip `applyBalanceDelta` calls from credits/expenses/investments routes (done fully in B2/B4, but ensure dashboard compiles now).
 
-Supabase (no migration files in repo today — schema is in `supabase/schema.sql`; add migrations there).
+**Acceptance (vitest):** `leftInBank` cumulates correctly across 3 seeded months; `spent_m` includes paid bills only; per-month tiles isolated to their month; no reference to `monthly_balances` remains in read path.
 
-1. **`expenses`** — add `category` enum/text column (`food|shopping|transport|health|groceries|other`, default `other`).
-2. **`investments`** — add `kind` (`fd|mutual_fund|sip`) + nullable `rate`, `maturity_date`, `current_value`, `due_date`, `monthly`, `paid`. Drop reliance on `is_active`/`carry_forward`/`start_month` (leave columns or drop — manual model ignores them). *(Or: new `holdings` + `sips` tables; single-table-with-`kind` preferred for less surface.)*
-3. **`bills`** (new) — `{ id, user_id, month, name, amount, due_date, paid bool default false, created_at }`.
-4. **`portfolio_total`** — store the manual hero number per user (small `settings`-style row, or a single-column table `{ user_id, value }`).
-5. **`monthly_balances`** — **leave as-is, orphan it.** Stop all reads/writes. Note in DATA_MODEL.md that it's deprecated/unused.
-6. Update `lib/supabase/database.types.ts`, `lib/api/schemas.ts` (zod), and DATA_MODEL.md to match.
+## Phase B2 — Expenses: category + de-balance
+**Files:** `src/app/api/expenses/route.ts`, `src/lib/api/schemas.ts`.
+1. `schemas.ts`: add `category` enum to `mutationCreateSchema`/`mutationUpdateSchema` (`z.enum([...]).default('other')`). Drop carry-forward fields if retiring (keep optional for now).
+2. `expenses/route.ts`: POST/PUT accept+store `category`; **remove `applyBalanceDelta`** calls (POST/PUT/DELETE no longer touch balances). Keep `requireUser`, `rateLimit`, `handleError`, user_id scoping, `select` includes `category`.
 
-Money-model rewrite (`lib/api/dashboard.ts`):
-- Remove: `calculateClosingBalance`, `applyBalanceDelta`, `updateClosingBalance`, `ensureCarryForward*`, rollover seeding.
-- Add: `leftInBank(userId, month)` = Σ over months ≤ month of (`earned_m − spent_m − invested_m`), where `spent_m = Σexpenses(m) + Σ(paid bills in m)`. Per-month tiles = single-month sums (Spent tile also includes paid bills).
+**Acceptance:** POST with category persists + returns it; no balance writes; pill data present in dashboard payload.
 
----
+## Phase B3 — Bills domain
+**Files:** new `src/app/api/bills/route.ts`, `schemas.ts` (`billCreateSchema`, `billPatchSchema`), `dashboard.ts` (already fetches bills in B1).
+1. Route: GET `?month=` (user-scoped, by month, order due_date) · POST `{currentMonth,name,amount,due_date}` · PATCH `{id,paid}` (toggle) · DELETE `?id=`. All follow CONVENTIONS (try/catch, `requireUser`, `rateLimit` `bills:{get,post,patch,delete}` 30–60/60s, `validate`, `handleError`, `.eq("user_id")`).
+2. Response shapes per CONVENTIONS §2 (`{item}` / `{ok:true}`). No balance object (balances gone).
 
-## 3. Component build order (Phase 1 — leaf → composite)
+**Acceptance (vitest):** pay toggles `paid`; `paidTotal` recomputes; paid bill raises `spent_m` in dashboard; unpaid does not; ownership enforced.
 
-Build under `src/features/dashboard/components/` (mobile variants). Each maps to README §5.
+## Phase B4 — Investments: simplify to per-month flow
+**Files:** `src/app/api/investments/route.ts`, `schemas.ts`.
+1. POST `{currentMonth, description, amount}` → plain row `{month, description, amount}`. Hard DELETE (drop soft-delete). Optional PUT for edit. **Remove** `applyBalanceDelta`, `start_month`/`is_active`/`carry_forward` handling.
+2. `select`: `"id, description, amount, month, created_at"`.
 
-1. **GreetingHeader** *(new)* — "Good evening" + name + month pill + 40px AK avatar. README §4. Name/avatar from auth user.
-2. **HeroBalance** *(reskin of `BalancePanel`)* — "Left in bank" `₹{net}` 36px + 3 glass stat tiles (Earned/Spent/Invested). Keep month stepper wired to existing `handleChangeMonth`. README §5.1. (G1 mapping.)
-3. **Transactions** *(reskin of `TransactionSection`+`TransactionList` for expenses)* — "Recent payments", count subtitle, red total pill, rows = merchant + category pill + date + amount, **no minus sign**. README §5.2. (G4 mapping.)
-4. **BillsEmis** *(new)* — unpaid row (line icon + name + Due date + amount + Pay pill) / paid row (green check + strikethrough + "Paid" label), "Paid this month" total recomputes. **No overdue state** (spec removed it — the `overdue` field in `support.js` is dead; ignore). README §5.3. (G2.)
-5. **Investments** *(new tabbed panel)* — portfolio value + segmented Holdings/Active SIPs control (local UI state). Holdings = FD + Mutual Funds sections; SIPs = monthly/due/paid rows. README §5.4. (G3.)
-6. **FloatingActionBar** *(new)* — fixed bottom-centered frosted pill, 3 circular icon buttons (Expense red / Income green / Invest purple), `backdrop-filter: blur(18px) saturate(1.8)`, safe-area aware. README §5.5.
-7. **AddSheet** *(unify existing `ExpenseForm`/`CreditForm`/`InvestmentForm` into one bottom sheet, 3 modes)* — grabber, mode title, amount field (strip non-digits, `inputmode=numeric`), expense-only category picker, mode-dependent 2nd field (Note/Source/Fund), indigo submit. Mode matrix README §6. Reuse `Modal`/`useLockBodyScroll`/`AmountInput` patterns. Backdrop tap closes, sheet tap stops propagation.
+**Acceptance:** invested flow per month feeds `invested_m`; delete removes row; no recurring/soft-delete logic remains.
 
-Icons: lucide-react already installed — map per README §9 (arrow-up/down, trending-up, chevrons, credit-card/zap/home/car/wifi/flame, check).
+## Phase B5 — Portfolio (holdings · sips · portfolio_total)
+**Files:** new `src/app/api/holdings/route.ts`, `src/app/api/sips/route.ts`, `src/app/api/portfolio/route.ts` (or one `/api/portfolio` with sub-actions), `schemas.ts`, `dashboard.ts` (or a separate `loadPortfolio`).
+1. `holdings`: GET (all, user-scoped) · POST `{kind,name,current_value,rate?,maturity_date?}` · PUT (edit current_value etc.) · DELETE. 
+2. `sips`: GET · POST `{name,monthly,due_date,paid_total?}` · PUT · DELETE.
+3. `portfolio_total`: GET · PUT `{value}` (upsert single row per user).
+4. Manual CRUD only; no money-model coupling (per A1 G3 sub-decision).
 
----
+**Acceptance:** holdings/sips/portfolio_total CRUD scoped per user; portfolio number persists; panel data fetchable.
 
-## 4. Compose home screen (Phase 2)
-
-Rework `Dashboard.tsx` (or a new mobile `Dashboard` view) to stack, top→bottom (README §4): GreetingHeader → HeroBalance → Transactions → BillsEmis → Investments, with `flex-col gap-16px`, outer padding `4px 16px`, **104px bottom padding** so last card clears the floating bar. Screen bg `#f1f5f9` (`bg-slate-100`). Then overlay FloatingActionBar (fixed) + AddSheet (conditional).
-
-- Keep existing month nav (`useDashboardState`), data fetching (`useDashboardData`), optimistic upsert/remove helpers — they already do exactly what cloth's "optimistic UI on Pay/add" calls for.
-- Floating-bar button → open AddSheet in matching mode + reset form (reuse the three existing form `onSuccess`→`upsert*` flows behind one sheet).
-
----
-
-## 5. Wire state / money model (Phase 3)
-
-- HeroBalance: `leftInBank(month)` cumulative (G1) for the big number; the 3 tiles = current-month `Σcredits/Σexpenses/Σinvestments`. No starting/closing balance.
-- Transactions: real `expenses` list, newest first, category pill from new `category` column (G4).
-- AddSheet save: route by mode to `/api/expenses` (with `category`) | `/api/credits` | `/api/investments`. Optimistic add already supported by `useDashboardData` upsert helpers.
-- BillsEmis: new `/api/bills` (G2). Pay = optimistic PATCH `paid=true`; `paidTotal` recomputes.
-- Investments tabs: Holdings (FD + Mutual Funds) + Active SIPs from reworked `investments` (G3, manual CRUD per `kind`). Portfolio number = manual `portfolio_total`, inline-editable.
-
----
-
-## 6. Verify (Phase 4)
-
-- `npx tsc --noEmit` + lint + `vitest` (note: verify scripts not yet defined — WHATS_LEFT Track B #1; add `typecheck`/`verify` if convenient).
-- Visual QA at 412px viewport vs `screenshots/01..06` and README §5/§8 exact values.
-- Accessibility: 44px touch targets on floating buttons + Pay pills (WHATS_LEFT 0.1b).
+## Phase B6 — Backend verify gate
+1. Add `package.json` scripts: `typecheck` (`tsc --noEmit`), `verify` (typecheck && lint && test && build) — closes WHATS_LEFT Track B #1.
+2. Vitest coverage: money model (B1), bills→spend (B3), per-route ownership/validation. Target the new logic, not the deleted paths.
+3. Run `verify` green before any frontend work. Update `WHATS_LEFT.md`.
 
 ---
 
-## 7. Suggested PR slicing
+# PART C — Frontend phases (only after PART B green)
 
-- **PR0** — schema migrations + types + zod + DATA_MODEL/DESIGN_SYSTEM doc updates (Phase 0 + 0.5): `category`, `investments` manual cols, `bills` table, `portfolio_total`, orphan `monthly_balances`, tokens + Geist.
-- **PR1** — money-model rewrite in `lib/api/dashboard.ts` + `balances.ts` (cumulative `leftInBank`, remove closing/carry-forward) + `useDashboardData`. Tests for the new sums.
-- **PR2** — GreetingHeader + HeroBalance (cumulative number + 3 per-month tiles).
-- **PR3** — Transactions card (category pill) + FloatingActionBar + AddSheet unify (3 modes, category picker, `/api/expenses` category).
-- **PR4** — BillsEmis card + `/api/bills` route (add/pay/delete, optimistic).
-- **PR5** — Investments tabbed panel (Holdings FD/MF + Active SIPs, manual CRUD) + manual portfolio_total editor.
+High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `shared/ui/*`. 412px viewport; QA vs `screenshots/01..06`.
+
+## Phase F0 — Tokens & fonts
+- Load **Geist** (`next/font`), add `--font-body`. Split `--color-investment` → violet. Add category color tokens (Food `245,158,11`/`#b45309`, Shopping `139,92,246`/`#6d28d9`, Transport `14,165,233`/`#0369a1`, Health `16,185,129`/`#047857`, Groceries `20,184,166`/`#0f766e`, Other `100,116,139`/`#475569`). Add glass-tile recipe util. Document in DESIGN_SYSTEM.md (currently omits credit/expense/investment + glass — WHATS_LEFT).
+
+## Phase F1 — Greeting header + HeroBalance
+- GreetingHeader (greeting + name + month pill + AK avatar; name/avatar from auth user). HeroBalance: cumulative `₹{leftInBank}` (36px) + 3 glass tiles (Earned/Spent/Invested = per-month). Month stepper → existing `handleChangeMonth`. Handoff §4, §5.1.
+
+## Phase F2 — Transactions (Recent payments)
+- Reskin expenses list: count subtitle, red total pill, rows = merchant + **category pill** (from `category`) + date + amount, **no minus sign**. Handoff §5.2.
+
+## Phase F3 — Floating action bar + AddSheet (unify 3 forms)
+- FloatingActionBar: fixed bottom-centered frosted pill, 3 circular buttons (Expense/Income/Invest), safe-area aware. Handoff §5.5.
+- AddSheet: one bottom sheet, 3 modes (mode matrix §6) — grabber, amount field (strip non-digits, `inputmode=numeric`, reuse AmountInput), expense-only category picker (6 pills, default Food), mode-dependent 2nd field (Note/Source/Fund), indigo submit. Routes: expense→`/api/expenses` (+category), income→`/api/credits`, invest→`/api/investments`. Replaces `ExpenseForm`/`CreditForm`/`InvestmentForm`. Handoff §5.6.
+
+## Phase F4 — Bills & EMIs card
+- Unpaid row (line icon + name + Due date + amount + Pay pill) / paid row (green check + strikethrough + "Paid"). "Paid this month" total recomputes. Optimistic Pay → PATCH. **No overdue.** `/api/bills`. Handoff §5.3.
+
+## Phase F5 — Investments panel (tabbed)
+- Portfolio value (manual, inline-editable → `/api/portfolio`) + segmented Holdings/Active SIPs control (local UI state). Holdings = FD + Mutual Funds sections (`/api/holdings`); SIPs = monthly/due/paid rows (`/api/sips`). Manual add/edit. Handoff §5.4.
+
+## Phase F6 — Compose home + verify
+- Rework `Dashboard.tsx` (mobile): stack GreetingHeader → HeroBalance → Transactions → BillsEmis → Investments (`flex-col gap-16px`, padding `4px 16px`, **104px** bottom), bg `#f1f5f9`; overlay FloatingActionBar + AddSheet. Keep `useDashboardState` month nav + `useDashboardData` (reworked for new payload + bills/portfolio).
+- Verify: `npm run verify` + react-best-practices + Claude_Preview mobile screenshots vs handoff. Accessibility: 44px touch targets (WHATS_LEFT 0.1b).
 
 ---
 
-## 8. Bill / spend relationship (DECIDED)
+## §8. Bill / spend relationship (DECIDED)
 - `bills` ledger is **separate** from `expenses` — paying a bill creates no expense row; bills never show in Recent payments.
-- Paid bills **are attached to monthly spend**: `spent_m = Σexpenses(m) + Σ(paid bills in m)`; this flows into the Spent tile and the cumulative Left-in-bank. Unpaid bills excluded.
+- Paid bills **attach to monthly spend**: `spent_m = Σexpenses(m) + Σ(paid bills in m)`; flows into the Spent tile + cumulative Left-in-bank. Unpaid excluded.
 
-All gaps (G1–G4) decided — no blockers to start PR0.
+## Open sub-decision (non-blocking, confirm before B5/F5)
+- Do SIP payments / holdings feed the monthly "Invested" tile + Left-in-bank? **Assumed NO** — portfolio panel is manual reference only (matches cloth). Say the word to wire SIP payments into the monthly investment flow instead.
