@@ -20,16 +20,18 @@ const sumAmount = (rows: { amount: number }[]) =>
 
 /**
  * Cumulative "Left in bank" across every month <= currentMonth:
- *   Σ_{m ≤ month} ( Σcredits − Σexpenses − ΣpaidBills − Σinvestments )
+ *   opening_balance + Σ_{m ≤ month} ( Σcredits − Σexpenses − ΣpaidBills − Σinvestments )
+ * opening_balance is the one-time signup bank balance (profiles.opening_balance, D-A);
+ * it is NOT income, so it never feeds the per-month `earned` tile.
  * Month keys are 'YYYY-MM-01' text — lexicographically ordered, so `lte` is correct.
- * See specs/DATA_MODEL.md (money model) and DECISIONS D13.
+ * See specs/DATA_MODEL.md (money model), DECISIONS D13, and backend-wiring-checklist §1 D-A.
  */
 export const cumulativeLeftInBank = async (
   supabase: SupabaseClient,
   userId: string,
   currentMonth: string
 ): Promise<number> => {
-  const [creditsRes, expensesRes, investmentsRes, paidBillsRes] =
+  const [creditsRes, expensesRes, investmentsRes, paidBillsRes, profileRes] =
     await Promise.all([
       supabase
         .from("credits")
@@ -52,14 +54,20 @@ export const cumulativeLeftInBank = async (
         .eq("user_id", userId)
         .eq("paid", true)
         .lte("month", currentMonth),
+      supabase
+        .from("profiles")
+        .select("opening_balance")
+        .eq("user_id", userId)
+        .maybeSingle(),
     ]);
 
+  const openingBalance = Number(profileRes.data?.opening_balance ?? 0);
   const earned = sumAmount(creditsRes.data ?? []);
   const spent =
     sumAmount(expensesRes.data ?? []) + sumAmount(paidBillsRes.data ?? []);
   const invested = sumAmount(investmentsRes.data ?? []);
 
-  return earned - spent - invested;
+  return openingBalance + earned - spent - invested;
 };
 
 export const loadDashboardData = async (

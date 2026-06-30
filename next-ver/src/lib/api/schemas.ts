@@ -84,6 +84,19 @@ export const sipUpdateSchema = sipCreateSchema
 export const portfolioTotalSchema = z.object({ value: amount });
 
 /**
+ * POST body for signup. `openingBalance` is the one-time bank balance the user sets
+ * at signup (D-A); optional + clamped ≥ 0, defaults to 0 if absent.
+ */
+export const signupSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+  openingBalance: amount
+    .refine((n) => n >= 0, { message: "openingBalance must be ≥ 0" })
+    .optional()
+    .default(0),
+});
+
+/**
  * Parse `data` against `schema`. On failure, throws a 400 NextResponse
  * (caught by handleError, keeping the standard error shape). On success,
  * returns the typed, coerced data. Call inside the route's try block.

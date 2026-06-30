@@ -191,6 +191,13 @@ export type Database = {
         Update: Partial<{ value: number }>;
         Relationships: [];
       };
+      // Per-user profile. opening_balance set once at signup; folded into Left-in-bank.
+      profiles: {
+        Row: { user_id: string; opening_balance: number; created_at: string };
+        Insert: { user_id: string; opening_balance?: number; created_at?: string };
+        Update: Partial<{ opening_balance: number }>;
+        Relationships: [];
+      };
       // DEPRECATED — unused since mobile redesign. Kept for back-compat.
       monthly_balances: {
         Row: {
