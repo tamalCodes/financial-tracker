@@ -24,6 +24,7 @@ function mockSupabase(data: Record<string, Row[]>) {
       const builder = {
         select: () => builder,
         order: () => builder,
+        range: () => builder,
         eq: (col: string, val: unknown) => {
           filters.push(["eq", col, val]);
           return builder;

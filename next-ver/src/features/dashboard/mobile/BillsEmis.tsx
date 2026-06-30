@@ -1,6 +1,7 @@
 "use client";
 
 import { BODY, DISPLAY } from "./data";
+import Skeleton from "./Skeleton";
 
 // "Bills & EMIs" card — pixel from BillsEmis.dc.html (handoff §5.3).
 // Two row states (unpaid / paid). No overdue state. No issuer line.
@@ -17,6 +18,24 @@ interface Props {
   bills: BillView[];
   paidTotal: string;
   onPay: (id: string) => void;
+  loading?: boolean;
+}
+
+function SkeletonRow() {
+  return (
+    <div style={{ borderTop: "1px solid #f1f5f9" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "13px 1px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 13, minWidth: 0, flex: 1 }}>
+          <Skeleton width={20} height={20} radius={6} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0, flex: 1 }}>
+            <Skeleton width={120} height={14} />
+            <Skeleton width={70} height={11} />
+          </div>
+        </div>
+        <Skeleton width={64} height={36} radius={999} />
+      </div>
+    </div>
+  );
 }
 
 const CARD_SHADOW =
@@ -96,7 +115,7 @@ function PaidRow({ bill }: { bill: BillView }) {
   );
 }
 
-export default function BillsEmis({ bills, paidTotal, onPay }: Props) {
+export default function BillsEmis({ bills, paidTotal, onPay, loading }: Props) {
   return (
     <div
       style={{
@@ -117,17 +136,23 @@ export default function BillsEmis({ bills, paidTotal, onPay }: Props) {
         </span>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
           <span style={{ font: `500 11px ${BODY}`, color: "#64748b" }}>Paid this month</span>
-          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 18, color: "#047857", fontVariantNumeric: "tabular-nums" }}>
-            ₹{paidTotal}
-          </span>
+          {loading ? (
+            <Skeleton width={70} height={18} style={{ marginTop: 2 }} />
+          ) : (
+            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 18, color: "#047857", fontVariantNumeric: "tabular-nums" }}>
+              ₹{paidTotal}
+            </span>
+          )}
         </div>
       </div>
 
-      {bills.map((bill) => (
-        <div key={bill.id} style={{ borderTop: "1px solid #f1f5f9" }}>
-          {bill.paid ? <PaidRow bill={bill} /> : <UnpaidRow bill={bill} onPay={onPay} />}
-        </div>
-      ))}
+      {loading
+        ? Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`skel-${i}`} />)
+        : bills.map((bill) => (
+            <div key={bill.id} style={{ borderTop: "1px solid #f1f5f9" }}>
+              {bill.paid ? <PaidRow bill={bill} /> : <UnpaidRow bill={bill} onPay={onPay} />}
+            </div>
+          ))}
     </div>
   );
 }

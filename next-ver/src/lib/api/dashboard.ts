@@ -7,10 +7,16 @@ import {
   MonthSummary,
 } from "@/features/dashboard/types/types";
 
+// Recent-payments page size. The first page ships in the dashboard payload; pages
+// 2+ are fetched lazily via GET /api/expenses. Keep in sync with the client.
+export const EXPENSES_PAGE_SIZE = 6;
+
 interface DashboardPayload {
   summary: MonthSummary;
   credits: Credit[];
-  expenses: Expense[];
+  expenses: Expense[]; // first page only (newest EXPENSES_PAGE_SIZE)
+  expensesTotal: number; // full month count (for pagination + the "N this month" line)
+  loggedTotal: number; // full month Σ expenses (for the chip badge) — page-independent
   investments: Investment[];
   bills: Bill[];
 }
@@ -75,20 +81,34 @@ export const loadDashboardData = async (
   userId: string,
   currentMonth: string
 ): Promise<DashboardPayload> => {
-  const [creditsRes, expensesRes, investmentsRes, billsRes, leftInBank] =
-    await Promise.all([
+  const [
+    creditsRes,
+    expensesRes,
+    expenseAmountsRes,
+    investmentsRes,
+    billsRes,
+    leftInBank,
+  ] = await Promise.all([
       supabase
         .from("credits")
         .select("id, description, amount, created_at")
         .eq("user_id", userId)
         .eq("month", currentMonth)
         .order("created_at", { ascending: false }),
+      // Display rows: first page only (newest first).
       supabase
         .from("expenses")
-        .select("id, description, amount, category, created_at, tags")
+        .select("id, description, amount, category, created_at")
         .eq("user_id", userId)
         .eq("month", currentMonth)
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        .range(0, EXPENSES_PAGE_SIZE - 1),
+      // Amounts-only sweep: month total count + Σ for `spent`/`loggedTotal`, page-independent.
+      supabase
+        .from("expenses")
+        .select("amount")
+        .eq("user_id", userId)
+        .eq("month", currentMonth),
       supabase
         .from("investments")
         .select("id, description, amount, month, created_at")
@@ -106,15 +126,31 @@ export const loadDashboardData = async (
 
   const credits = (creditsRes.data ?? []) as Credit[];
   const expenses = (expensesRes.data ?? []) as Expense[];
+  const expenseAmounts = (expenseAmountsRes.data ?? []) as { amount: number }[];
   const investments = (investmentsRes.data ?? []) as Investment[];
   const bills = (billsRes.data ?? []) as Bill[];
 
   // Per-month tiles (reset each month). spent includes paid bills (DECISIONS D14).
+  // Totals come from the full-month amounts sweep, NOT the paginated display rows.
   const earned = sumAmount(credits);
-  const spent = sumAmount(expenses) + sumAmount(bills.filter((b) => b.paid));
+  const loggedTotal = sumAmount(expenseAmounts);
+  const spent = loggedTotal + sumAmount(bills.filter((b) => b.paid));
   const invested = sumAmount(investments);
 
   const summary: MonthSummary = { leftInBank, earned, spent, invested };
 
-  return { summary, credits, expenses, investments, bills };
+  // TEMP diagnostic — confirms the paginated build is live (server terminal).
+  console.log(
+    `[FT][server] month=${currentMonth} pageRows=${expenses.length} expensesTotal=${expenseAmounts.length} loggedTotal=${loggedTotal}`
+  );
+
+  return {
+    summary,
+    credits,
+    expenses,
+    expensesTotal: expenseAmounts.length,
+    loggedTotal,
+    investments,
+    bills,
+  };
 };

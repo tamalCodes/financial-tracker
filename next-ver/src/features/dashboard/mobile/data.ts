@@ -11,6 +11,15 @@ export const BODY = "var(--font-geist), 'Geist', system-ui, sans-serif";
 export const fmt = (n: number) =>
   new Intl.NumberFormat("en-IN").format(Math.max(0, Math.round(n)));
 
+// Compact INR for chips/badges: 28134 → "28.1k", 1500000 → "15L". Lakh past 1,00,000
+// (en-IN grouping). Trailing ".0" trimmed so round figures read clean (28000 → "28k").
+export const fmtCompact = (n: number) => {
+  const v = Math.max(0, Math.round(n));
+  if (v < 1000) return String(v);
+  if (v < 100000) return `${(v / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return `${(v / 100000).toFixed(1).replace(/\.0$/, "")}L`;
+};
+
 // ── Categories (handoff §8) ──────────────────────────────────────────────────
 export type CategoryKey =
   | "food"

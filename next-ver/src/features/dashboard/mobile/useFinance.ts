@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { formatTxnDate } from "@/features/dashboard/utils/dates";
@@ -10,9 +10,14 @@ import {
   catOf,
   CATS,
   fmt,
+  fmtCompact,
   type CategoryKey,
   type SheetMode,
 } from "./data";
+
+// Recent-payments page size. Mirrors EXPENSES_PAGE_SIZE on the server: page 1 arrives
+// in the dashboard payload, pages 2+ are fetched from GET /api/expenses.
+const EXPENSES_PAGE_SIZE = 6;
 
 // Real finance state for the mobile home — backed by /api/dashboard (+ mutation routes).
 // Returns the same shape the old in-memory useFinanceDemo did, so the leaf components
@@ -24,13 +29,56 @@ export function useFinance() {
   const {
     summary,
     expenses,
+    expensesTotal,
+    loggedTotal,
     bills,
     setBills,
     reload,
     upsertExpense,
     upsertCredit,
     upsertInvestment,
+    isBootstrapping,
   } = useDashboardData(currentMonth);
+
+  // ── Recent-payments pagination ───────────────────────────────────────────────
+  // Page 1 reuses the dashboard payload (no extra request); pages 2+ are fetched.
+  const [expPage, setExpPage] = useState(1);
+  const [pageRows, setPageRows] = useState<Expense[] | null>(null);
+
+  const expPages = Math.max(1, Math.ceil(expensesTotal / EXPENSES_PAGE_SIZE));
+
+  // Reset to the newest page whenever the month changes.
+  useEffect(() => {
+    setExpPage(1);
+  }, [currentMonth]);
+
+  // Fetch pages beyond the first; page 1 is served straight from the dashboard rows.
+  useEffect(() => {
+    if (expPage === 1) {
+      setPageRows(null);
+      return;
+    }
+    let active = true;
+    fetch(
+      `/api/expenses?month=${currentMonth}&page=${expPage}&pageSize=${EXPENSES_PAGE_SIZE}`
+    )
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("page load failed"))))
+      .then((d: { items: Expense[] }) => {
+        if (active) setPageRows(d.items ?? []);
+      })
+      .catch((error) => {
+        console.error(error);
+        if (active) setPageRows([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [expPage, currentMonth]);
+
+  const expensesPage = useMemo(
+    () => (expPage === 1 ? expenses : pageRows ?? []),
+    [expPage, expenses, pageRows]
+  );
 
   // AddSheet state
   const [sheet, setSheet] = useState<SheetMode | null>(null);
@@ -40,21 +88,23 @@ export function useFinance() {
   const [saving, setSaving] = useState(false);
 
   // ── Derived money model (server-computed; we only format) ────────────────────
-  const derived = useMemo(() => {
-    const loggedSum = expenses.reduce((s, e) => s + Number(e.amount), 0);
-    return {
+  // logged/count are full-month totals from the server, NOT the current page slice.
+  const derived = useMemo(
+    () => ({
       net: fmt(summary.leftInBank),
       earned: fmt(summary.earned),
       spent: fmt(summary.spent),
       invested: fmt(summary.invested),
-      logged: fmt(loggedSum),
-      count: expenses.length,
-    };
-  }, [summary, expenses]);
+      logged: fmt(loggedTotal),
+      loggedCompact: fmtCompact(loggedTotal),
+      count: expensesTotal,
+    }),
+    [summary, loggedTotal, expensesTotal]
+  );
 
   const txView = useMemo(
     () =>
-      expenses.map((e: Expense) => {
+      expensesPage.map((e: Expense) => {
         const c = catOf(e.category as CategoryKey);
         return {
           merchant: e.description,
@@ -65,7 +115,7 @@ export function useFinance() {
           text: c.text,
         };
       }),
-    [expenses]
+    [expensesPage]
   );
 
   const billsView = useMemo(
@@ -156,6 +206,7 @@ export function useFinance() {
         upsertInvestment(item);
       }
       await reload();
+      setExpPage(1); // newest entry lives on page 1
       setSheet(null);
       setFormAmount("");
       setFormNote("");
@@ -167,12 +218,16 @@ export function useFinance() {
   };
 
   return {
+    loading: isBootstrapping,
     month: monthLabel,
     canNavigateNextMonth,
     prevMonth,
     nextMonth,
     derived,
     txView,
+    expPage,
+    expPages,
+    setExpPage,
     bills: billsView,
     paidTotal,
     pay,

@@ -1,6 +1,7 @@
 "use client";
 
 import { BODY, DISPLAY } from "./data";
+import Skeleton from "./Skeleton";
 
 // "Left in bank" card — pixel from HeroBalance.dc.html (handoff §5.1).
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
   invested: string;
   onPrev: () => void;
   onNext: () => void;
+  loading?: boolean;
 }
 
 const CARD_SHADOW =
@@ -25,9 +27,10 @@ interface TileProps {
   labelColor: string;
   valueColor: string;
   icon: React.ReactNode;
+  loading?: boolean;
 }
 
-function StatTile({ label, value, gradient, border, labelColor, valueColor, icon }: TileProps) {
+function StatTile({ label, value, gradient, border, labelColor, valueColor, icon, loading }: TileProps) {
   return (
     <div
       style={{
@@ -55,18 +58,22 @@ function StatTile({ label, value, gradient, border, labelColor, valueColor, icon
         {icon}
         {label}
       </span>
-      <span
-        style={{
-          fontFamily: DISPLAY,
-          fontWeight: 600,
-          fontSize: 16.5,
-          letterSpacing: "-0.02em",
-          color: valueColor,
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
-        ₹{value}
-      </span>
+      {loading ? (
+        <Skeleton width={52} height={17} />
+      ) : (
+        <span
+          style={{
+            fontFamily: DISPLAY,
+            fontWeight: 600,
+            fontSize: 16.5,
+            letterSpacing: "-0.02em",
+            color: valueColor,
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          ₹{value}
+        </span>
+      )}
     </div>
   );
 }
@@ -103,25 +110,24 @@ function StepBtn({ onClick, label, d }: { onClick: () => void; label: string; d:
       aria-label={label}
       style={{
         cursor: "pointer",
-        width: 30,
-        height: 30,
-        borderRadius: 10,
-        border: "1px solid #e2e8f0",
-        background: "#f8fafc",
+        width: 22,
+        height: 22,
+        border: "none",
+        background: "transparent",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 0,
       }}
     >
-      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d={d} />
       </svg>
     </button>
   );
 }
 
-export default function HeroBalance({ net, month, earned, spent, invested, onPrev, onNext }: Props) {
+export default function HeroBalance({ net, month, earned, spent, invested, onPrev, onNext, loading }: Props) {
   return (
     <div
       style={{
@@ -146,30 +152,34 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
             style={{
               font: `600 13px ${DISPLAY}`,
               color: "#334155",
-              minWidth: 78,
+              minWidth: 54,
               textAlign: "center",
               whiteSpace: "nowrap",
             }}
           >
-            {month}
+            {month.split(" ")[0]}
           </span>
           <StepBtn onClick={onNext} label="Next month" d="M8 5l5 5-5 5" />
         </div>
       </div>
 
-      <span
-        style={{
-          fontFamily: DISPLAY,
-          fontWeight: 600,
-          fontSize: 36,
-          lineHeight: 1,
-          letterSpacing: "-0.03em",
-          color: "#0f172a",
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
-        ₹{net}
-      </span>
+      {loading ? (
+        <Skeleton width={170} height={36} radius={10} />
+      ) : (
+        <span
+          style={{
+            fontFamily: DISPLAY,
+            fontWeight: 600,
+            fontSize: 36,
+            lineHeight: 1,
+            letterSpacing: "-0.03em",
+            color: "#0f172a",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          ₹{net}
+        </span>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 2 }}>
         <StatTile
@@ -180,6 +190,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           labelColor="#047857"
           valueColor="#065f46"
           icon={<ArrowUp color="#047857" />}
+          loading={loading}
         />
         <StatTile
           label="Spent"
@@ -189,6 +200,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           labelColor="#b91c1c"
           valueColor="#991b1b"
           icon={<ArrowDown color="#b91c1c" />}
+          loading={loading}
         />
         <StatTile
           label="Invested"
@@ -198,6 +210,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           labelColor="#6d28d9"
           valueColor="#5b21b6"
           icon={<TrendUp color="#6d28d9" />}
+          loading={loading}
         />
       </div>
     </div>

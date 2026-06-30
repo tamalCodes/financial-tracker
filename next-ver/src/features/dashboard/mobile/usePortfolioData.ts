@@ -26,6 +26,7 @@ export function usePortfolioData() {
   const [fds, setFds] = useState<Fd[]>([]);
   const [funds, setFunds] = useState<Fund[]>([]);
   const [sips, setSips] = useState<SipRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let alive = true;
@@ -67,6 +68,8 @@ export function usePortfolioData() {
         );
       } catch (error) {
         console.error(error);
+      } finally {
+        if (alive) setLoading(false);
       }
     })();
     return () => {
@@ -74,5 +77,5 @@ export function usePortfolioData() {
     };
   }, []);
 
-  return { portfolioTotal, fds, funds, sips };
+  return { portfolioTotal, fds, funds, sips, loading };
 }

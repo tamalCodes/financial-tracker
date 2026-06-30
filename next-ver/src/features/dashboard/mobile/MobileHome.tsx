@@ -60,14 +60,25 @@ export default function MobileHome() {
             invested={f.derived.invested}
             onPrev={f.prevMonth}
             onNext={f.nextMonth}
+            loading={f.loading}
           />
-          <Transactions transactions={f.txView} count={f.derived.count} logged={f.derived.logged} />
-          <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} />
+          <Transactions
+            transactions={f.txView}
+            count={f.derived.count}
+            logged={f.derived.logged}
+            loggedCompact={f.derived.loggedCompact}
+            page={f.expPage}
+            pages={f.expPages}
+            onPageChange={f.setExpPage}
+            loading={f.loading}
+          />
+          <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} loading={f.loading} />
           <Investments
             portfolioTotal={portfolio.portfolioTotal}
             fds={portfolio.fds}
             funds={portfolio.funds}
             sips={portfolio.sips}
+            loading={portfolio.loading}
           />
         </div>
       </div>
