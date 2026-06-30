@@ -55,8 +55,9 @@ Status: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked (n
       RLS isolation). Run: `set -a && . ./.env && set +a && npm run test:integration` (needs
       `SUPABASE_SERVICE_ROLE_KEY` in `.env`).
 
-## G. Live finding — email confirmation (action required)
-- [ ] **Prod has email confirmation ON** → signup returns no session until the email link is clicked, but
-      `AuthForm` redirects to `/dashboard` expecting an immediate session. **Decision: turn it OFF**
-      (Supabase dashboard → Authentication → Providers → Email → disable "Confirm email"). Until then,
-      real signup UX is broken. After disabling, anon-path signup yields a session and the app works.
+## G. Live finding — email confirmation — PARKED ✅ (revisit later)
+- [x] Decision (2026-06-30): not needed now → parked. Does not block "backend verified": the live
+      integration suite proves the full money model + RLS via the service-role admin path.
+- [ ] **Later:** prod has "Confirm email" ON, so anon signup returns no session and `AuthForm`'s redirect
+      to `/dashboard` has nothing to land on. When resumed: disable it in the dashboard OR add a
+      "check your email" confirmation flow to `AuthForm`.
