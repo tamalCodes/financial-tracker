@@ -57,52 +57,52 @@ All five resolved. Each now drives concrete work in §2/§4.
 
 ## 2. Integration — per surface (replace demo → real)
 
-### 2.1 Data layer
-- [ ] Keep `mobile/data.ts` **presentational** constants (`DISPLAY`, `BODY`, `CATS`, `catOf`, mode matrix)
-      and the **D-C bill-icon map** (keyword → electric/wifi/gas/misc). **Remove** the seed/model
-      constants: `SEED_TXS`, `BILL_DEFS`,
-      `FDS`, `FUNDS`, `SIPS`, `PORTFOLIO_TOTAL`, `SALARY`, `AUTO_INVEST`, `SPENT_BASE`, `MONTHS`.
-- [ ] Replace `useFinanceDemo` with the real hooks: existing `useDashboardData(currentMonth)` +
-      `useDashboardState` (month nav) + a **new `usePortfolioData`** (see 2.5) + local AddSheet form state.
-- [ ] Map dashboard payload → component props (no shape change in the leaf components):
-  - HeroBalance ← `summary.{leftInBank,earned,spent,invested}` + `monthLabel` + `canNavigateNextMonth`
-  - Transactions ← `expenses` (merchant=`description`, category=`category`, date=`formatTxnDate(created_at)`,
-    amount, logged=Σ, count=`length`)
-  - BillsEmis ← `bills` (name, amount, `due_date`, paid); `paidTotal` = Σ paid
+### 2.1 Data layer ✅
+- [x] `mobile/data.ts` trimmed to presentational only (`DISPLAY`, `BODY`, `fmt`, `CATS`, `catOf`, mode
+      matrix) + **D-C `billIconFor`** keyword map (electric/wifi/gas/misc). All seed/model constants removed
+      (`SEED_TXS`, `BILL_DEFS`, `FDS`, `FUNDS`, `SIPS`, `PORTFOLIO_TOTAL`, `SALARY`, `AUTO_INVEST`,
+      `SPENT_BASE`, `MONTHS`).
+- [x] `useFinanceDemo` **deleted**; replaced by `mobile/useFinance.ts` (wraps `useDashboardData` +
+      `useDashboardState` + AddSheet form state) + new `mobile/usePortfolioData.ts` (2.5). Same return
+      shape → leaf components untouched.
+- [x] Payload → props mapping done in `useFinance` (HeroBalance/Transactions/BillsEmis exactly as listed).
 
-### 2.2 HeroBalance + month nav
-- [ ] Wire `useDashboardState` month stepper (`handleChangeMonth`, `canNavigateNextMonth`, `canEditCurrentMonth`).
+### 2.2 HeroBalance + month nav ✅
+- [x] Month stepper wired via `useFinance` (`prevMonth`/`nextMonth` → `handleChangeMonth`;
+      `canNavigateNextMonth` exposed; next no-ops past current month).
 - [x] **D-A backend:** ✅ migration `002_profiles_opening_balance.sql` (`profiles` table) + `schema.sql`
       + hand-written `database.types.ts` `profiles` entry. `signup/route.ts` now validates via
       `signupSchema` (email/password/`openingBalance` ≥0, default 0) and upserts the profile row from the
-      `signUp` user id (idempotent). **DEFERRED (frontend):** add `openingBalance` field to `AuthForm` /
-      `AuthContext.signup` — route accepts it, form not yet sending it.
+      `signUp` user id (idempotent). ✅ **Frontend now wired too:** `AuthForm` shows a "Current bank
+      balance" field on signup; `AuthContext.signUp(email, password, openingBalance)` sends it. (Backend
+      since switched to a signup-metadata trigger under RLS — see backend-complete-checklist §B.)
 - [x] **D-A formula:** ✅ `cumulativeLeftInBank` (`lib/api/dashboard.ts`) now fetches `profiles` and
       returns `opening_balance + earned − spent − invested`. Tests updated (opening 70000, +no-profile→0 case).
-- [ ] **D-B:** keep the `Math.max(0, …)` clamp in the presentational `fmt` (no negative balance). *(frontend)*
+- [x] **D-B:** `fmt` keeps the `Math.max(0, …)` clamp (no negative balance shown).
 
-### 2.3 AddSheet (the 3 modes → 3 routes)
-- [ ] expense → `POST /api/expenses` `{ currentMonth, description: note||categoryLabel, amount, category }`
-- [ ] income → `POST /api/credits` `{ currentMonth, description: source, amount }`
-- [ ] investment → `POST /api/investments` `{ currentMonth, description: fund, amount, month: currentMonth }`
-- [ ] On success: optimistic `upsert*` then `reload()` (recompute cumulative summary). No-op on amount 0/empty.
-- [ ] `currentMonth` ('YYYY-MM-01') replaces the demo `MONTHS` display array.
+### 2.3 AddSheet (the 3 modes → 3 routes) ✅
+- [x] expense → `POST /api/expenses` `{ currentMonth, description: note||categoryLabel, amount, category }`.
+- [x] income → `POST /api/credits` `{ currentMonth, description: note||"Income", amount }`.
+- [x] investment → `POST /api/investments` `{ currentMonth, description: note||"Investment", amount }`.
+- [x] On success: optimistic `upsert*` then `reload()`; no-op on amount 0/empty; `saving` guard prevents
+      double-submit.
+- [x] `currentMonth` ('YYYY-MM-01') from `useDashboardState` (demo `MONTHS` gone).
 
-### 2.4 BillsEmis
-- [ ] Pay → `PATCH /api/bills` `{ id, paid: true }`, optimistic via `setBills` + reload.
-- [ ] (Deferred affordance) add-bill "+" → `POST /api/bills` `{ currentMonth, name, amount, due_date? }`.
-- [ ] (Deferred affordance) delete → `DELETE /api/bills?id=`.
+### 2.4 BillsEmis ✅ (core)
+- [x] Pay → `PATCH /api/bills` `{ id, paid: true }`, optimistic via `setBills`, reload; reverts on failure.
+- [ ] (Deferred affordance) add-bill "+" → `POST /api/bills`. *(deferred UI)*
+- [ ] (Deferred affordance) delete → `DELETE /api/bills?id=`. *(deferred UI)*
 
-### 2.5 Investments panel (NEW client hook)
-- [ ] `usePortfolioData()` — fetch on panel mount: `GET /api/portfolio`, `GET /api/holdings`, `GET /api/sips`.
-- [ ] Split holdings by `kind`: `fd` → Fixed Deposits (sub = `"matures <maturity_date>"` per D-D, no rate),
-      `mutual_fund` → Mutual Funds.
-- [ ] Portfolio value inline edit → `PUT /api/portfolio` `{ value }` (save on blur).
+### 2.5 Investments panel (NEW client hook) ✅ (read)
+- [x] `usePortfolioData()` — fetches `GET /api/portfolio` + `/api/holdings` + `/api/sips` on mount.
+- [x] Holdings split by `kind`: `fd` → Fixed Deposits (sub = `"matures <maturity_date>"`, no rate),
+      `mutual_fund` → Mutual Funds; sips mapped to rows.
+- [ ] Portfolio value inline edit → `PUT /api/portfolio`. *(deferred UI)*
 - [ ] (Deferred affordances) add/edit holdings + sips → `POST/PUT/DELETE /api/{holdings,sips}`.
 
-### 2.6 Greeting identity
-- [ ] Replace hardcoded `Arjun Kapoor / AK / Good evening` with auth user (`useAuth()`): derive name +
-      initials from email/metadata; keep time-based greeting; month pill ← `monthLabel`.
+### 2.6 Greeting identity ✅
+- [x] `MobileHome` derives name + initials from `useAuth().user.email`, time-based greeting from the hour,
+      month pill ← `monthLabel`. Hardcoded `Arjun Kapoor / AK` gone.
 
 ---
 

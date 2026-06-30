@@ -14,6 +14,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [openingBalance, setOpeningBalance] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +35,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
       if (isLogin) {
         await signIn(email, password);
       } else {
-        await signUp(email, password);
+        await signUp(email, password, Number(openingBalance) || 0);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -111,6 +112,30 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label
+                  htmlFor="openingBalance"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Current bank balance
+                </label>
+                <input
+                  id="openingBalance"
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={openingBalance}
+                  onChange={(e) => setOpeningBalance(e.target.value)}
+                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base"
+                  placeholder="e.g. 70000"
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  Asked once. Your balance grows from here as you log income and spending.
+                </p>
+              </div>
+            )}
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-xl">

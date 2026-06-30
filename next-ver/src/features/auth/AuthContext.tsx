@@ -6,7 +6,11 @@ interface AuthContextType {
   user: { id: string; email?: string | null } | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    openingBalance?: number
+  ) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -43,11 +47,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    openingBalance = 0
+  ) => {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, openingBalance }),
     });
     if (!res.ok) {
       const data = await res.json();

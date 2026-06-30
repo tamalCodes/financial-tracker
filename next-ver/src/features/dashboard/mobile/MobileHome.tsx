@@ -1,7 +1,9 @@
 "use client";
 
-import { FDS, FUNDS, PORTFOLIO_TOTAL, SIPS } from "./data";
-import { useFinanceDemo } from "./useFinanceDemo";
+import { useMemo } from "react";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useFinance } from "./useFinance";
+import { usePortfolioData } from "./usePortfolioData";
 import GreetingHeader from "./GreetingHeader";
 import HeroBalance from "./HeroBalance";
 import Transactions from "./Transactions";
@@ -10,15 +12,37 @@ import Investments from "./Investments";
 import FloatingActionBar from "./FloatingActionBar";
 import AddSheet from "./AddSheet";
 
-// Mobile home — composes the screen in handoff §4 order. Demo data only (no backend).
-// In a real app the OS draws the status bar; we skip the prototype's device frame.
+// Identity for the greeting (§2.6): derive a display name + initials from the auth email.
+function identityFrom(email: string | null | undefined) {
+  const local = (email ?? "").split("@")[0] ?? "";
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  const name = parts.length
+    ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ")
+    : "there";
+  const initials =
+    (parts.map((p) => p.charAt(0).toUpperCase()).join("").slice(0, 2)) || "U";
+  return { name, initials };
+}
+
+function greetingForHour(hour: number) {
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+// Mobile home — composes the screen in handoff §4 order, wired to the real API.
 export default function MobileHome() {
-  const f = useFinanceDemo();
+  const { user } = useAuth();
+  const f = useFinance();
+  const portfolio = usePortfolioData();
+
+  const { name, initials } = useMemo(() => identityFrom(user?.email), [user?.email]);
+  const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
 
   return (
     <div style={{ minHeight: "100vh", background: "#f1f5f9", display: "flex", justifyContent: "center" }}>
       <div style={{ width: 412, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
-        <GreetingHeader month={f.month} />
+        <GreetingHeader greeting={greeting} name={name} initials={initials} month={f.month} />
 
         <div
           style={{
@@ -39,7 +63,12 @@ export default function MobileHome() {
           />
           <Transactions transactions={f.txView} count={f.derived.count} logged={f.derived.logged} />
           <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} />
-          <Investments portfolioTotal={PORTFOLIO_TOTAL} fds={FDS} funds={FUNDS} sips={SIPS} />
+          <Investments
+            portfolioTotal={portfolio.portfolioTotal}
+            fds={portfolio.fds}
+            funds={portfolio.funds}
+            sips={portfolio.sips}
+          />
         </div>
       </div>
 
