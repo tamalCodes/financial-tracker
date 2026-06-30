@@ -18,7 +18,8 @@ Status: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked (n
       with check (auth.uid() = user_id)`. Idempotent (drop-if-exists). portfolio_totals/profiles keyed on `user_id` PK.
 - [x] Mirrored into `schema.sql`.
 - [x] Server client carries the user's auth cookie → `auth.uid()` resolves; routes still scope `.eq("user_id")`
-      (belt-and-suspenders). **Needs live-DB verification once 003 applied (§E + §D integration suite).**
+      (belt-and-suspenders). ✅ **Verified live (2026-06-30):** integration suite confirms RLS isolates users
+      and authed reads work.
 
 ## B. Signup opening balance under RLS (trigger, replaces route upsert) ✅
 - [x] `003_rls.sql`: `handle_new_user()` `SECURITY DEFINER` trigger on `auth.users` AFTER INSERT →
@@ -50,4 +51,12 @@ Status: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked (n
 
 ## F. Verify
 - [x] `npm run verify` green — 35 unit tests · typecheck (incl. `.itest.ts`) · lint · build (2026-06-30).
-- [ ] (after E) integration suite green against live/local DB.
+- [x] integration suite green against **live** DB — 3/3 (trigger seeds opening balance · money model ·
+      RLS isolation). Run: `set -a && . ./.env && set +a && npm run test:integration` (needs
+      `SUPABASE_SERVICE_ROLE_KEY` in `.env`).
+
+## G. Live finding — email confirmation (action required)
+- [ ] **Prod has email confirmation ON** → signup returns no session until the email link is clicked, but
+      `AuthForm` redirects to `/dashboard` expecting an immediate session. **Decision: turn it OFF**
+      (Supabase dashboard → Authentication → Providers → Email → disable "Confirm email"). Until then,
+      real signup UX is broken. After disabling, anon-path signup yields a session and the app works.
