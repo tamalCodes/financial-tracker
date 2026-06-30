@@ -29,10 +29,6 @@ export const useDashboardState = () => {
     [selectedMonthDate]
   );
   const canEditCurrentMonth = isViewingCurrentMonth;
-  const [startingBalanceInput, setStartingBalanceInput] = useState("");
-  const [showStartingBalanceForm, setShowStartingBalanceForm] = useState(false);
-  const [startingBalanceError, setStartingBalanceError] = useState("");
-  const [updatingStartingBalance, setUpdatingStartingBalance] = useState(false);
   const handleChangeMonth = (direction: "prev" | "next") => {
     if (direction === "next" && !canNavigateNextMonth) {
       return;
@@ -55,14 +51,6 @@ export const useDashboardState = () => {
     canNavigateNextMonth,
     isViewingCurrentMonth,
     canEditCurrentMonth,
-    startingBalanceInput,
-    setStartingBalanceInput,
-    showStartingBalanceForm,
-    setShowStartingBalanceForm,
-    startingBalanceError,
-    setStartingBalanceError,
-    updatingStartingBalance,
-    setUpdatingStartingBalance,
     handleChangeMonth,
   };
 };

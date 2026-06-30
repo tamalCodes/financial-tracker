@@ -106,12 +106,14 @@ All five resolved. Each now drives concrete work in §2/§4.
 
 ---
 
-## 3. Demo teardown
-- [ ] Delete temp route `src/app/demo/page.tsx`.
-- [ ] Delete `useFinanceDemo.ts`; trim `data.ts` per 2.1.
-- [ ] Retire legacy forms once AddSheet covers them: `ExpenseForm`, `CreditForm`, `InvestmentForm`
-      (+ `MonthlyBalance` type, `BalancePanel`, `StartingBalanceModal`).
-- [ ] Revert `.claude/launch.json` `autoPort` if not wanted.
+## 3. Demo teardown ✅
+- [x] Deleted temp route `src/app/demo/`.
+- [x] Deleted `useFinanceDemo.ts`; `data.ts` trimmed (2.1).
+- [x] Deleted the whole dead `dashboard/components/` dir (ExpenseForm/CreditForm/InvestmentForm,
+      TransactionSection/List, old desktop GreetingHeader/HeroBalance/Transactions, AmountInput/TagInput —
+      nothing outside the dir imported it). Removed `MonthlyBalance` type; pruned dead starting-balance
+      state from `useDashboardState`. `BalancePanel`/`StartingBalanceModal` were already gone (F1).
+- [ ] Revert `.claude/launch.json` `autoPort` if not wanted. *(cosmetic, optional)*
 
 ---
 

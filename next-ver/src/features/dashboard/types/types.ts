@@ -65,13 +65,6 @@ export interface Sip {
   created_at: string;
 }
 
-// DEPRECATED — starting/closing balance removed (DECISIONS D13). Kept only so legacy
-// frontend (BalancePanel/StartingBalanceModal) still type-resolves until PART C replaces it.
-export interface MonthlyBalance {
-  starting_balance: number;
-  closing_balance: number;
-}
-
 // Per-month figures + cumulative balance returned by GET /api/dashboard.
 export interface MonthSummary {
   leftInBank: number; // cumulative across all months <= current
