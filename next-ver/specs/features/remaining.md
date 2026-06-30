@@ -11,17 +11,15 @@ balance). Demo + dead legacy code torn down.
 
 ---
 
-## 1. Email confirmation — PARKED ✅ (revisit later)
-- [x] Decision: not needed now. Parked. Backend correctness does NOT depend on it — the live
-      integration suite already verifies signup-trigger → opening balance → money model → RLS end to end
-      (via the service-role admin path, 3/3 green).
-- [ ] **Later:** prod still has "Confirm email" ON, so the real anon signup→`/dashboard` redirect won't
-      have a session until confirmed. When picked up: either disable it in the dashboard, or add a
-      "check your email" flow to `AuthForm`. Not blocking current work.
+## 1. Email confirmation — RESOLVED ✅ (2026-06-30)
+- [x] "Confirm email" turned **OFF** in the Supabase dashboard (testing phase, no emails). Signup now
+      yields a session immediately; the `email rate limit exceeded` block is gone.
+- [ ] **Later (real launch):** re-enable confirmation + add a "check your email" flow to `AuthForm`.
 
-## 2. Final app-path (anon) smoke — PARKED with #1 ✅
-- [x] Backend end-to-end already proven by the live integration suite. The anon UI-path smoke is parked
-      together with email confirmation (can't get an anon session until #1 is resolved).
+## 2. Final app-path (anon) smoke — DONE ✅ (2026-06-30)
+- [x] Real anon signup path verified end to end — **9/9**: signup w/ ₹70k → trigger seeds profile →
+      baseline 70000 → expense → 69500 → income → 79500 → paid bill → 78500 → persists across new
+      session → RLS isolates users → RLS blocks cross-user writes. Test users cleaned up.
 
 ## 3. Deferred UI affordances — NEED DESIGN DECISIONS (you) ⏸
 No DC mockup exists for these; backend routes are ready. Decide UX before I build:
