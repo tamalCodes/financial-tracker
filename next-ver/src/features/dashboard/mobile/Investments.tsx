@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BODY, DISPLAY, type Fd, type Fund, type SipRow } from "./data";
+import Skeleton from "./Skeleton";
 
 // Portfolio panel — pixel from Investments.dc.html (handoff §5.4). Tab = local UI state.
 interface Props {
@@ -9,6 +10,23 @@ interface Props {
   fds: Fd[];
   funds: Fund[];
   sips: SipRow[];
+  loading?: boolean;
+}
+
+function SkeletonRows({ count }: { count: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={`skel-${i}`} style={ROW}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0, flex: 1 }}>
+            <Skeleton width={`${48 + ((i * 17) % 28)}%`} height={13} />
+            <Skeleton width={80} height={10} />
+          </div>
+          <Skeleton width={56} height={14} />
+        </div>
+      ))}
+    </>
+  );
 }
 
 const CARD_SHADOW =
@@ -56,7 +74,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-export default function Investments({ portfolioTotal, fds, funds, sips }: Props) {
+export default function Investments({ portfolioTotal, fds, funds, sips, loading }: Props) {
   const [tab, setTab] = useState<"holdings" | "sips">("holdings");
 
   return (
@@ -75,18 +93,22 @@ export default function Investments({ portfolioTotal, fds, funds, sips }: Props)
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <span style={{ font: `500 12.5px ${BODY}`, color: "#64748b" }}>Portfolio value</span>
-        <span
-          style={{
-            fontFamily: DISPLAY,
-            fontWeight: 600,
-            fontSize: 30,
-            letterSpacing: "-0.025em",
-            color: "#0f172a",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          ₹{portfolioTotal}
-        </span>
+        {loading ? (
+          <Skeleton width={150} height={30} radius={9} />
+        ) : (
+          <span
+            style={{
+              fontFamily: DISPLAY,
+              fontWeight: 600,
+              fontSize: 30,
+              letterSpacing: "-0.025em",
+              color: "#0f172a",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            ₹{portfolioTotal}
+          </span>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 4, background: "#f1f5f9", borderRadius: 13, padding: 4 }}>
@@ -98,7 +120,18 @@ export default function Investments({ portfolioTotal, fds, funds, sips }: Props)
         </TabButton>
       </div>
 
-      {tab === "holdings" ? (
+      {loading ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+            <span style={SECTION_LABEL}>Fixed Deposits</span>
+            <SkeletonRows count={2} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+            <span style={SECTION_LABEL}>Mutual Funds</span>
+            <SkeletonRows count={3} />
+          </div>
+        </div>
+      ) : tab === "holdings" ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
             <span style={SECTION_LABEL}>Fixed Deposits</span>

@@ -73,13 +73,6 @@ export default function Transactions({
           <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
             Recent payments
           </span>
-          {loading ? (
-            <Skeleton width={84} height={12} style={{ marginTop: 2 }} />
-          ) : (
-            <span style={{ font: `500 12px ${BODY}`, color: "#94a3b8" }}>
-              {count} this month
-            </span>
-          )}
         </div>
         <div style={{ position: "relative", flex: "none" }}>
           {loading ? (
@@ -186,19 +179,6 @@ export default function Transactions({
               {tx.merchant}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-              <span
-                style={{
-                  flex: "none",
-                  font: `600 10.5px ${DISPLAY}`,
-                  color: tx.text,
-                  background: `rgba(${tx.rgb},0.13)`,
-                  border: `1px solid rgba(${tx.rgb},0.28)`,
-                  borderRadius: 999,
-                  padding: "2px 8px",
-                }}
-              >
-                {tx.category}
-              </span>
               <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{tx.date}</span>
             </div>
           </div>

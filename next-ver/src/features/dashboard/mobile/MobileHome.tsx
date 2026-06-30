@@ -7,6 +7,7 @@ import { usePortfolioData } from "./usePortfolioData";
 import GreetingHeader from "./GreetingHeader";
 import HeroBalance from "./HeroBalance";
 import Transactions from "./Transactions";
+import Income from "./Income";
 import BillsEmis from "./BillsEmis";
 import Investments from "./Investments";
 import FloatingActionBar from "./FloatingActionBar";
@@ -72,6 +73,7 @@ export default function MobileHome() {
             onPageChange={f.setExpPage}
             loading={f.loading}
           />
+          <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
           <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} loading={f.loading} />
           <Investments
             portfolioTotal={portfolio.portfolioTotal}

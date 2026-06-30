@@ -28,6 +28,7 @@ export function useFinance() {
     useDashboardState();
   const {
     summary,
+    credits,
     expenses,
     expensesTotal,
     loggedTotal,
@@ -137,6 +138,27 @@ export function useFinance() {
     [bills]
   );
 
+  const incomeView = useMemo(
+    () =>
+      credits.map((c: Credit) => ({
+        id: c.id,
+        name: c.description,
+        date: c.created_at ? formatTxnDate(c.created_at) : "",
+        amount: fmt(Number(c.amount)),
+      })),
+    [credits]
+  );
+
+  const incomeTotal = useMemo(
+    () => fmt(credits.reduce((s, c) => s + Number(c.amount), 0)),
+    [credits]
+  );
+
+  const incomeCompact = useMemo(
+    () => fmtCompact(credits.reduce((s, c) => s + Number(c.amount), 0)),
+    [credits]
+  );
+
   // ── Mutations ────────────────────────────────────────────────────────────────
   const prevMonth = () => handleChangeMonth("prev");
   const nextMonth = () => handleChangeMonth("next");
@@ -231,6 +253,9 @@ export function useFinance() {
     bills: billsView,
     paidTotal,
     pay,
+    income: incomeView,
+    incomeTotal,
+    incomeCompact,
     // sheet
     sheet,
     openSheet,
