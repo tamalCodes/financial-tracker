@@ -1,0 +1,31 @@
+# Local Supabase config for `supabase start` / `supabase db reset`.
+# Migrations in supabase/migrations/*.sql are applied in order, then seed.sql runs.
+project_id = "financial-tracker"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+[auth.email]
+# Disable email confirmation locally so signup yields a usable session in tests.
+enable_confirmations = false

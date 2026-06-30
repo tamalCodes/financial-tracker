@@ -114,6 +114,15 @@ create table if not exists public.portfolio_totals (
   value    numeric not null default 0
 );
 
+-- profiles (per-user; opening bank balance set once at signup) -----------------
+-- opening_balance is NOT income; it is folded into the cumulative Left-in-bank
+-- read (opening + credits − expenses − paid bills − investments). See migration 002.
+create table if not exists public.profiles (
+  user_id         uuid primary key references auth.users (id) on delete cascade,
+  opening_balance numeric not null default 0,
+  created_at      timestamptz not null default now()
+);
+
 -- monthly_balances — DEPRECATED ----------------------------------------------
 -- Kept for back-compat; unused since the mobile redesign. Left-in-bank is computed
 -- on read (cumulative), so no closing/starting balance is maintained.
@@ -126,5 +135,18 @@ create table if not exists public.monthly_balances (
   unique (user_id, month)
 );
 
--- RLS: not enforced in code (queries scope by user_id). If you enable RLS, add
--- policies like:  using (auth.uid() = user_id)  on each table.
+-- RLS — enabled in migration 003. Every per-user table has a single owner policy:
+--   alter table public.<t> enable row level security;
+--   create policy <t>_owner on public.<t> for all to authenticated
+--     using (auth.uid() = user_id) with check (auth.uid() = user_id);
+-- Tables: credits, expenses, investments, bills, holdings, sips, portfolio_totals,
+-- profiles, monthly_balances. The server client carries the user's auth cookie, so
+-- auth.uid() resolves; routes additionally scope by user_id (belt-and-suspenders).
+
+-- profiles seeded at signup by a SECURITY DEFINER trigger (bypasses RLS, runs before
+-- the user has a session). Opening balance comes from auth user metadata:
+--   create function public.handle_new_user() ... security definer:
+--     insert into public.profiles (user_id, opening_balance)
+--     values (new.id, coalesce((new.raw_user_meta_data->>'opening_balance')::numeric, 0));
+--   create trigger on_auth_user_created after insert on auth.users
+--     for each row execute function public.handle_new_user();

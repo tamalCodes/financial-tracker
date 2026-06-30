@@ -1,0 +1,8 @@
+-- Local seed (runs after migrations on `supabase db reset`).
+--
+-- Test users are created by the integration suite via the auth admin API
+-- (supabase.auth.admin.createUser) — NOT here — because auth.users has many
+-- required columns and the handle_new_user trigger (003) seeds profiles from
+-- signup metadata. Keeping user creation in test setup keeps this file portable.
+--
+-- Add only reference/lookup rows that don't depend on a user_id below.
