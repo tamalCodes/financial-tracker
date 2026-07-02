@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
 
@@ -17,9 +16,6 @@ interface TxView {
 
 interface Props {
   transactions: TxView[];
-  count: number;
-  logged: string; // full grouped total, e.g. "28,134" — used in the tooltip
-  loggedCompact: string; // chip label, e.g. "28.1k"
   page: number;
   pages: number;
   onPageChange: (page: number) => void;
@@ -31,21 +27,11 @@ const CARD_SHADOW =
 
 export default function Transactions({
   transactions,
-  count,
-  logged,
-  loggedCompact,
   page,
   pages,
   onPageChange,
   loading,
 }: Props) {
-  const [tipOpen, setTipOpen] = useState(false);
-
-  // TEMP diagnostic — confirms the paginated component renders (browser console).
-  console.log(
-    `[FT][Transactions] rows=${transactions.length} page=${page} pages=${pages}`
-  );
-
   return (
     <div
       style={{
@@ -73,62 +59,6 @@ export default function Transactions({
           <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
             Recent payments
           </span>
-        </div>
-        <div style={{ position: "relative", flex: "none" }}>
-          {loading ? (
-            <Skeleton width={56} height={24} radius={999} />
-          ) : (
-          <>
-          <button
-            type="button"
-            onClick={() => setTipOpen((v) => !v)}
-            onBlur={() => setTipOpen(false)}
-            aria-expanded={tipOpen}
-            aria-label={`Total logged ₹${logged} across ${count} payments`}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              font: `600 11.5px ${DISPLAY}`,
-              color: "#b91c1c",
-              background:
-                "linear-gradient(135deg,rgba(239,68,68,0.18),rgba(239,68,68,0.09))",
-              border: "1px solid rgba(239,68,68,0.34)",
-              borderRadius: 999,
-              padding: "5px 10px",
-              fontVariantNumeric: "tabular-nums",
-              whiteSpace: "nowrap",
-              cursor: "pointer",
-            }}
-          >
-            ₹{loggedCompact}
-          </button>
-          {tipOpen && (
-            <div
-              role="tooltip"
-              style={{
-                position: "absolute",
-                top: "calc(100% + 8px)",
-                right: 0,
-                zIndex: 10,
-                font: `500 11.5px ${BODY}`,
-                color: "#e2e8f0",
-                background: "rgba(15,23,42,0.92)",
-                backdropFilter: "blur(6px)",
-                border: "1px solid rgba(148,163,184,0.25)",
-                borderRadius: 12,
-                padding: "8px 11px",
-                boxShadow: "0 12px 30px -16px rgba(15,23,42,0.7)",
-                whiteSpace: "nowrap",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              <span style={{ color: "#fff", fontWeight: 600 }}>₹{logged}</span> spent ·{" "}
-              {count} payment{count === 1 ? "" : "s"}
-            </div>
-          )}
-          </>
-          )}
         </div>
       </div>
 

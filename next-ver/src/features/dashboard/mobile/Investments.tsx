@@ -150,8 +150,11 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading 
 
           <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
             <span style={SECTION_LABEL}>Mutual Funds</span>
-            {funds.map((fund) => (
-              <div key={fund.name} style={ROW}>
+            {funds.map((fund, i) => (
+              <div
+                key={fund.name}
+                style={{ ...ROW, borderBottom: i === funds.length - 1 ? "none" : ROW.borderBottom }}
+              >
                 <span
                   style={{
                     font: `600 13.5px ${BODY}`,
@@ -174,22 +177,20 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading 
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
           <span style={SECTION_LABEL}>Active SIPs</span>
-          {sips.map((sip) => (
-            <div key={sip.name} style={ROW}>
+          {sips.map((sip, i) => (
+            <div
+              key={sip.name}
+              style={{ ...ROW, borderBottom: i === sips.length - 1 ? "none" : ROW.borderBottom }}
+            >
               <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
                 <span style={{ font: `600 13.5px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {sip.name}
                 </span>
                 <span style={{ font: `500 11px ${BODY}`, color: "#94a3b8" }}>Due {sip.due}</span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2, flex: "none" }}>
-                <span style={{ font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>
-                  ₹{sip.monthly}/mo
-                </span>
-                <span style={{ font: `500 11px ${BODY}`, color: "#94a3b8", fontVariantNumeric: "tabular-nums" }}>
-                  Paid ₹{sip.paid}
-                </span>
-              </div>
+              <span style={{ font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums", flex: "none" }}>
+                ₹{sip.monthly}
+              </span>
             </div>
           ))}
         </div>

@@ -65,16 +65,17 @@ export default function MobileHome() {
           />
           <Transactions
             transactions={f.txView}
-            count={f.derived.count}
-            logged={f.derived.logged}
-            loggedCompact={f.derived.loggedCompact}
             page={f.expPage}
             pages={f.expPages}
             onPageChange={f.setExpPage}
             loading={f.loading}
           />
-          <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
-          <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} loading={f.loading} />
+          {(f.loading || f.income.length > 0) && (
+            <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
+          )}
+          {(f.loading || f.bills.length > 0) && (
+            <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} loading={f.loading} />
+          )}
           <Investments
             portfolioTotal={portfolio.portfolioTotal}
             fds={portfolio.fds}
