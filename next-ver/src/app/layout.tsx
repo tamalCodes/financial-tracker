@@ -1,5 +1,4 @@
 import { AuthProvider } from "@/features/auth/AuthContext";
-import InstallPrompt from "@/features/pwa/InstallPrompt";
 import ServiceWorkerRegister from "@/features/pwa/ServiceWorkerRegister";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
@@ -46,7 +45,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
-          <InstallPrompt />
           <ServiceWorkerRegister />
         </AuthProvider>
       </body>

@@ -13,17 +13,17 @@ Legend: 🔴 blocker · 🟠 important · 🟡 nice-to-have · [x] done
 Users must be nudged to install. Chrome/Android fires `beforeinstallprompt`; iOS
 Safari does NOT — it needs a manual instructions banner.
 
-- [ ] 🔴 1.1 `InstallPrompt` client component in `src/features/pwa/`:
+- [x] 🔴 1.1 `InstallPrompt` client component in `src/features/pwa/`:
   - Capture `beforeinstallprompt` event, `preventDefault()`, stash it.
   - Render a dismissible banner/toast: "Install Financial Tracker on your phone".
   - On click → `deferredPrompt.prompt()`; record outcome.
-- [ ] 🔴 1.2 iOS path (no `beforeinstallprompt`): detect iOS Safari + not already
+- [x] 🔴 1.2 iOS path (no `beforeinstallprompt`): detect iOS Safari + not already
       standalone (`navigator.standalone` / `display-mode: standalone`), show a hint:
       "Tap Share → Add to Home Screen".
-- [ ] 🟠 1.3 Don't nag: persist "dismissed" / "installed" in `localStorage`; suppress
-      for N days. Hide entirely once `appinstalled` fires or running standalone.
-- [ ] 🟠 1.4 Mount `InstallPrompt` in `(app)` layout so only logged-in users see it
-      (or on landing — decide placement).
+- [x] 🟠 1.3 Don't nag: persist "dismissed" / "installed" in `localStorage`; suppress
+      for N days. Hide entirely once `appinstalled` fires or running standalone. (14-day TTL, `appinstalled` handled.)
+- [x] 🟠 1.4 Mount `InstallPrompt` in `(app)` layout so only logged-in users see it
+      (or on landing — decide placement). Done: new `app/(app)/layout.tsx` mounts it; removed from root `layout.tsx`. `ServiceWorkerRegister` stays root (needs to run everywhere).
 - [ ] 🟡 1.5 Track install funnel (shown / accepted / dismissed) for later analytics.
 
 ## 2. PWA correctness (installability + offline)
@@ -33,13 +33,13 @@ Safari does NOT — it needs a manual instructions banner.
       SVG-only fails iOS + weakens Android install quality.
 - [ ] 🔴 2.2 `manifest.json`: reference the PNGs with `purpose: "any"` and
       `"maskable"`; keep `display: standalone`, `start_url`, `theme_color`.
-- [ ] 🔴 2.3 `layout.tsx` metadata: add `appleWebApp: { capable, statusBarStyle, title }`
-      and confirm `themeColor`.
+- [x] 🔴 2.3 `layout.tsx` metadata: add `appleWebApp: { capable, statusBarStyle, title }`
+      and confirm `themeColor`. (Done: `appleWebApp` + `viewport.themeColor` present.)
 - [ ] 🟠 2.4 Auto-reload on SW update: in `ServiceWorkerRegister`, listen for
       `controllerchange` and `location.reload()` once (guard flag) so a deploy shows
-      instantly — no manual refresh. (Follows the cache-first fix already shipped.)
-- [ ] 🟠 2.5 Offline fallback: cache the app shell; serve an `/offline` page when the
-      network is down and no cache hit.
+      instantly — no manual refresh. NOT DONE: register does `skipWaiting` but no `controllerchange` reload.
+- [~] 🟠 2.5 Offline fallback: cache the app shell; serve an `/offline` page when the
+      network is down and no cache hit. PARTIAL: `sw.js` navigate falls back to cached `/`; no dedicated `/offline` page.
 - [ ] 🟡 2.6 iOS splash screens (`apple-touch-startup-image`) — cosmetic.
 - [ ] 🔴 2.7 Verify with Lighthouse PWA audit (installable, offline, HTTPS) — target
       all green. Test real install on Android Chrome + iOS Safari.
@@ -58,9 +58,9 @@ Safari does NOT — it needs a manual instructions banner.
       → query always scoped `.eq("user_id", userId)`. Audit all 12 routes for the guard.
 - [ ] 🔴 3.4 Supabase Row Level Security (RLS) enabled on every table, policy = owner-only.
       Do not depend on app-layer `user_id` filtering alone.
-- [ ] 🔴 3.5 Secrets: service-role key server-only (never `NEXT_PUBLIC_*`). Confirm
+- [x] 🔴 3.5 Secrets: service-role key server-only (never `NEXT_PUBLIC_*`). Confirm
       `lib/supabase/server.ts` stays `import "server-only"`. `.env` is gitignored ✅;
-      never commit real keys.
+      never commit real keys. (Verified: `server.ts` line 1 = `import "server-only"`.)
 - [ ] 🟠 3.6 Cookies: auth cookies `HttpOnly`, `Secure`, `SameSite=Lax`. Verify SSR
       client sets these in prod.
 - [ ] 🟠 3.7 Dependency + secret scanning: `npm audit` in CI; enable GitHub Dependabot
