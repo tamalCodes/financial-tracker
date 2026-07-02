@@ -37,9 +37,10 @@ Safari does NOT — it needs a manual instructions banner.
       `metadata.icons` (icon + `apple-touch-icon`) in `layout.tsx` so Next emits the links.
 - [x] 🔴 2.3 `layout.tsx` metadata: add `appleWebApp: { capable, statusBarStyle, title }`
       and confirm `themeColor`. (Done: `appleWebApp` + `viewport.themeColor` present.)
-- [ ] 🟠 2.4 Auto-reload on SW update: in `ServiceWorkerRegister`, listen for
+- [x] 🟠 2.4 Auto-reload on SW update: in `ServiceWorkerRegister`, listen for
       `controllerchange` and `location.reload()` once (guard flag) so a deploy shows
-      instantly — no manual refresh. NOT DONE: register does `skipWaiting` but no `controllerchange` reload.
+      instantly — no manual refresh. Done: `refreshing` guard + `hadController` check so
+      the first-ever registration doesn't self-reload.
 - [~] 🟠 2.5 Offline fallback: cache the app shell; serve an `/offline` page when the
       network is down and no cache hit. PARTIAL: `sw.js` navigate falls back to cached `/`; no dedicated `/offline` page.
 - [ ] 🟡 2.6 iOS splash screens (`apple-touch-startup-image`) — cosmetic.
@@ -77,8 +78,10 @@ Safari does NOT — it needs a manual instructions banner.
 - [ ] 🟠 4.1 Financial data is personal — add a short privacy note (what's stored, where,
       that it's per-user isolated). Even a `PRIVACY.md`.
 - [ ] 🟠 4.2 Account deletion / data export path (user can wipe their data).
-- [ ] 🟡 4.3 SW must never cache authenticated API responses to disk cache — already
-      enforced (`/api/*` = network-only). Keep it that way; re-audit if cache rules change.
+- [x] 🟡 4.3 SW must never cache authenticated API responses to disk cache — enforced in
+      `sw.js` v4: cross-origin (all Supabase `*.supabase.co`) AND same-origin `/api/*` are
+      passthrough (SW stores nothing); navigations are network-first with no cache write.
+      Only `/_next/static/*` (immutable) + non-sensitive public assets are cached.
 - [ ] 🟡 4.4 Log hygiene: no tokens / PII in server logs or client `console`.
 
 ## 5. Agent-development readiness (gaps in current tree)

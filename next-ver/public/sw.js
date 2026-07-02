@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const CACHE_NAME = `financial-tracker-${CACHE_VERSION}`;
 const urlsToCache = ["/", "/manifest.json", "/icon.svg"];
 
@@ -40,21 +40,29 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  // Never cache API calls — always hit the network so data stays fresh.
+  // HARD RULE — never cache any data/API response, not a single byte.
+  // This is a financial app used across desktop + phone: a cached response
+  // could show one device stale balances the other has already changed.
+  // Two escape hatches, both passthrough (browser fetches, SW stores nothing):
+  //   1. Cross-origin — includes every Supabase call (*.supabase.co): auth,
+  //      REST, realtime. These never touch the cache.
+  //   2. Same-origin /api/* — our own route handlers.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
   if (url.pathname.startsWith("/api/")) {
     return;
   }
 
-  // Navigations: network-first, fall back to cached shell when offline.
+  // Navigations: network-first, no cache write (SSR pages can embed user data).
+  // Fall back to the precached shell only when fully offline.
   if (request.mode === "navigate") {
     event.respondWith(fetch(request).catch(() => caches.match("/")));
     return;
   }
 
   // Immutable, content-hashed build assets: safe to serve cache-first.
-  const isImmutable =
-    url.origin === self.location.origin &&
-    url.pathname.startsWith("/_next/static/");
+  const isImmutable = url.pathname.startsWith("/_next/static/");
 
   if (isImmutable) {
     event.respondWith(
@@ -72,7 +80,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Everything else: network-first, fall back to cache only when offline.
+  // Remaining same-origin GETs are non-sensitive static assets (icons, manifest,
+  // public files). Network-first with a cache write so the shell works offline.
   event.respondWith(
     fetch(request)
       .then((response) => {
