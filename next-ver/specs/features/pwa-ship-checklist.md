@@ -28,11 +28,13 @@ Safari does NOT — it needs a manual instructions banner.
 
 ## 2. PWA correctness (installability + offline)
 
-- [ ] 🔴 2.1 Icons: add real PNGs to `public/` — `icon-192.png`, `icon-512.png`,
+- [x] 🔴 2.1 Icons: add real PNGs to `public/` — `icon-192.png`, `icon-512.png`,
       `apple-touch-icon.png` (180×180), and a maskable `icon-maskable-512.png`.
-      SVG-only fails iOS + weakens Android install quality.
-- [ ] 🔴 2.2 `manifest.json`: reference the PNGs with `purpose: "any"` and
-      `"maskable"`; keep `display: standalone`, `start_url`, `theme_color`.
+      SVG-only fails iOS + weakens Android install quality. (Generated via sharp from
+      the ₹ mark; maskable glyph sized into the safe zone.)
+- [x] 🔴 2.2 `manifest.json`: reference the PNGs with `purpose: "any"` and
+      `"maskable"`; keep `display: standalone`, `start_url`, `theme_color`. Also wired
+      `metadata.icons` (icon + `apple-touch-icon`) in `layout.tsx` so Next emits the links.
 - [x] 🔴 2.3 `layout.tsx` metadata: add `appleWebApp: { capable, statusBarStyle, title }`
       and confirm `themeColor`. (Done: `appleWebApp` + `viewport.themeColor` present.)
 - [ ] 🟠 2.4 Auto-reload on SW update: in `ServiceWorkerRegister`, listen for
