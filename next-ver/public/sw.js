@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `financial-tracker-${CACHE_VERSION}`;
 const urlsToCache = ["/", "/manifest.json", "/icon.svg"];
 
@@ -38,25 +38,50 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const url = new URL(request.url);
+
+  // Never cache API calls — always hit the network so data stays fresh.
+  if (url.pathname.startsWith("/api/")) {
+    return;
+  }
+
+  // Navigations: network-first, fall back to cached shell when offline.
   if (request.mode === "navigate") {
+    event.respondWith(fetch(request).catch(() => caches.match("/")));
+    return;
+  }
+
+  // Immutable, content-hashed build assets: safe to serve cache-first.
+  const isImmutable =
+    url.origin === self.location.origin &&
+    url.pathname.startsWith("/_next/static/");
+
+  if (isImmutable) {
     event.respondWith(
-      fetch(request)
-        .then((response) => response)
-        .catch(() => caches.match("/"))
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        });
+      })
     );
     return;
   }
 
+  // Everything else: network-first, fall back to cache only when offline.
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
+    fetch(request)
+      .then((response) => {
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(request, responseClone);
         });
         return response;
-      });
-    })
+      })
+      .catch(() => caches.match(request))
   );
 });
