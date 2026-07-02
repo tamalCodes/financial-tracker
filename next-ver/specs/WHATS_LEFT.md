@@ -3,6 +3,15 @@
 Consolidated open work. Two tracks: design-system migration + agentic-coding readiness.
 Full detail/log: [DESIGN_SYSTEM_MIGRATION.md](./DESIGN_SYSTEM_MIGRATION.md).
 
+## Track C — PWA ship (install, security, safety, agent-dev)
+Full checklist: [features/pwa-ship-checklist.md](./features/pwa-ship-checklist.md).
+Strategy / why-not-Expo: [features/mobile-app-strategy.md](./features/mobile-app-strategy.md).
+- [x] Install experience (§1) — `InstallPrompt` component (Android `beforeinstallprompt`
+      + iOS Share hint, 14-day dismiss, hides when standalone). Mounted in root layout.
+- [ ] PWA correctness (§2) — PNG/maskable icons, SW auto-reload, offline shell, Lighthouse
+- [ ] Security (§3) — headers/CSP, shared-store rate limit, RLS audit
+- [ ] Safety/privacy (§4) · Agent-dev gaps (§5) · Deploy (§6)
+
 ## Track A — Design system migration
 - [ ] 0.1b — accessibility-review (touch targets 44px, glass contrast, focus) — DEFERRED by user
 - [ ] 0.1c — design-critique (hierarchy/spacing) — DEFERRED by user
