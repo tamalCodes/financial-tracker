@@ -135,7 +135,7 @@ Each phase: implement → `tsc --noEmit` + lint + vitest → commit on `main`. C
 
 # PART C — Frontend phases (only after PART B green)
 
-High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `shared/ui/*`. 412px viewport; QA vs `screenshots/01..06`.
+High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `shared/ui/*`. 412px design viewport; QA vs `screenshots/01..06`. **As built the shell is fluid** (`MobileHome`): `width:100%, maxWidth:640` — it fills the device edge-to-edge (only the 16px content padding as side gutter) instead of capping at 412px, which left large empty side rails on phones whose viewport is wider than 412 (PWA fix).
 
 ## Phase F0 — Tokens & fonts
 - Load **Geist** (`next/font`), add `--font-body`. Split `--color-investment` → violet. Add category color tokens (Food `245,158,11`/`#b45309`, Shopping `139,92,246`/`#6d28d9`, Transport `14,165,233`/`#0369a1`, Health `16,185,129`/`#047857`, Groceries `20,184,166`/`#0f766e`, Other `100,116,139`/`#475569`). Add glass-tile recipe util. Document in DESIGN_SYSTEM.md (currently omits credit/expense/investment + glass — WHATS_LEFT).
@@ -157,7 +157,7 @@ High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `
 - Portfolio value (manual, inline-editable → `/api/portfolio`) + segmented Holdings/Active SIPs control (local UI state). Holdings = FD + Mutual Funds sections (`/api/holdings`); SIPs = monthly/due/paid rows (`/api/sips`). Manual add/edit. Handoff §5.4.
 
 ## Phase F6 — Compose home + verify
-- Rework `Dashboard.tsx` (mobile): stack GreetingHeader → HeroBalance → Transactions → BillsEmis → Investments (`flex-col gap-16px`, padding `4px 16px`, **104px** bottom), bg `#f1f5f9`; overlay FloatingActionBar + AddSheet. Keep `useDashboardState` month nav + `useDashboardData` (reworked for new payload + bills/portfolio).
+- Rework `Dashboard.tsx` (mobile): stack GreetingHeader → HeroBalance → Transactions → BillsEmis → Investments (`flex-col gap-16px`, padding `4px 16px`, **104px** bottom), bg `#f1f5f9`; overlay FloatingActionBar + AddSheet. Keep `useDashboardState` month nav + `useDashboardData` (reworked for new payload + bills/portfolio). Centering shell is **fluid** (`width:100%, maxWidth:640`), not a fixed 412px column — see PART C intro.
 - Verify: `npm run verify` + react-best-practices + Claude_Preview mobile screenshots vs handoff. Accessibility: 44px touch targets (WHATS_LEFT 0.1b).
 
 ---

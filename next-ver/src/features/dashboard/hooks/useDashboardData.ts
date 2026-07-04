@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Bill,
   Credit,
+  EmiProgress,
   Expense,
   Investment,
   MonthSummary,
@@ -17,6 +18,7 @@ interface DashboardData {
   loggedTotal: number;
   investments: Investment[];
   bills: Bill[];
+  emis: EmiProgress[];
 }
 
 const EMPTY_SUMMARY: MonthSummary = {
@@ -34,6 +36,7 @@ export const useDashboardData = (currentMonth: string) => {
   const [loggedTotal, setLoggedTotal] = useState(0);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [bills, setBills] = useState<Bill[]>([]);
+  const [emis, setEmis] = useState<EmiProgress[]>([]);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -60,10 +63,6 @@ export const useDashboardData = (currentMonth: string) => {
         throw new Error("Failed to load dashboard data");
       }
       const payload = (await res.json()) as DashboardData;
-      // TEMP diagnostic — confirms the new payload shape reaches the client (browser console).
-      console.log(
-        `[FT][client] payload expenses=${payload.expenses?.length} expensesTotal=${payload.expensesTotal} loggedTotal=${payload.loggedTotal}`
-      );
       if (isMountedRef.current) {
         setSummary(payload.summary ?? EMPTY_SUMMARY);
         setCredits(payload.credits ?? []);
@@ -72,6 +71,7 @@ export const useDashboardData = (currentMonth: string) => {
         setLoggedTotal(payload.loggedTotal ?? 0);
         setInvestments(payload.investments ?? []);
         setBills(payload.bills ?? []);
+        setEmis(payload.emis ?? []);
       }
     } catch (error) {
       console.error(error);
@@ -99,6 +99,7 @@ export const useDashboardData = (currentMonth: string) => {
     investments,
     bills,
     setBills,
+    emis,
     isBootstrapping,
     isRefreshing,
     reload: load,

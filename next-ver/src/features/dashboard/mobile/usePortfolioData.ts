@@ -32,19 +32,21 @@ export function usePortfolioData() {
     let alive = true;
     (async () => {
       try {
-        const [pRes, hRes, sRes] = await Promise.all([
-          fetch("/api/portfolio"),
-          fetch("/api/holdings"),
-          fetch("/api/sips"),
-        ]);
-        const p = pRes.ok ? ((await pRes.json()) as { value: number }) : { value: 0 };
-        const h = hRes.ok ? ((await hRes.json()) as { items: Holding[] }) : { items: [] };
-        const s = sRes.ok ? ((await sRes.json()) as { items: Sip[] }) : { items: [] };
+        // One request instead of three (portfolio + holdings + sips) — see
+        // /api/portfolio-panel. Cuts the mobile home's initial fan-out.
+        const res = await fetch("/api/portfolio-panel");
+        const data = res.ok
+          ? ((await res.json()) as {
+              value: number;
+              holdings: Holding[];
+              sips: Sip[];
+            })
+          : { value: 0, holdings: [], sips: [] };
         if (!alive) return;
 
-        setPortfolioTotal(fmt(Number(p.value ?? 0)));
+        setPortfolioTotal(fmt(Number(data.value ?? 0)));
         setFds(
-          h.items
+          (data.holdings ?? [])
             .filter((x) => x.kind === "fd")
             .map((x) => ({
               name: x.name,
@@ -54,12 +56,12 @@ export function usePortfolioData() {
             }))
         );
         setFunds(
-          h.items
+          (data.holdings ?? [])
             .filter((x) => x.kind === "mutual_fund")
             .map((x) => ({ name: x.name, current: fmt(Number(x.current_value)) }))
         );
         setSips(
-          s.items.map((x) => ({
+          (data.sips ?? []).map((x) => ({
             name: x.name,
             monthly: fmt(Number(x.monthly)),
             due: x.due_date ?? "",

@@ -46,11 +46,22 @@
 
 ## State & data fetching pattern
 Mobile: `useFinance(month)` fetches `/api/dashboard?month=`, exposes `summary` (leftInBank + tiles)
-+ `credits/expenses/investments/bills` plus optimistic add/edit/remove per resource and `reload()`.
-Expenses are paginated (D20) — page 1 in the dashboard payload, 2+ via `GET /api/expenses?page=`.
++ `credits/expenses/investments/bills` **+ `emis`** plus optimistic add/edit/remove per resource and
+`reload()`. Expenses are paginated (D20) — page 1 in the dashboard payload, 2+ via `GET /api/expenses?page=`.
 Mutations hit the resource routes, then the hook patches local state optimistically or `reload()`s.
 (Legacy desktop `useDashboardState`/`useDashboardData` were torn down with the demo — commit
 `refactor(dashboard): teardown demo`.)
+
+**Initial-paint fan-out (perf).** The mobile home first paint makes **two** GETs, not five:
+`/api/dashboard?month=` and `/api/portfolio-panel`.
+- `/api/dashboard` payload folds in **EMI progress** (`emis`, all-months rollup) via
+  `loadEmiProgress` (`lib/api/emis.ts`) inside `loadDashboardData`'s `Promise.all` — so `useFinance`
+  no longer fires a separate `GET /api/emis` on mount; emis refresh for free on every `reload()`.
+- `/api/portfolio-panel` (`lib/`-free, route-inline) returns `{ value, holdings, sips }` in one
+  `Promise.all`, consolidating the old `/api/portfolio` + `/api/holdings` + `/api/sips` trio that
+  `usePortfolioData` used to fetch. Those per-resource routes remain for **mutations** only.
+Result: 5 serverless invocations → 2 on cold start. `GET /api/emis` still exists (unused by the
+mobile client) and shares the `loadEmiProgress` rollup.
 
 ## Security headers (CSP + hardening) — D19
 `next.config.ts` `headers()` sends on every route: **Content-Security-Policy** (default-src 'self';

@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { formatTxnDate } from "@/features/dashboard/utils/dates";
 import type {
   Bill,
   Credit,
-  EmiProgress,
   Expense,
   Investment,
 } from "@/features/dashboard/types/types";
@@ -56,6 +55,7 @@ export function useFinance() {
     loggedTotal,
     bills,
     setBills,
+    emis,
     reload,
     upsertExpense,
     removeExpense,
@@ -116,17 +116,8 @@ export function useFinance() {
   const [formEmiMonths, setFormEmiMonths] = useState(""); // EMI: duration in months
   const [saving, setSaving] = useState(false);
 
-  // EMI progress (rolled up across all months). Refetched after any bill/EMI mutation.
-  const [emis, setEmis] = useState<EmiProgress[]>([]);
-  const reloadEmis = useCallback(() => {
-    fetch("/api/emis")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("emis load failed"))))
-      .then((d: { items: EmiProgress[] }) => setEmis(d.items ?? []))
-      .catch((e) => console.error(e));
-  }, []);
-  useEffect(() => {
-    reloadEmis();
-  }, [reloadEmis]);
+  // EMI progress (rolled up across all months) now ships in the dashboard payload,
+  // so it refreshes automatically whenever reload() runs — no separate request.
 
   // ── Derived money model (server-computed; we only format) ────────────────────
   // logged/count are full-month totals from the server, NOT the current page slice.
@@ -222,7 +213,6 @@ export function useFinance() {
       });
       if (!res.ok) throw new Error("pay failed");
       await reload();
-      reloadEmis();
       toast.success("Bill marked as paid");
     } catch (error) {
       console.error(error);
@@ -279,7 +269,6 @@ export function useFinance() {
         setFormBillKind("once");
         setFormIsBill(false);
         reload().catch((e) => console.error(e));
-        reloadEmis();
         toast.success("EMI added");
         return;
       }

@@ -44,7 +44,7 @@ export default function MobileHome() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f1f5f9", display: "flex", justifyContent: "center" }}>
-      <div style={{ width: 412, maxWidth: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ width: "100%", maxWidth: 640, display: "flex", flexDirection: "column" }}>
         <GreetingHeader greeting={greeting} name={name} initials={initials} month={f.month} />
 
         <div

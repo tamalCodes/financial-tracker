@@ -2,10 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   Bill,
   Credit,
+  EmiProgress,
   Expense,
   Investment,
   MonthSummary,
 } from "@/features/dashboard/types/types";
+import { loadEmiProgress } from "@/lib/api/emis";
 
 // Recent-payments page size. The first page ships in the dashboard payload; pages
 // 2+ are fetched lazily via GET /api/expenses. Keep in sync with the client.
@@ -19,6 +21,7 @@ interface DashboardPayload {
   loggedTotal: number; // full month Σ expenses (for the chip badge) — page-independent
   investments: Investment[];
   bills: Bill[];
+  emis: EmiProgress[]; // EMI progress across all months — seeds the panel on first paint
 }
 
 const sumAmount = (rows: { amount: number }[]) =>
@@ -88,6 +91,7 @@ export const loadDashboardData = async (
     investmentsRes,
     billsRes,
     leftInBank,
+    emis,
   ] = await Promise.all([
       supabase
         .from("credits")
@@ -124,6 +128,7 @@ export const loadDashboardData = async (
         .eq("month", currentMonth)
         .order("due_date", { ascending: true }),
       cumulativeLeftInBank(supabase, userId, currentMonth),
+      loadEmiProgress(supabase, userId),
     ]);
 
   const credits = (creditsRes.data ?? []) as Credit[];
@@ -141,11 +146,6 @@ export const loadDashboardData = async (
 
   const summary: MonthSummary = { leftInBank, earned, spent, invested };
 
-  // TEMP diagnostic — confirms the paginated build is live (server terminal).
-  console.log(
-    `[FT][server] month=${currentMonth} pageRows=${expenses.length} expensesTotal=${expenseAmounts.length} loggedTotal=${loggedTotal}`
-  );
-
   return {
     summary,
     credits,
@@ -154,5 +154,6 @@ export const loadDashboardData = async (
     loggedTotal,
     investments,
     bills,
+    emis,
   };
 };

@@ -1,8 +1,8 @@
 # Investments
 
-Reverse-engineered from `src/app/api/investments/route.ts`, `lib/api/dashboard.ts`,
-`features/dashboard/mobile/{AddSheet,Investments,useFinance}.tsx`. Post mobile redesign —
-DECISIONS D15 (recurring/soft-delete model **removed**).
+Reverse-engineered from `src/app/api/investments/route.ts`, `src/app/api/portfolio-panel/route.ts`,
+`lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Investments,useFinance,usePortfolioData}.tsx`.
+Post mobile redesign — DECISIONS D15 (recurring/soft-delete model **removed**).
 
 ## Two distinct concepts (D15)
 1. **Investment FLOW** — this spec. Plain per-month rows that drive the **Invested** tile +
@@ -27,10 +27,20 @@ No recurring model, no soft delete, no balance side-effect — computed on read 
   `investments:{post,put,delete}` 30/60s. Auth `requireUser`, `.eq("user_id")`.
 - `select`: `"id, description, amount, month, created_at"`.
 
+## Portfolio panel read — `GET /api/portfolio-panel`
+The Investments panel loads its manual reference data in **one** request via `usePortfolioData`:
+```
+{ value: number, holdings: Holding[], sips: Sip[] }   // one Promise.all, user-scoped
+```
+Consolidates the old `/api/portfolio` + `/api/holdings` + `/api/sips` fan-out (three GETs → one) to
+cut the mobile home's cold-start invocations — see ARCHITECTURE → "Initial-paint fan-out". Rate limit
+`portfolio-panel:get` 60/60s. The per-resource routes still exist and remain the path for **mutations**
+(POST/PUT/DELETE holdings/sips, PUT portfolio total); display-only, no money-model effect (D15).
+
 ## UI / components (mobile)
 AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. The Investments panel
 (portfolio value + Holdings/SIPs) is manual reference — see DATA_MODEL `holdings`/`sips`/
-`portfolio_totals`.
+`portfolio_totals`, fetched via `GET /api/portfolio-panel` above.
 
 ## Acceptance criteria
 - [ ] POST/PUT/DELETE change `invested_m` + Left-in-bank; no balance row written.
@@ -38,8 +48,8 @@ AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. The Invest
 - [ ] user_id scoping on all queries.
 
 ## Files to touch
-`src/app/api/investments/route.ts`, `lib/api/schemas.ts`, `lib/api/dashboard.ts`,
-`features/dashboard/mobile/{AddSheet,Investments,useFinance}.tsx`.
+`src/app/api/investments/route.ts`, `src/app/api/portfolio-panel/route.ts`, `lib/api/schemas.ts`,
+`lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Investments,useFinance,usePortfolioData}.tsx`.
 
 ## Out of scope
 Returns/valuation feeds, sell flow. Portfolio panel CRUD (holdings/sips/portfolio) tracked

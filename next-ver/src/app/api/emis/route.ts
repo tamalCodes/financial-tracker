@@ -3,8 +3,8 @@ import { handleError, tooManyRequests } from "@/lib/api/responses";
 import { emiCreateSchema, validate } from "@/lib/api/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { requireUser } from "@/lib/supabase/auth";
+import { loadEmiProgress } from "@/lib/api/emis";
 import { shiftMonthKey } from "@/features/dashboard/utils/dates";
-import type { EmiProgress } from "@/features/dashboard/types/types";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 
@@ -60,51 +60,7 @@ export async function GET(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { userId } = await requireUser(supabase);
 
-    const { data, error } = await supabase
-      .from("bills")
-      .select("emi_id, name, amount, paid, emi_months, emi_total")
-      .eq("user_id", userId)
-      .not("emi_id", "is", null);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    // Roll installment rows up per emi_id.
-    const groups = new Map<string, EmiProgress>();
-    for (const r of data ?? []) {
-      const id = r.emi_id as string;
-      let g = groups.get(id);
-      if (!g) {
-        g = {
-          emi_id: id,
-          name: r.name as string,
-          monthly: Number(r.amount),
-          total: Number(r.emi_total ?? 0),
-          months: Number(r.emi_months ?? 0),
-          paidCount: 0,
-          paidAmount: 0,
-          remainingCount: 0,
-          remainingAmount: 0,
-        };
-        groups.set(id, g);
-      }
-      if (r.paid) {
-        g.paidCount += 1;
-        g.paidAmount += Number(r.amount);
-      } else {
-        g.remainingCount += 1;
-        g.remainingAmount += Number(r.amount);
-      }
-    }
-
-    // Active EMIs first (something still due), then by name.
-    const items = [...groups.values()].sort(
-      (a, b) =>
-        Number(b.remainingCount > 0) - Number(a.remainingCount > 0) ||
-        a.name.localeCompare(b.name)
-    );
-
+    const items = await loadEmiProgress(supabase, userId);
     return NextResponse.json({ items });
   } catch (error) {
     return handleError(error, 500);

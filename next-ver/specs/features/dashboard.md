@@ -1,8 +1,8 @@
 # Dashboard
 
-Reverse-engineered from `src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`,
-`features/dashboard/mobile/*`. Post mobile redesign — money model in DATA_MODEL; DECISIONS
-D13/D14/D16/D20.
+Reverse-engineered from `src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`, `lib/api/emis.ts`,
+`features/dashboard/mobile/*`, `features/dashboard/hooks/useDashboardData.ts`. Post mobile redesign —
+money model in DATA_MODEL; DECISIONS D13/D14/D16/D20.
 
 ## Problem
 Per-month home view: the cumulative **Left in bank** hero + three per-month tiles
@@ -26,6 +26,7 @@ Returns (`loadDashboardData`):
   loggedTotal:   number,                               // full-month Σ expenses
   investments: Investment[],                           // current month
   bills: Bill[],                                       // current month (one-off + EMI installments)
+  emis: EmiProgress[],                                 // EMI rollup across ALL months (perf: folded in)
 }
 ```
 - `leftInBank = opening_balance + Σ_{m ≤ month}(earned − spent − paidBills − invested)` — cumulative
@@ -33,6 +34,9 @@ Returns (`loadDashboardData`):
 - Expenses are **paginated** (D20): the payload carries page 1; the Spent tile / "N this month" use
   `expensesTotal`/`loggedTotal` from a separate amounts-only sweep, not the page. Pages 2+ via
   `GET /api/expenses?page=`.
+- `emis` is the all-months EMI progress rollup (`loadEmiProgress`, `lib/api/emis.ts`), folded into the
+  payload so the mobile home skips a separate `GET /api/emis` on first paint (see ARCHITECTURE →
+  "Initial-paint fan-out"). It refreshes on every `reload()`.
 - Errors: 400 missing month, 401 unauth, 500 unexpected. Rate limit `dashboard:get` 60/60s. Auth via
   `requireUser`.
 
