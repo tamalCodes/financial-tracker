@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { DISPLAY } from "./data";
 
 // AmountField — the AI-style inline-calculator amount input, shared by AddSheet
@@ -75,22 +81,34 @@ interface Props {
   prefix?: string; // e.g. "₹"
   autoFocus?: boolean;
   onCalcActiveChange?: (active: boolean) => void; // parent disables Save while true
+  onFocusChange?: (focused: boolean) => void; // parent swaps its CTA for the operator bar
 }
 
-export default function AmountField({
-  amount,
-  onAmount,
-  placeholder = "Try 900 + 300",
-  prefix,
-  autoFocus,
-  onCalcActiveChange,
-}: Props) {
+// Imperative handle so a parent-rendered OperatorBar can splice operators into
+// the field (the bar lives in the sheet's CTA slot, not inside this component).
+export interface AmountFieldHandle {
+  insertOp: (op: string) => void;
+}
+
+const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
+  {
+    amount,
+    onAmount,
+    placeholder = "Try 900 + 300",
+    prefix,
+    autoFocus,
+    onCalcActiveChange,
+    onFocusChange,
+  },
+  ref,
+) {
   // `expr` is the local, operator-capable draft shown in the field. The parent
   // only ever receives sanitised digits, so the arithmetic lives here and pushes
   // up the final number.
   const [expr, setExpr] = useState(amount);
   const [phase, setPhase] = useState<CalcPhase>("idle");
   const [display, setDisplay] = useState<number | null>(null); // count-up value
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null); // typing pause
   const seqRef = useRef<ReturnType<typeof setTimeout> | null>(null); // think→reveal/settle
   const rafRef = useRef<number | null>(null); // count-up frames
@@ -176,6 +194,26 @@ export default function AmountField({
     if (!/[+\-*/×x]/.test(cleaned)) onAmount(cleaned);
   }
 
+  // Mobile numeric keypads don't expose + − × ÷, so these chips splice the
+  // operator in at the caret, keep focus, and drop the caret just after it.
+  function insertOp(op: string) {
+    if (calcActive) return;
+    const el = inputRef.current;
+    const start = el?.selectionStart ?? expr.length;
+    const end = el?.selectionEnd ?? expr.length;
+    const next = expr.slice(0, start) + op + expr.slice(end);
+    handleAmount(next);
+    // restore caret after React re-renders the controlled value
+    requestAnimationFrame(() => {
+      if (!inputRef.current) return;
+      const pos = start + op.length;
+      inputRef.current.focus();
+      inputRef.current.setSelectionRange(pos, pos);
+    });
+  }
+
+  useImperativeHandle(ref, () => ({ insertOp }));
+
   return (
     <div
       style={{
@@ -231,12 +269,15 @@ export default function AmountField({
       )}
 
       <input
+        ref={inputRef}
         value={
           phase === "reveal" && display != null
             ? display.toLocaleString("en-IN")
             : expr
         }
         onChange={(e) => handleAmount(e.target.value)}
+        onFocus={() => onFocusChange?.(true)}
+        onBlur={() => onFocusChange?.(false)}
         readOnly={calcActive}
         inputMode="numeric"
         className="amt-input"
@@ -311,8 +352,59 @@ export default function AmountField({
       )}
     </div>
   );
-}
+});
 
-// Whether the field is mid-calculation — parents disable Save while true. We keep
-// this simple: the parent tracks its own guard via the count-up settling to a
-// plain string, so no extra wiring is exported here.
+export default AmountField;
+
+// OperatorBar — the glassy + − × ÷ row a sheet drops into its CTA slot while the
+// Amount field is focused (replacing the Save button). Frosted indigo-translucent
+// per the design system — never an opaque saturated fill. No "Done" button:
+// blurring the field (tap another control) swaps the Save button back in.
+// onPointerDown preventDefault keeps the field focused so the tap actually lands.
+export function OperatorBar({ onOp }: { onOp: (op: string) => void }) {
+  const ops = [
+    { label: "+", op: "+" },
+    { label: "−", op: "-" },
+    { label: "×", op: "*" },
+    { label: "÷", op: "/" },
+  ];
+  return (
+    <div
+      onPointerDown={(e) => e.preventDefault()}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        height: 54,
+        fontFamily: DISPLAY,
+      }}
+    >
+      {ops.map(({ label, op }) => (
+        <button
+          key={op}
+          type="button"
+          onClick={() => onOp(op)}
+          style={{
+            flex: 1,
+            height: "100%",
+            borderRadius: 16,
+            border: "1px solid rgba(79,70,229,0.18)",
+            background:
+              "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            color: "#4f46e5",
+            fontSize: 24,
+            fontWeight: 600,
+            lineHeight: 1,
+            cursor: "pointer",
+            padding: 0,
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}

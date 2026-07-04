@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   BODY,
   DISPLAY,
@@ -12,7 +12,10 @@ import {
   type CategoryKey,
   type SheetMode,
 } from "./data";
-import AmountField from "./AmountField";
+import AmountField, {
+  OperatorBar,
+  type AmountFieldHandle,
+} from "./AmountField";
 import CatPill from "./CatPill";
 
 // AddSheet — pixel from AddSheet.dc.html (handoff §5.6 + mode matrix §6).
@@ -67,6 +70,16 @@ export default function AddSheet({
   // Amount calculator lives in AmountField; it reports when it's animating so we
   // can gate the Save button.
   const [calcActive, setCalcActive] = useState(false);
+  // While the Amount field is focused on a touch device, the CTA slot becomes the
+  // glassy + − × ÷ operator bar (numeric keypads omit those keys). Ref lets that
+  // bar splice operators into the field; focus swaps the slot back to Save.
+  const amountRef = useRef<AmountFieldHandle>(null);
+  const [amountFocus, setAmountFocus] = useState(false);
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    setTouch(window.matchMedia?.("(pointer: coarse)").matches ?? false);
+  }, []);
+  const showOps = touch && amountFocus;
 
   const isExpense = mode === "expense";
   const asBill = isExpense && isBill;
@@ -311,10 +324,12 @@ export default function AddSheet({
               {asEmi ? "Monthly amount" : "Amount"}
             </span>
             <AmountField
+              ref={amountRef}
               amount={amount}
               onAmount={onAmount}
               autoFocus
               onCalcActiveChange={setCalcActive}
+              onFocusChange={setAmountFocus}
             />
           </div>
 
@@ -415,28 +430,33 @@ export default function AddSheet({
             </div>
           )}
 
-          {/* Submit — disabled while the amount is still being calculated */}
-          <button
-            onClick={onSave}
-            disabled={calcActive}
-            style={{
-              cursor: calcActive ? "not-allowed" : "pointer",
-              width: "100%",
-              height: 54,
-              border: "none",
-              borderRadius: 16,
-              background: "#4f46e5",
-              color: "#fff",
-              fontFamily: DISPLAY,
-              fontWeight: 600,
-              fontSize: 15.5,
-              boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
-              opacity: calcActive ? 0.5 : 1,
-              transition: "opacity .25s ease",
-            }}
-          >
-            {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_SAVE[mode]}
-          </button>
+          {/* CTA slot — while the Amount field is focused (touch), this becomes the
+              glassy operator bar; otherwise the Save button. Disabled mid-calc. */}
+          {showOps ? (
+            <OperatorBar onOp={(op) => amountRef.current?.insertOp(op)} />
+          ) : (
+            <button
+              onClick={onSave}
+              disabled={calcActive}
+              style={{
+                cursor: calcActive ? "not-allowed" : "pointer",
+                width: "100%",
+                height: 54,
+                border: "none",
+                borderRadius: 16,
+                background: "#4f46e5",
+                color: "#fff",
+                fontFamily: DISPLAY,
+                fontWeight: 600,
+                fontSize: 15.5,
+                boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
+                opacity: calcActive ? 0.5 : 1,
+                transition: "opacity .25s ease",
+              }}
+            >
+              {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_SAVE[mode]}
+            </button>
+          )}
         </div>
       </div>
     </div>

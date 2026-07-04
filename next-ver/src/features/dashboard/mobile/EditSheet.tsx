@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BODY, DISPLAY, type Category, type CategoryKey } from "./data";
-import AmountField from "./AmountField";
+import AmountField, {
+  OperatorBar,
+  type AmountFieldHandle,
+} from "./AmountField";
 import CatPill from "./CatPill";
 
 // EditSheet — tap a recent payment to edit it. Same visual language as AddSheet
@@ -187,6 +190,14 @@ export default function EditSheet({
   const [titleFocus, setTitleFocus] = useState(false);
   const [calcActive, setCalcActive] = useState(false);
   const saveDisabled = saving || calcActive;
+  // Amount focused on touch → CTA slot becomes the glassy operator bar (see AddSheet).
+  const amountRef = useRef<AmountFieldHandle>(null);
+  const [amountFocus, setAmountFocus] = useState(false);
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    setTouch(window.matchMedia?.("(pointer: coarse)").matches ?? false);
+  }, []);
+  const showOps = touch && amountFocus;
 
   return (
     <div
@@ -255,11 +266,13 @@ export default function EditSheet({
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
             <span style={FIELD_LABEL}>Amount</span>
             <AmountField
+              ref={amountRef}
               amount={amount}
               onAmount={onAmount}
               placeholder="0"
               prefix="₹"
               onCalcActiveChange={setCalcActive}
+              onFocusChange={setAmountFocus}
             />
           </div>
 
@@ -303,29 +316,33 @@ export default function EditSheet({
             <TagField tag={tag} onTag={onTag} />
           </div>
 
-          {/* Save */}
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saveDisabled}
-            style={{
-              cursor: saveDisabled ? "default" : "pointer",
-              width: "100%",
-              height: 54,
-              border: "none",
-              borderRadius: 16,
-              background: "#4f46e5",
-              color: "#fff",
-              fontFamily: DISPLAY,
-              fontWeight: 600,
-              fontSize: 15.5,
-              opacity: saveDisabled ? 0.6 : 1,
-              boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
-              transition: "opacity .25s ease",
-            }}
-          >
-            {saving ? "Saving…" : "Save changes"}
-          </button>
+          {/* Save — or the glassy operator bar while the Amount field is focused */}
+          {showOps ? (
+            <OperatorBar onOp={(op) => amountRef.current?.insertOp(op)} />
+          ) : (
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={saveDisabled}
+              style={{
+                cursor: saveDisabled ? "default" : "pointer",
+                width: "100%",
+                height: 54,
+                border: "none",
+                borderRadius: 16,
+                background: "#4f46e5",
+                color: "#fff",
+                fontFamily: DISPLAY,
+                fontWeight: 600,
+                fontSize: 15.5,
+                opacity: saveDisabled ? 0.6 : 1,
+                boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
+                transition: "opacity .25s ease",
+              }}
+            >
+              {saving ? "Saving…" : "Save changes"}
+            </button>
+          )}
 
           {/* Delete */}
           <button

@@ -36,9 +36,13 @@ export const metadata: Metadata = {
 
 // viewport-fit=cover is required for env(safe-area-inset-*) to resolve on notched
 // devices — the Modal's safe-area bottom padding depends on it. See specs/DESIGN_SYSTEM.md §6.
+// interactiveWidget=resizes-content shrinks the layout viewport when the soft
+// keyboard opens, so bottom-anchored sheets (and their CTA / AmountField operator
+// bar) lift above the keyboard instead of hiding under it.
 export const viewport: Viewport = {
   themeColor: "#0f172a",
   viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

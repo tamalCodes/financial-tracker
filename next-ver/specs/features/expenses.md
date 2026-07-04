@@ -50,6 +50,22 @@ cumulative Left-in-bank replaces the old copy-forward behavior.
     + glow pop and pushes the final integer up via `onAmount`. Reports its animating state via
     `onCalcActiveChange` so the parent can disable Save. Optional `prefix` (e.g. `₹`) and
     `placeholder`. Indigo-only per design system.
+    - **Operator bar in the CTA slot (mobile keypad fallback)** — the field keeps
+      `inputMode="numeric"`, but mobile numeric keypads don't expose `+ − × ÷`. Rather than a
+      separate floating strip, the exported **`OperatorBar`** (glassy indigo-translucent row of
+      `+ − × ÷`, no "Done" button) **takes over the sheet's primary CTA slot** — the Save / "Add
+      expense" button — while the Amount field is focused; blurring swaps the Save button back in.
+      `AmountField` is a `forwardRef` exposing an `AmountFieldHandle` (`insertOp`) and reports focus
+      via `onFocusChange`; each sheet (AddSheet, EditSheet) holds a ref + `amountFocus` state and
+      renders `{touch && amountFocus ? <OperatorBar …/> : <SaveButton/>}`. Touch only — gated on
+      `matchMedia('(pointer: coarse)')`, so desktop (which has the keys) always shows Save. Buttons
+      map to `+ - * /` and call `insertOp`, which splices at the caret (`selectionStart/End`) and
+      restores it via `requestAnimationFrame`; `onPointerDown` preventDefault on the bar keeps the
+      field focused so the tap lands (and doesn't dismiss the keyboard / swap the CTA back). Because
+      the CTA lives at the bottom of a keyboard-covered sheet, this relies on
+      `viewport.interactiveWidget = "resizes-content"` (set in `app/layout.tsx`) to lift the sheet
+      above the soft keyboard. The bar is inert mid-calc (`insertOp` no-ops while `calcActive`);
+      typed-expression + word-operator paths are unchanged and additive.
   - **Category pills** — the slim glassy chip is the shared **`CatPill`** component (also used by
     EditSheet): 30px tall, 10px radius, dot + label, category-tinted gradient when selected.
 - **EditSheet** — tap a Recent-payments row → edit amount, title (description), single `tag`, and
