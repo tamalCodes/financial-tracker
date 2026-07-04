@@ -27,14 +27,14 @@ function Fab({ label, onClick, gradient, border, stroke, children }: FabProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: 50,
-        height: 50,
+        width: 42,
+        height: 42,
         borderRadius: 999,
         background: gradient,
         border: `1px solid ${border}`,
       }}
     >
-      <svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {children}
       </svg>
     </button>
@@ -60,13 +60,13 @@ export default function FloatingActionBar({ onOpen }: Props) {
           pointerEvents: "auto",
           display: "flex",
           alignItems: "center",
-          gap: 12,
+          gap: 10,
           background: "rgba(255,255,255,0.82)",
           backdropFilter: "blur(18px) saturate(1.8)",
           WebkitBackdropFilter: "blur(18px) saturate(1.8)",
           border: "1px solid rgba(226,232,240,0.95)",
           borderRadius: 999,
-          padding: 9,
+          padding: 7,
           boxShadow: "0 22px 48px -14px rgba(15,23,42,0.45), 0 2px 8px rgba(15,23,42,0.06)",
         }}
       >

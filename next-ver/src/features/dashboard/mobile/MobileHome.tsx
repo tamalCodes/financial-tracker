@@ -13,6 +13,7 @@ import Investments from "./Investments";
 import FloatingActionBar from "./FloatingActionBar";
 import AddSheet from "./AddSheet";
 import EditSheet from "./EditSheet";
+import Toaster from "./Toaster";
 
 // Identity for the greeting (§2.6): derive a display name + initials from the auth email.
 function identityFrom(email: string | null | undefined) {
@@ -76,7 +77,7 @@ export default function MobileHome() {
             <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
           )}
           {(f.loading || f.bills.length > 0) && (
-            <BillsEmis bills={f.bills} paidTotal={f.paidTotal} onPay={f.pay} loading={f.loading} />
+            <BillsEmis bills={f.bills} paidTotal={f.paidTotal} emis={f.emis} onPay={f.pay} loading={f.loading} />
           )}
           <Investments
             portfolioTotal={portfolio.portfolioTotal}
@@ -99,11 +100,17 @@ export default function MobileHome() {
           cats={f.cats}
           isBill={f.formIsBill}
           due={f.formDue}
+          billKind={f.formBillKind}
+          emiTotal={f.formEmiTotal}
+          emiMonths={f.formEmiMonths}
           onAmount={f.setAmount}
           onNote={f.setNote}
           onCat={f.setCat}
           onToggleBill={f.setFormIsBill}
           onDue={f.setFormDue}
+          onBillKind={f.setFormBillKind}
+          onEmiTotal={f.setFormEmiTotal}
+          onEmiMonths={f.setFormEmiMonths}
           onSave={f.saveEntry}
           onClose={f.closeSheet}
         />
@@ -117,14 +124,18 @@ export default function MobileHome() {
           cat={f.editCat}
           cats={f.cats}
           saving={f.editSaving}
+          deleting={f.editDeleting}
           onAmount={f.setEditAmount}
           onTitle={f.setEditTitle}
           onTag={f.setEditTag}
           onCat={f.setEditCat}
           onSave={f.saveEdit}
+          onDelete={f.deleteEdit}
           onClose={f.closeEdit}
         />
       )}
+
+      <Toaster />
     </div>
   );
 }

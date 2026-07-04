@@ -18,11 +18,13 @@ interface Props {
   cat: CategoryKey;
   cats: Category[];
   saving?: boolean;
+  deleting?: boolean;
   onAmount: (v: string) => void;
   onTitle: (v: string) => void;
   onTag: (v: string) => void;
   onCat: (key: CategoryKey) => void;
   onSave: () => void;
+  onDelete: () => void;
   onClose: () => void;
 }
 
@@ -64,11 +66,13 @@ export default function EditSheet({
   cat,
   cats,
   saving,
+  deleting,
   onAmount,
   onTitle,
   onTag,
   onCat,
   onSave,
+  onDelete,
   onClose,
 }: Props) {
   const [focus, setFocus] = useState<"title" | "tag" | null>(null);
@@ -265,6 +269,29 @@ export default function EditSheet({
             }}
           >
             {saving ? "Saving…" : "Save changes"}
+          </button>
+
+          {/* Delete */}
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={deleting}
+            style={{
+              cursor: deleting ? "default" : "pointer",
+              width: "100%",
+              height: 48,
+              marginTop: 10,
+              borderRadius: 16,
+              border: "1px solid #e2e8f0",
+              background: "#fff",
+              color: "#b91c1c",
+              fontFamily: DISPLAY,
+              fontWeight: 600,
+              fontSize: 14.5,
+              opacity: deleting ? 0.7 : 1,
+            }}
+          >
+            {deleting ? "Deleting…" : "Delete payment"}
           </button>
         </div>
       </div>

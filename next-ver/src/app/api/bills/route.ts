@@ -8,7 +8,8 @@ import { NextResponse } from "next/server";
 // Bills & EMIs — a separate ledger from expenses. A PAID bill counts toward spent_m
 // and Left-in-bank (DECISIONS D14); paying never creates an expense. No overdue state.
 // Conventions: CONVENTIONS §1–§7.
-const SELECT = "id, name, amount, due_date, paid, month, created_at";
+const SELECT =
+  "id, name, amount, due_date, paid, month, created_at, emi_id, emi_seq, emi_months, emi_total";
 
 export async function GET(request: Request) {
   const limit = rateLimit(request, "bills:get", { limit: 60, windowMs: 60_000 });

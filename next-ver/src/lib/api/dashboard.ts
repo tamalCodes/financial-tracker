@@ -117,7 +117,9 @@ export const loadDashboardData = async (
         .order("created_at", { ascending: false }),
       supabase
         .from("bills")
-        .select("id, name, amount, due_date, paid, month, created_at")
+        .select(
+          "id, name, amount, due_date, paid, month, created_at, emi_id, emi_seq, emi_months, emi_total"
+        )
         .eq("user_id", userId)
         .eq("month", currentMonth)
         .order("due_date", { ascending: true }),

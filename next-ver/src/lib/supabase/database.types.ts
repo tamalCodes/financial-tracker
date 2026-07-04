@@ -110,6 +110,10 @@ export type Database = {
           due_date: string | null;
           paid: boolean;
           created_at: string;
+          emi_id: string | null;
+          emi_seq: number | null;
+          emi_months: number | null;
+          emi_total: number | null;
         };
         Insert: {
           id?: string;
@@ -120,12 +124,20 @@ export type Database = {
           due_date?: string | null;
           paid?: boolean;
           created_at?: string;
+          emi_id?: string | null;
+          emi_seq?: number | null;
+          emi_months?: number | null;
+          emi_total?: number | null;
         };
         Update: Partial<{
           name: string;
           amount: number;
           due_date: string | null;
           paid: boolean;
+          emi_id: string | null;
+          emi_seq: number | null;
+          emi_months: number | null;
+          emi_total: number | null;
         }>;
         Relationships: [];
       };

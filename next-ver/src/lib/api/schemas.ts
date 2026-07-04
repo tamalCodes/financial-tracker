@@ -59,6 +59,19 @@ export const billPatchSchema = z.object({
   paid: z.boolean(),
 });
 
+/**
+ * POST body for an EMI. Expands into `months` installment rows on the bills ledger
+ * (one per month from `currentMonth`), each of value `monthly`. `total` is the whole
+ * loan amount, kept for display only (monthly × months may exceed it due to interest).
+ */
+export const emiCreateSchema = z.object({
+  currentMonth: month,
+  name: z.string().min(1),
+  monthly: amount, // installment paid each month
+  total: amount, // total loan amount (display only)
+  months: z.coerce.number().int().min(1).max(120),
+});
+
 // Portfolio panel — manual reference data (no money-model effect; DECISIONS D15).
 export const holdingKind = z.enum(["fd", "mutual_fund"]);
 

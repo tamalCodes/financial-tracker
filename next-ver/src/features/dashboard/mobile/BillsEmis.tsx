@@ -1,10 +1,13 @@
 "use client";
 
-import { BODY, DISPLAY } from "./data";
+import { BODY, DISPLAY, fmt } from "./data";
 import Skeleton from "./Skeleton";
+import type { EmiProgress } from "@/features/dashboard/types/types";
 
 // "Bills & EMIs" card — pixel from BillsEmis.dc.html (handoff §5.3).
 // Two row states (unpaid / paid). No overdue state. No issuer line.
+// EMI installments (isEmi) render like bills; a progress strip above the rows
+// rolls each EMI up across every month.
 interface BillView {
   id: string;
   name: string;
@@ -12,11 +15,13 @@ interface BillView {
   icon: string;
   amount: string;
   paid: boolean;
+  isEmi: boolean;
 }
 
 interface Props {
   bills: BillView[];
   paidTotal: string;
+  emis: EmiProgress[];
   onPay: (id: string) => void;
   loading?: boolean;
 }
@@ -115,7 +120,56 @@ function PaidRow({ bill }: { bill: BillView }) {
   );
 }
 
-export default function BillsEmis({ bills, paidTotal, onPay, loading }: Props) {
+// Roll-up strip for one EMI: name, installments paid, amounts, progress bar.
+function EmiProgressRow({ emi }: { emi: EmiProgress }) {
+  const cleared = emi.remainingCount === 0;
+  const pct = emi.months > 0 ? Math.round((emi.paidCount / emi.months) * 100) : 0;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        padding: "12px 14px",
+        borderRadius: 16,
+        background: "#f8fafc",
+        border: "1px solid #eef2ff",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+        <span style={{ font: `600 13.5px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {emi.name}
+        </span>
+        <span style={{ font: `600 12px ${DISPLAY}`, color: cleared ? "#047857" : "#4338ca" }}>
+          {cleared ? "Cleared" : `${emi.paidCount} of ${emi.months} paid`}
+        </span>
+      </div>
+      <div style={{ height: 6, borderRadius: 999, background: "#e2e8f0", overflow: "hidden" }}>
+        <div
+          style={{
+            width: `${pct}%`,
+            height: "100%",
+            borderRadius: 999,
+            background: cleared ? "#047857" : "#4f46e5",
+          }}
+        />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+        <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8", fontVariantNumeric: "tabular-nums" }}>
+          Paid ₹{fmt(emi.paidAmount)}
+        </span>
+        <span style={{ font: `500 11.5px ${BODY}`, color: cleared ? "#047857" : "#64748b", fontVariantNumeric: "tabular-nums" }}>
+          {cleared ? "No EMI due" : `₹${fmt(emi.remainingAmount)} left`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export default function BillsEmis({ bills, paidTotal, emis, onPay, loading }: Props) {
+  // "No EMI due this month" once every EMI installment for the month is paid.
+  const emiDueThisMonth = bills.some((b) => b.isEmi && !b.paid);
+  const hasEmis = emis.length > 0;
   return (
     <div
       style={{
@@ -145,6 +199,20 @@ export default function BillsEmis({ bills, paidTotal, onPay, loading }: Props) {
           )}
         </div>
       </div>
+
+      {/* EMI progress roll-up (across all months) */}
+      {!loading && hasEmis && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingBottom: 6 }}>
+          {emis.map((emi) => (
+            <EmiProgressRow key={emi.emi_id} emi={emi} />
+          ))}
+          {!emiDueThisMonth && (
+            <span style={{ font: `500 12px ${BODY}`, color: "#047857", paddingTop: 2 }}>
+              No EMI due this month — you&apos;re all caught up.
+            </span>
+          )}
+        </div>
+      )}
 
       {loading
         ? Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`skel-${i}`} />)

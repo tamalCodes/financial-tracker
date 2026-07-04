@@ -21,7 +21,14 @@ export default function GreetingHeader({
   month,
 }: Props) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 20px 14px" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "calc(8px + env(safe-area-inset-top)) 20px 14px",
+      }}
+    >
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>{greeting}</span>
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 19, letterSpacing: "-0.01em", color: "#0f172a" }}>

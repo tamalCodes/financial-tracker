@@ -36,6 +36,7 @@ export interface Credit {
 }
 
 // Bills & EMIs — separate ledger; a PAID bill counts toward monthly spend.
+// EMI installments carry the emi_* fields; one-off bills leave them null.
 export interface Bill {
   id: string;
   name: string;
@@ -44,6 +45,23 @@ export interface Bill {
   paid: boolean;
   month: string;
   created_at: string;
+  emi_id?: string | null; // groups installments of one EMI
+  emi_seq?: number | null; // 1-based installment index
+  emi_months?: number | null; // total installments (duration)
+  emi_total?: number | null; // total loan amount (display only)
+}
+
+// One EMI's progress rolled up across every month (GET /api/emis).
+export interface EmiProgress {
+  emi_id: string;
+  name: string;
+  monthly: number; // per-installment amount
+  total: number; // total loan amount (display only)
+  months: number; // total installments
+  paidCount: number; // installments paid so far
+  paidAmount: number; // Σ paid installments
+  remainingCount: number; // installments still due
+  remainingAmount: number; // Σ unpaid installments
 }
 
 // Portfolio panel (manual, display-only — no money-model effect).

@@ -23,16 +23,30 @@ interface Props {
   cats: Category[];
   isBill: boolean; // expense mode only: route this entry to the bills / EMI ledger
   due: string; // bill due date (free text, optional)
+  billKind: "once" | "emi"; // bill sub-mode: one-off bill vs multi-month EMI
+  emiTotal: string; // EMI: total loan amount
+  emiMonths: string; // EMI: duration in months
   onAmount: (v: string) => void;
   onNote: (v: string) => void;
   onCat: (key: CategoryKey) => void;
   onToggleBill: (v: boolean) => void;
   onDue: (v: string) => void;
+  onBillKind: (v: "once" | "emi") => void;
+  onEmiTotal: (v: string) => void;
+  onEmiMonths: (v: string) => void;
   onSave: () => void;
   onClose: () => void;
 }
 
-function CatPill({ cat, selected, onSelect }: { cat: Category; selected: boolean; onSelect: () => void }) {
+function CatPill({
+  cat,
+  selected,
+  onSelect,
+}: {
+  cat: Category;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   const base: React.CSSProperties = {
     cursor: "pointer",
     display: "inline-flex",
@@ -52,10 +66,22 @@ function CatPill({ cat, selected, onSelect }: { cat: Category; selected: boolean
         background: `linear-gradient(135deg,rgba(${cat.rgb},0.30),rgba(${cat.rgb},0.15))`,
         border: `1px solid rgba(${cat.rgb},0.50)`,
       }
-    : { ...base, color: "#64748b", background: "#fff", border: "1px solid #e2e8f0" };
+    : {
+        ...base,
+        color: "#64748b",
+        background: "#fff",
+        border: "1px solid #e2e8f0",
+      };
   return (
     <button onClick={onSelect} style={style}>
-      <span style={{ width: 8, height: 8, borderRadius: 999, background: selected ? cat.text : "#cbd5e1" }} />
+      <span
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 999,
+          background: selected ? cat.text : "#cbd5e1",
+        }}
+      />
       {cat.label}
     </button>
   );
@@ -69,11 +95,17 @@ export default function AddSheet({
   cats,
   isBill,
   due,
+  billKind,
+  emiTotal,
+  emiMonths,
   onAmount,
   onNote,
   onCat,
   onToggleBill,
   onDue,
+  onBillKind,
+  onEmiTotal,
+  onEmiMonths,
   onSave,
   onClose,
 }: Props) {
@@ -81,6 +113,7 @@ export default function AddSheet({
   const [dueFocus, setDueFocus] = useState(false);
   const isExpense = mode === "expense";
   const asBill = isExpense && isBill;
+  const asEmi = asBill && billKind === "emi";
 
   return (
     <div
@@ -114,14 +147,42 @@ export default function AddSheet({
           }}
         >
           {/* Grabber */}
-          <div style={{ display: "flex", justifyContent: "center", padding: "4px 0 16px" }}>
-            <span style={{ width: 42, height: 5, borderRadius: 999, background: "#e2e8f0" }} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "4px 0 16px",
+            }}
+          >
+            <span
+              style={{
+                width: 42,
+                height: 5,
+                borderRadius: 999,
+                background: "#e2e8f0",
+              }}
+            />
           </div>
 
           {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "#0f172a" }}>
-              {asBill ? "Add bill / EMI" : SHEET_TITLE[mode]}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 20,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: DISPLAY,
+                fontWeight: 600,
+                fontSize: 21,
+                letterSpacing: "-0.01em",
+                color: "#0f172a",
+              }}
+            >
+              {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_TITLE[mode]}
             </span>
             <button
               onClick={onClose}
@@ -157,8 +218,56 @@ export default function AddSheet({
               }}
             >
               {[
-                { label: "Expense", on: !isBill, click: () => onToggleBill(false) },
-                { label: "Bill / EMI", on: isBill, click: () => onToggleBill(true) },
+                {
+                  label: "Expense",
+                  on: !isBill,
+                  click: () => onToggleBill(false),
+                },
+                {
+                  label: "Bill / EMI",
+                  on: isBill,
+                  click: () => onToggleBill(true),
+                },
+              ].map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  onClick={t.click}
+                  style={{
+                    cursor: "pointer",
+                    flex: 1,
+                    height: 40,
+                    borderRadius: 10,
+                    border: "none",
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 13.5,
+                    color: t.on ? "#4f46e5" : "#64748b",
+                    background: t.on ? "#fff" : "transparent",
+                    boxShadow: t.on ? "0 1px 3px rgba(15,23,42,0.10)" : "none",
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Bill sub-mode toggle: one-off bill vs multi-month EMI */}
+          {asBill && (
+            <div
+              style={{
+                display: "flex",
+                gap: 4,
+                padding: 4,
+                marginBottom: 18,
+                background: "#f1f5f9",
+                borderRadius: 14,
+              }}
+            >
+              {[
+                { label: "One-time", on: billKind === "once", click: () => onBillKind("once") },
+                { label: "EMI", on: billKind === "emi", click: () => onBillKind("emi") },
               ].map((t) => (
                 <button
                   key={t.label}
@@ -185,8 +294,17 @@ export default function AddSheet({
           )}
 
           {/* Amount */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
-            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>Amount</span>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              marginBottom: 18,
+            }}
+          >
+            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+              {asEmi ? "Monthly amount" : "Amount"}
+            </span>
             <div
               style={{
                 display: "flex",
@@ -199,7 +317,16 @@ export default function AddSheet({
                 background: "#f8fafc",
               }}
             >
-              <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 26, color: "#94a3b8" }}>₹</span>
+              <span
+                style={{
+                  fontFamily: DISPLAY,
+                  fontWeight: 600,
+                  fontSize: 26,
+                  color: "#94a3b8",
+                }}
+              >
+                ₹
+              </span>
               <input
                 value={amount}
                 onChange={(e) => onAmount(e.target.value)}
@@ -223,18 +350,39 @@ export default function AddSheet({
 
           {/* Category picker (plain expense only — bills have no category) */}
           {isExpense && !isBill && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 18 }}>
-              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>Category</span>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 9,
+                marginBottom: 18,
+              }}
+            >
+              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                Category
+              </span>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {cats.map((c) => (
-                  <CatPill key={c.key} cat={c} selected={c.key === cat} onSelect={() => onCat(c.key)} />
+                  <CatPill
+                    key={c.key}
+                    cat={c}
+                    selected={c.key === cat}
+                    onSelect={() => onCat(c.key)}
+                  />
                 ))}
               </div>
             </div>
           )}
 
           {/* Note / Source / Fund / (bill) Name */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: asBill ? 18 : 22 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              marginBottom: asBill ? 18 : 22,
+            }}
+          >
             <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
               {asBill ? "Name" : NOTE_LABEL[mode]}
             </span>
@@ -243,7 +391,9 @@ export default function AddSheet({
               onChange={(e) => onNote(e.target.value)}
               onFocus={() => setNoteFocus(true)}
               onBlur={() => setNoteFocus(false)}
-              placeholder={asBill ? "e.g. Electricity, Car EMI" : NOTE_PLACEHOLDER[mode]}
+              placeholder={
+                asBill ? "e.g. Electricity, Car EMI" : NOTE_PLACEHOLDER[mode]
+              }
               style={{
                 width: "100%",
                 border: `1px solid ${noteFocus ? "#818cf8" : "#e2e8f0"}`,
@@ -259,10 +409,78 @@ export default function AddSheet({
             />
           </div>
 
-          {/* Due date (bill / EMI only, optional) */}
-          {asBill && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
-              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>Due date · optional</span>
+          {/* EMI details: total loan + duration */}
+          {asEmi && (
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 22,
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                  Total amount
+                </span>
+                <input
+                  value={emiTotal}
+                  onChange={(e) => onEmiTotal(e.target.value.replace(/[^0-9]/g, ""))}
+                  inputMode="numeric"
+                  placeholder="e.g. 32600"
+                  style={{
+                    width: "100%",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 14,
+                    padding: "0 15px",
+                    height: 50,
+                    fontFamily: BODY,
+                    fontSize: 16,
+                    color: "#0f172a",
+                    background: "#f8fafc",
+                    outline: "none",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, width: 120 }}>
+                <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                  Months
+                </span>
+                <input
+                  value={emiMonths}
+                  onChange={(e) => onEmiMonths(e.target.value.replace(/[^0-9]/g, ""))}
+                  inputMode="numeric"
+                  maxLength={3}
+                  placeholder="e.g. 8"
+                  style={{
+                    width: "100%",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 14,
+                    padding: "0 15px",
+                    height: 50,
+                    fontFamily: BODY,
+                    fontSize: 16,
+                    color: "#0f172a",
+                    background: "#f8fafc",
+                    outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Due date (one-off bill only, optional) */}
+          {asBill && !asEmi && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginBottom: 22,
+              }}
+            >
+              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                Due date · optional
+              </span>
               <input
                 value={due}
                 onChange={(e) => onDue(e.target.value)}
@@ -303,7 +521,7 @@ export default function AddSheet({
               boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
             }}
           >
-            {asBill ? "Add bill / EMI" : SHEET_SAVE[mode]}
+            {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_SAVE[mode]}
           </button>
         </div>
       </div>

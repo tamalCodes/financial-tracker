@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
 import { formatTxnDate } from "@/features/dashboard/utils/dates";
-import type { Bill, Credit, Expense, Investment } from "@/features/dashboard/types/types";
+import type {
+  Bill,
+  Credit,
+  EmiProgress,
+  Expense,
+  Investment,
+} from "@/features/dashboard/types/types";
 import {
   billIconFor,
   catOf,
@@ -14,6 +20,7 @@ import {
   type CategoryKey,
   type SheetMode,
 } from "./data";
+import { toast } from "./toast";
 
 // Recent-payments page size. Mirrors EXPENSES_PAGE_SIZE on the server: page 1 arrives
 // in the dashboard payload, pages 2+ are fetched from GET /api/expenses.
@@ -51,6 +58,7 @@ export function useFinance() {
     setBills,
     reload,
     upsertExpense,
+    removeExpense,
     upsertCredit,
     upsertInvestment,
     isBootstrapping,
@@ -103,7 +111,22 @@ export function useFinance() {
   const [formCat, setFormCat] = useState<CategoryKey>("food");
   const [formIsBill, setFormIsBill] = useState(false); // expense sheet → route to bills ledger
   const [formDue, setFormDue] = useState(""); // bill due date (free text, optional)
+  const [formBillKind, setFormBillKind] = useState<"once" | "emi">("once"); // one-off bill vs EMI
+  const [formEmiTotal, setFormEmiTotal] = useState(""); // EMI: total loan amount
+  const [formEmiMonths, setFormEmiMonths] = useState(""); // EMI: duration in months
   const [saving, setSaving] = useState(false);
+
+  // EMI progress (rolled up across all months). Refetched after any bill/EMI mutation.
+  const [emis, setEmis] = useState<EmiProgress[]>([]);
+  const reloadEmis = useCallback(() => {
+    fetch("/api/emis")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("emis load failed"))))
+      .then((d: { items: EmiProgress[] }) => setEmis(d.items ?? []))
+      .catch((e) => console.error(e));
+  }, []);
+  useEffect(() => {
+    reloadEmis();
+  }, [reloadEmis]);
 
   // ── Derived money model (server-computed; we only format) ────────────────────
   // logged/count are full-month totals from the server, NOT the current page slice.
@@ -145,10 +168,15 @@ export function useFinance() {
       bills.map((b: Bill) => ({
         id: b.id,
         name: b.name,
-        due: b.due_date ?? "",
+        // EMI installments show "Installment 3 of 8" in place of a due date.
+        due:
+          b.emi_seq && b.emi_months
+            ? `Installment ${b.emi_seq} of ${b.emi_months}`
+            : b.due_date ?? "",
         icon: billIconFor(b.name),
         amount: fmt(Number(b.amount)),
         paid: b.paid,
+        isEmi: Boolean(b.emi_id),
       })),
     [bills]
   );
@@ -194,9 +222,12 @@ export function useFinance() {
       });
       if (!res.ok) throw new Error("pay failed");
       await reload();
+      reloadEmis();
+      toast.success("Bill marked as paid");
     } catch (error) {
       console.error(error);
       setBills((prev) => prev.map((b) => (b.id === id ? { ...b, paid: false } : b)));
+      toast.error("Couldn't mark bill as paid");
     }
   };
 
@@ -207,6 +238,9 @@ export function useFinance() {
     setFormCat("food");
     setFormIsBill(false);
     setFormDue("");
+    setFormBillKind("once");
+    setFormEmiTotal("");
+    setFormEmiMonths("");
   };
   const closeSheet = () => setSheet(null);
   const setAmount = (v: string) => setFormAmount(v.replace(/[^0-9]/g, ""));
@@ -217,8 +251,40 @@ export function useFinance() {
     const note = formNote.trim();
     setSaving(true);
     try {
+      if (sheet === "expense" && formIsBill && formBillKind === "emi") {
+        // EMI → expands into one installment row per month for its whole duration.
+        const months = parseInt(formEmiMonths.replace(/[^0-9]/g, ""), 10);
+        const total = parseInt(formEmiTotal.replace(/[^0-9]/g, ""), 10);
+        if (!months) {
+          toast.error("Enter the EMI duration in months");
+          return;
+        }
+        const res = await fetch("/api/emis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentMonth,
+            name: note || "EMI",
+            monthly: amount,
+            total: total || amount * months,
+            months,
+          }),
+        });
+        if (!res.ok) throw new Error("save failed");
+        setSheet(null);
+        setFormAmount("");
+        setFormNote("");
+        setFormEmiTotal("");
+        setFormEmiMonths("");
+        setFormBillKind("once");
+        setFormIsBill(false);
+        reload().catch((e) => console.error(e));
+        reloadEmis();
+        toast.success("EMI added");
+        return;
+      }
       if (sheet === "expense" && formIsBill) {
-        // Marked as Bill / EMI → separate ledger, not a plain expense.
+        // One-off Bill → separate ledger, not a plain expense.
         const res = await fetch("/api/bills", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -230,12 +296,14 @@ export function useFinance() {
           }),
         });
         if (!res.ok) throw new Error("save failed");
-        await reload();
+        // Close instantly; refresh the bills list in the background.
         setSheet(null);
         setFormAmount("");
         setFormNote("");
         setFormDue("");
         setFormIsBill(false);
+        reload().catch((e) => console.error(e));
+        toast.success("Bill added");
         return;
       }
       if (sheet === "expense") {
@@ -252,6 +320,7 @@ export function useFinance() {
         if (!res.ok) throw new Error("save failed");
         const { item } = (await res.json()) as { item: Expense };
         upsertExpense(item);
+        toast.success("Expense added");
       } else if (sheet === "income") {
         const res = await fetch("/api/credits", {
           method: "POST",
@@ -261,6 +330,7 @@ export function useFinance() {
         if (!res.ok) throw new Error("save failed");
         const { item } = (await res.json()) as { item: Credit };
         upsertCredit(item);
+        toast.success("Income added");
       } else if (sheet === "investment") {
         const res = await fetch("/api/investments", {
           method: "POST",
@@ -270,14 +340,17 @@ export function useFinance() {
         if (!res.ok) throw new Error("save failed");
         const { item } = (await res.json()) as { item: Investment };
         upsertInvestment(item);
+        toast.success("Investment added");
       }
-      await reload();
+      // Row is already shown optimistically — close instantly, reconcile totals after.
       setExpPage(1); // newest entry lives on page 1
       setSheet(null);
       setFormAmount("");
       setFormNote("");
+      reload().catch((e) => console.error(e));
     } catch (error) {
       console.error(error);
+      toast.error("Couldn't save — try again");
     } finally {
       setSaving(false);
     }
@@ -290,6 +363,7 @@ export function useFinance() {
   const [editTag, setEditTag] = useState("");
   const [editCat, setEditCat] = useState<CategoryKey>("food");
   const [editSaving, setEditSaving] = useState(false);
+  const [editDeleting, setEditDeleting] = useState(false);
 
   const openEdit = (tx: TxView) => {
     setEditId(tx.id);
@@ -326,10 +400,36 @@ export function useFinance() {
       ); // page 2+
       await reload(); // totals may shift (amount changed)
       setEditId(null);
+      toast.success("Payment updated");
     } catch (error) {
       console.error(error);
+      toast.error("Couldn't update payment");
     } finally {
       setEditSaving(false);
+    }
+  };
+
+  const deleteEdit = async () => {
+    if (!editId || editDeleting) return;
+    const id = editId;
+    setEditDeleting(true);
+    // Close instantly + drop the row optimistically; reconcile with the server after.
+    setEditId(null);
+    removeExpense(id); // page 1
+    setPageRows((prev) => (prev ? prev.filter((e) => e.id !== id) : prev)); // page 2+
+    try {
+      const res = await fetch(`/api/expenses?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("delete failed");
+      await reload(); // totals + count shift
+      toast.success("Payment deleted");
+    } catch (error) {
+      console.error(error);
+      await reload(); // restore the row if the delete failed
+      toast.error("Couldn't delete payment");
+    } finally {
+      setEditDeleting(false);
     }
   };
 
@@ -346,6 +446,7 @@ export function useFinance() {
     setExpPage,
     bills: billsView,
     paidTotal,
+    emis,
     pay,
     income: incomeView,
     incomeTotal,
@@ -364,6 +465,12 @@ export function useFinance() {
     setFormIsBill,
     formDue,
     setFormDue,
+    formBillKind,
+    setFormBillKind,
+    formEmiTotal,
+    setFormEmiTotal,
+    formEmiMonths,
+    setFormEmiMonths,
     saveEntry,
     saving,
     cats: CATS,
@@ -381,6 +488,8 @@ export function useFinance() {
     setEditCat,
     saveEdit,
     editSaving,
+    deleteEdit,
+    editDeleting,
   };
 }
 
