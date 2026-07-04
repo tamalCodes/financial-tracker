@@ -17,6 +17,7 @@ import EditSheet from "@/features/dashboard/mobile/EditSheet";
 import BillEditSheet from "@/features/dashboard/mobile/BillEditSheet";
 import FloatingActionBar from "@/features/dashboard/mobile/FloatingActionBar";
 import Toaster from "@/features/dashboard/mobile/Toaster";
+import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
 import TrendChart from "./TrendChart";
 
 // Identity for the greeting — mirrors MobileHome (derive name/initials from the email).
@@ -49,6 +50,9 @@ export default function DesktopHome() {
   const f = useFinance();
   const portfolio = usePortfolioData();
   const trend = useTrendData(f.currentMonth);
+  // Desktop "Recent payments" scrolls + appends instead of paging. Reload the list
+  // when the month changes (handled inside) or the expense count shifts (add/delete).
+  const tx = useInfiniteExpenses(f.currentMonth, f.derived.count);
 
   const { name, initials } = useMemo(() => identityFrom(user?.email), [user?.email]);
   const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
@@ -56,16 +60,28 @@ export default function DesktopHome() {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
         background: "radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef)",
         display: "flex",
-        justifyContent: "center",
-        padding: "40px 32px 72px",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 32px 24px",
       }}
     >
-      <div style={{ width: "100%", maxWidth: 1360, display: "flex", flexDirection: "column", gap: 24 }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 1360,
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: 24,
+        }}
+      >
         {/* Header — "Overview" (handoff desktop block) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
+        <div style={{ flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <span
               style={{
@@ -125,10 +141,22 @@ export default function DesktopHome() {
           </div>
         </div>
 
-        {/* Two-column grid: 1.32fr / 1fr (handoff desktop block) */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.32fr 1fr", gap: 24, alignItems: "start" }}>
+        {/* Two-column grid: 1.32fr / 1fr, fixed viewport height so both columns end at
+            the same bottom. The last card in each column fills the leftover space and
+            scrolls internally (Recent payments left, Portfolio right). */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.32fr 1fr",
+            gridTemplateRows: "minmax(0, 1fr)", // single row fills the grid's flex height
+            gap: 24,
+            alignItems: "stretch",
+            flex: 1,
+            minHeight: 0,
+          }}
+        >
           {/* Left column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: 0 }}>
             <HeroBalance
               net={f.derived.net}
               month={f.month}
@@ -146,18 +174,23 @@ export default function DesktopHome() {
               window={trend.window}
               onWindow={trend.setWindow}
             />
-            <Transactions
-              transactions={f.txView}
-              page={f.expPage}
-              pages={f.expPages}
-              onPageChange={f.setExpPage}
-              onEdit={f.openEdit}
-              loading={f.loading}
-            />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <Transactions
+                transactions={tx.rows}
+                page={f.expPage}
+                pages={f.expPages}
+                onPageChange={f.setExpPage}
+                onEdit={f.openEdit}
+                loading={tx.loading}
+                fill
+                onLoadMore={tx.loadMore}
+                loadingMore={tx.loadingMore}
+              />
+            </div>
           </div>
 
           {/* Right column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: 0 }}>
             {(f.loading || f.bills.length > 0) && (
               <Bills
                 bills={f.bills}
@@ -180,13 +213,16 @@ export default function DesktopHome() {
             {(f.loading || f.income.length > 0) && (
               <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
             )}
-            <Investments
-              portfolioTotal={portfolio.portfolioTotal}
-              fds={portfolio.fds}
-              funds={portfolio.funds}
-              sips={portfolio.sips}
-              loading={portfolio.loading}
-            />
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <Investments
+                portfolioTotal={portfolio.portfolioTotal}
+                fds={portfolio.fds}
+                funds={portfolio.funds}
+                sips={portfolio.sips}
+                loading={portfolio.loading}
+                fill
+              />
+            </div>
           </div>
         </div>
       </div>

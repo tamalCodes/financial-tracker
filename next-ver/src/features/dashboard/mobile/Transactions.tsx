@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
 import type { TxView } from "./useFinance";
@@ -7,6 +8,10 @@ import type { TxView } from "./useFinance";
 // "Recent payments" card — pixel from Transactions.dc.html (handoff §5.2).
 // No minus sign (debits understood). No trash icon — matches the design reference.
 // Tap a row to edit it (amount / title / tag / category) — handled by MobileHome.
+//
+// Two layouts: mobile uses Prev/Next pagination (default). Desktop passes `fill` →
+// the card fills its column, the header pins, and the row list scrolls internally with
+// append-on-scroll (onLoadMore) instead of a pager (specs/features/desktop-dashboard.md).
 interface Props {
   transactions: TxView[];
   page: number;
@@ -14,6 +19,9 @@ interface Props {
   onPageChange: (page: number) => void;
   onEdit: (tx: TxView) => void;
   loading?: boolean;
+  fill?: boolean; // desktop: fill column height + internal scroll pagination
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
 }
 
 const CARD_SHADOW =
@@ -26,37 +34,22 @@ export default function Transactions({
   onPageChange,
   onEdit,
   loading,
+  fill,
+  onLoadMore,
+  loadingMore,
 }: Props) {
-  return (
-    <div
-      style={{
-        fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
-        borderRadius: 28,
-        boxShadow: CARD_SHADOW,
-        padding: "22px 22px 10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          gap: 12,
-          paddingBottom: 8,
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
-            Recent payments
-          </span>
-        </div>
-      </div>
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Append-on-scroll: when the body nears its bottom, ask for the next page.
+  const handleScroll = () => {
+    if (!fill || !onLoadMore) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 120) onLoadMore();
+  };
+
+  const rows = (
+    <>
       {loading &&
         Array.from({ length: 6 }).map((_, i) => (
           <div
@@ -149,6 +142,78 @@ export default function Transactions({
           </span>
         </button>
       ))}
+    </>
+  );
+
+  const header = (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: 12,
+        paddingBottom: 8,
+        flex: "none",
+      }}
+    >
+      <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+        Recent payments
+      </span>
+    </div>
+  );
+
+  // Desktop: fill the column, pin the header, scroll the rows (append-on-scroll).
+  if (fill) {
+    return (
+      <div
+        style={{
+          fontFamily: BODY,
+          background: "#fff",
+          border: "1px solid #e2e8f0",
+          borderRadius: 28,
+          boxShadow: CARD_SHADOW,
+          padding: "22px 22px 14px",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          minHeight: 0,
+        }}
+      >
+        {header}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="subtle-scroll"
+          style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: 6 }}
+        >
+          {rows}
+          {loadingMore && (
+            <div style={{ padding: "12px 0", textAlign: "center", font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
+              Loading…
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile: Prev/Next pager.
+  return (
+    <div
+      style={{
+        fontFamily: BODY,
+        background: "#fff",
+        border: "1px solid #e2e8f0",
+        borderRadius: 28,
+        boxShadow: CARD_SHADOW,
+        padding: "22px 22px 10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}
+    >
+      {header}
+      {rows}
 
       {pages > 1 && (
         <div

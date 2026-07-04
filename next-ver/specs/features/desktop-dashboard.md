@@ -57,13 +57,21 @@ All `"use client"`. Mobile path is **untouched**.
   syncs via `matchMedia` on mount. Mobile is the safe default → no desktop flash on phones.
 - **`Dashboard.tsx`** (edit) — `const isDesktop = useMediaQuery("(min-width: 1024px)")`;
   render `<DesktopHome/>` when true, else `<MobileHome/>` (current behavior).
-- **`desktop/DesktopHome.tsx`** (new) — owns `useFinance()` + `usePortfolioData()` + `useTrendData()`.
-  Mounts the shared sheets (`AddSheet`/`EditSheet`/`BillEditSheet`) + `Toaster` once (same as MobileHome).
-  Layout per mock:
+- **`desktop/DesktopHome.tsx`** (new) — owns `useFinance()` + `usePortfolioData()` + `useTrendData()` +
+  `useInfiniteExpenses()`. Mounts the shared sheets (`AddSheet`/`EditSheet`/`BillEditSheet`) + `Toaster`
+  once (same as MobileHome). Layout per mock:
   - **Header**: "Overview" icon-badge + greeting/month subline + month pill + avatar (mock 73–85).
-  - **Grid** `1.32fr / 1fr`, `max-width ~1360px`, centered, real padding (fluid, not fixed 1180px).
-  - **Left col**: `HeroBalance` → `TrendChart` → `Transactions`.
-  - **Right col**: `Bills` → `Emis` → `Income` → `Investments`.
+  - **Grid** `1.32fr / 1fr`, `max-width ~1360px`, centered. **Fixed-height dashboard**: the root is
+    `height:100vh` flex-column; header pins; the grid takes `flex:1` with
+    `grid-template-rows: minmax(0,1fr)` so both columns stretch to the same height and their bottoms
+    **align** (the original bug: Recent payments vs Portfolio ended at different heights).
+  - **Left col**: `HeroBalance` → `TrendChart` → `Transactions` (**fill**, scrolls).
+  - **Right col**: `Bills` → `Emis` → `Income` → `Investments` (**fill**, scrolls).
+  - The bottom card in each column gets `flex:1` and scrolls its body internally; the header/tabs pin.
+- **Fill / scroll-pagination**: `Transactions` and `Investments` gain an optional `fill` prop. In fill
+  mode the card fills its column, the header pins, and the list body scrolls with a subtle scrollbar
+  (`.subtle-scroll` in globals.css). `Transactions` replaces its Prev/Next pager with **append-on-scroll**
+  (`onLoadMore` fires when the body nears its bottom). Mobile keeps the pager (no `fill`).
 - **Actions**: the **mobile `FloatingActionBar`** is reused verbatim (fixed bottom-center frosted pill,
   three icon-only buttons). The mock's separate `QuickActions` button row was dropped — the user wants
   the identical pill on desktop, not a big-button row.
@@ -71,8 +79,11 @@ All `"use client"`. Mobile path is **untouched**.
   glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,
   refetches on window + month change. Loading/error states.
-- **Reused as-is (no props change):** `HeroBalance`, `Transactions`, `Bills`, `Emis`, `Income`,
-  `Investments`, `AddSheet`, `EditSheet`, `BillEditSheet`, `Toaster`.
+- **`hooks/useInfiniteExpenses.ts`** (new) — desktop-only scroll pagination for Recent payments:
+  fetches `/api/expenses?page=` in batches of 12 and appends via `loadMore()`. Resets on month change;
+  reloads when the expense count shifts (add/delete). Maps `Expense → TxView` like `useFinance`.
+- **Reused as-is (no props change):** `HeroBalance`, `Bills`, `Emis`, `Income`, `AddSheet`,
+  `EditSheet`, `BillEditSheet`, `Toaster`. **Extended (opt-in `fill`):** `Transactions`, `Investments`.
 
 ## Acceptance criteria
 - [ ] Viewport < 1024px renders the **current mobile UI, pixel-unchanged**.
@@ -88,8 +99,12 @@ All `"use client"`. Mobile path is **untouched**.
 - `src/features/dashboard/Dashboard.tsx` — branch mobile vs desktop.
 - `src/features/dashboard/hooks/useMediaQuery.ts` — new, SSR-safe.
 - `src/features/dashboard/hooks/useTrendData.ts` — new.
+- `src/features/dashboard/hooks/useInfiniteExpenses.ts` — new (desktop scroll pagination).
 - `src/features/dashboard/desktop/DesktopHome.tsx` — new shell (reuses `mobile/FloatingActionBar`).
 - `src/features/dashboard/desktop/TrendChart.tsx` — new (Recharts).
+- `src/features/dashboard/mobile/Transactions.tsx` — add `fill` (scroll + append-on-scroll) mode.
+- `src/features/dashboard/mobile/Investments.tsx` — add `fill` (scroll) mode.
+- `src/app/globals.css` — `.subtle-scroll` thin translucent scrollbar utility.
 - `src/app/api/trend/route.ts` — new GET.
 - `src/lib/api/trend.ts` — new aggregation.
 - `src/lib/api/schemas.ts` — trend query/response schema.

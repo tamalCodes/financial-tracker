@@ -11,6 +11,7 @@ interface Props {
   funds: Fund[];
   sips: SipRow[];
   loading?: boolean;
+  fill?: boolean; // desktop: fill column height, pin header + tabs, scroll the list
 }
 
 function SkeletonRows({ count }: { count: number }) {
@@ -74,7 +75,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-export default function Investments({ portfolioTotal, fds, funds, sips, loading }: Props) {
+export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill }: Props) {
   const [tab, setTab] = useState<"holdings" | "sips">("holdings");
 
   return (
@@ -89,6 +90,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading 
         display: "flex",
         flexDirection: "column",
         gap: 18,
+        ...(fill ? { height: "100%", minHeight: 0 } : null),
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -120,6 +122,14 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading 
         </TabButton>
       </div>
 
+      <div
+        className={fill ? "subtle-scroll" : undefined}
+        style={
+          fill
+            ? { flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 18, paddingRight: 6 }
+            : { display: "contents" }
+        }
+      >
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
@@ -195,6 +205,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading 
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

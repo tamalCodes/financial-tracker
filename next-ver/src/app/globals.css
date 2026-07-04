@@ -151,3 +151,27 @@ h2 {
     animation: none;
   }
 }
+
+/*
+ * Subtle internal scrollbar for desktop dashboard cards whose bodies scroll
+ * (Recent payments, Portfolio). Thin, translucent, appears on the track only on
+ * hover — keeps the glass aesthetic (specs/features/desktop-dashboard.md).
+ */
+.subtle-scroll {
+  scrollbar-width: thin;                       /* Firefox */
+  scrollbar-color: rgb(15 23 42 / 0.16) transparent;
+  overscroll-behavior: contain;                /* don't chain to the page */
+}
+.subtle-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.subtle-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.subtle-scroll::-webkit-scrollbar-thumb {
+  background: rgb(15 23 42 / 0.12);
+  border-radius: 999px;
+}
+.subtle-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(15 23 42 / 0.22);
+}
