@@ -30,7 +30,8 @@ Returns (`loadDashboardData`):
 }
 ```
 - `leftInBank = opening_balance + Σ_{m ≤ month}(earned − spent − paidBills − invested)` — cumulative
-  (D16). `spent` includes **paid bills** (D14). Tiles are current-month only and reset monthly.
+  (D16), summed **server-side** by the `cumulative_left_in_bank` RPC (migration 006; JS fallback in
+  `cumulativeLeftInBankJs`). `spent` includes **paid bills** (D14). Tiles are current-month only and reset monthly.
 - Expenses are **paginated** (D20): the payload carries page 1; the Spent tile / "N this month" use
   `expensesTotal`/`loggedTotal` from a separate amounts-only sweep, not the page. Pages 2+ via
   `GET /api/expenses?page=`.
@@ -57,7 +58,8 @@ optimistic add/edit/remove per resource, `reload()`. Month nav can't go past the
 - [ ] `expensesTotal`/`loggedTotal` reflect the whole month, not page 1.
 
 ## Files to touch
-`src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`,
+`src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`, `lib/api/emis.ts`,
+`supabase/migrations/006_perf_leftinbank_sum.sql`,
 `features/dashboard/mobile/{MobileHome,HeroBalance,GreetingHeader,useFinance}.tsx`.
 
 ## Out of scope

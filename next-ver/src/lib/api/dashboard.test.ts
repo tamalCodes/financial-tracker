@@ -7,8 +7,17 @@ import { cumulativeLeftInBank, loadDashboardData } from "@/lib/api/dashboard";
  * recorded eq/lte predicates. user_id is ignored (single-user fixtures).
  */
 type Row = Record<string, unknown>;
-function mockSupabase(data: Record<string, Row[]>) {
+// `rpcValue`: when set, `.rpc()` resolves to it (fast path). Default returns an
+// error so `cumulativeLeftInBank` falls back to the JS sweep — which is the math
+// these tests assert (the SQL in migration 006 mirrors the same formula).
+function mockSupabase(data: Record<string, Row[]>, rpcValue?: number) {
   return {
+    rpc: () =>
+      Promise.resolve(
+        rpcValue == null
+          ? { data: null, error: { message: "rpc not in mock" } }
+          : { data: rpcValue, error: null }
+      ),
     from(table: string) {
       const rows = data[table] ?? [];
       const filters: [string, string, unknown][] = [];
@@ -102,6 +111,12 @@ describe("cumulativeLeftInBank", () => {
     const left = await cumulativeLeftInBank(db as never, "u1", JUNE);
     // no opening balance: 50000 − 14500 − 5000 = 30500
     expect(left).toBe(30500);
+  });
+
+  it("uses the RPC scalar (server-side SUM) when present, skipping the JS sweep", async () => {
+    const db = mockSupabase(fixtures, 123456);
+    const left = await cumulativeLeftInBank(db as never, "u1", JUNE);
+    expect(left).toBe(123456);
   });
 });
 

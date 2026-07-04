@@ -236,7 +236,13 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      // Server-side cumulative "Left in bank" — sums in Postgres (migration 006).
+      cumulative_left_in_bank: {
+        Args: { p_month: string };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

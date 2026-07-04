@@ -12,7 +12,10 @@
 --
 -- Conventions observed:
 --   * Every table is per-user via user_id (auth.users.id). Queries always filter user_id.
---   * "month" is text 'YYYY-MM-01'.
+--   * "month" is the key 'YYYY-MM-01'. NOTE: the live DB's column type is INCONSISTENT
+--     across tables (some `date`, some `text`) — this file's `text` is best-effort and
+--     wrong for at least credits (date). The cumulative_left_in_bank RPC (migration 006)
+--     casts `month::date` to compare safely regardless. Verify with `\d public.<table>`.
 
 create extension if not exists "pgcrypto";
 

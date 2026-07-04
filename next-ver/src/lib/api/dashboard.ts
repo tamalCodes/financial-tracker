@@ -40,6 +40,26 @@ export const cumulativeLeftInBank = async (
   userId: string,
   currentMonth: string
 ): Promise<number> => {
+  // Fast path: sum in Postgres (migration 006) — one scalar round trip instead of
+  // shipping every historical amount row to the app. Falls back to the JS sweep if
+  // the RPC isn't present yet (deploy can precede the migration).
+  const rpc = await supabase.rpc("cumulative_left_in_bank", {
+    p_month: currentMonth,
+  });
+  if (!rpc.error && rpc.data != null) {
+    return Number(rpc.data);
+  }
+
+  return cumulativeLeftInBankJs(supabase, userId, currentMonth);
+};
+
+// JS fallback for the cumulative money model — retained so the app keeps working
+// before migration 006 is applied, and to unit-test the formula without Postgres.
+const cumulativeLeftInBankJs = async (
+  supabase: SupabaseClient,
+  userId: string,
+  currentMonth: string
+): Promise<number> => {
   const [creditsRes, expensesRes, investmentsRes, paidBillsRes, profileRes] =
     await Promise.all([
       supabase

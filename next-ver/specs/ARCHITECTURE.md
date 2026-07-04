@@ -13,7 +13,10 @@
    `lib/api/dashboard.ts`, mutations inline in the route.
 5. **No balance sync** — mutations have **no balance side-effect** (D13). `monthly_balances` and
    `applyBalanceDelta`/`lib/api/balances.ts` are gone; Left-in-bank and the per-month tiles are
-   computed on read in `loadDashboardData` (DATA_MODEL money model).
+   computed on read in `loadDashboardData` (DATA_MODEL money model). The **cumulative** Left-in-bank
+   sum runs **server-side** in Postgres via the `cumulative_left_in_bank(p_month)` RPC (migration 006)
+   — one scalar round trip instead of shipping every historical amount row to the app. `dashboard.ts`
+   keeps a JS-sweep fallback (`cumulativeLeftInBankJs`) for before-migration safety + unit tests.
 6. **JSON response** — `{ item }` / `{ ok: true }` / `{ error }` (no `balance` object anymore).
 
 ## Auth model
