@@ -2,6 +2,7 @@
 
 import { BODY, DISPLAY, fmt } from "./data";
 import Skeleton from "./Skeleton";
+import AddButton from "./AddButton";
 import type { BillView } from "./Bills";
 import type { EmiProgress } from "@/features/dashboard/types/types";
 
@@ -30,6 +31,7 @@ interface Props {
   onPay: (id: string) => void;
   onEdit: (emi: EmiProgress) => void;
   loading?: boolean;
+  onAdd?: () => void; // desktop: contextual "+" in the header → add EMI
 }
 
 const CARD_SHADOW =
@@ -107,7 +109,7 @@ function EmiRow({ card, onPay, onEdit }: { card: EmiCard; onPay: (id: string) =>
   );
 }
 
-export default function Emis({ cards, summary, onPay, onEdit, loading }: Props) {
+export default function Emis({ cards, summary, onPay, onEdit, loading, onAdd }: Props) {
   return (
     <div
       style={{
@@ -126,21 +128,32 @@ export default function Emis({ cards, summary, onPay, onEdit, loading }: Props) 
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
           EMIs
         </span>
-        {loading ? (
-          <Skeleton width={96} height={18} />
-        ) : (
-          <PaidTotal paid={summary.paid} total={summary.total} />
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
+          {loading ? (
+            <Skeleton width={96} height={18} />
+          ) : (
+            <PaidTotal paid={summary.paid} total={summary.total} />
+          )}
+          {onAdd && <AddButton variant="bill" label="Add EMI" onClick={onAdd} />}
+        </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {loading
-          ? Array.from({ length: 2 }).map((_, i) => (
-              <Skeleton key={`skel-${i}`} width="100%" height={78} radius={16} />
-            ))
-          : cards.map((card) => (
-              <EmiRow key={card.emi.emi_id} card={card} onPay={onPay} onEdit={onEdit} />
-            ))}
+        {loading ? (
+          Array.from({ length: 2 }).map((_, i) => (
+            <Skeleton key={`skel-${i}`} width="100%" height={78} radius={16} />
+          ))
+        ) : cards.length === 0 ? (
+          <div style={{ borderTop: "1px solid #f1f5f9", padding: "18px 1px", textAlign: "center" }}>
+            <span style={{ font: `500 13px ${BODY}`, color: "#94a3b8" }}>
+              No EMIs yet — tap + to add one
+            </span>
+          </div>
+        ) : (
+          cards.map((card) => (
+            <EmiRow key={card.emi.emi_id} card={card} onPay={onPay} onEdit={onEdit} />
+          ))
+        )}
       </div>
     </div>
   );

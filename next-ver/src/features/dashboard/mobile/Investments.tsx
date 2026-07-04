@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BODY, DISPLAY, type Fd, type Fund, type SipRow } from "./data";
 import Skeleton from "./Skeleton";
+import AddButton from "./AddButton";
 
 // Portfolio panel — pixel from Investments.dc.html (handoff §5.4). Tab = local UI state.
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   sips: SipRow[];
   loading?: boolean;
   fill?: boolean; // desktop: fill column height, pin header + tabs, scroll the list
+  onAdd?: () => void; // desktop: contextual "+" by the total → add investment
 }
 
 function SkeletonRows({ count }: { count: number }) {
@@ -75,7 +77,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill }: Props) {
+export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill, onAdd }: Props) {
   const [tab, setTab] = useState<"holdings" | "sips">("holdings");
 
   return (
@@ -93,24 +95,27 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
         ...(fill ? { height: "100%", minHeight: 0 } : null),
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <span style={{ font: `500 12.5px ${BODY}`, color: "#64748b" }}>Portfolio value</span>
-        {loading ? (
-          <Skeleton width={150} height={30} radius={9} />
-        ) : (
-          <span
-            style={{
-              fontFamily: DISPLAY,
-              fontWeight: 600,
-              fontSize: 30,
-              letterSpacing: "-0.025em",
-              color: "#0f172a",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            ₹{portfolioTotal}
-          </span>
-        )}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+          <span style={{ font: `500 12.5px ${BODY}`, color: "#64748b" }}>Portfolio value</span>
+          {loading ? (
+            <Skeleton width={150} height={30} radius={9} />
+          ) : (
+            <span
+              style={{
+                fontFamily: DISPLAY,
+                fontWeight: 600,
+                fontSize: 30,
+                letterSpacing: "-0.025em",
+                color: "#0f172a",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              ₹{portfolioTotal}
+            </span>
+          )}
+        </div>
+        {onAdd && <AddButton variant="investment" label="Add investment" onClick={onAdd} />}
       </div>
 
       <div style={{ display: "flex", gap: 4, background: "#f1f5f9", borderRadius: 13, padding: 4 }}>

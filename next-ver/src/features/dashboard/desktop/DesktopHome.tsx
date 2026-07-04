@@ -15,7 +15,6 @@ import Investments from "@/features/dashboard/mobile/Investments";
 import AddSheet from "@/features/dashboard/mobile/AddSheet";
 import EditSheet from "@/features/dashboard/mobile/EditSheet";
 import BillEditSheet from "@/features/dashboard/mobile/BillEditSheet";
-import FloatingActionBar from "@/features/dashboard/mobile/FloatingActionBar";
 import Toaster from "@/features/dashboard/mobile/Toaster";
 import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
 import TrendChart from "./TrendChart";
@@ -185,6 +184,7 @@ export default function DesktopHome() {
                 fill
                 onLoadMore={tx.loadMore}
                 loadingMore={tx.loadingMore}
+                onAdd={() => f.openSheet("expense")}
               />
             </div>
           </div>
@@ -199,19 +199,25 @@ export default function DesktopHome() {
                 onPageChange={f.setBillPage}
                 onEdit={f.openBillEdit}
                 loading={f.loading}
+                onAdd={() => f.openSheet("expense", { isBill: true, billKind: "once" })}
               />
             )}
-            {f.emiCards.length > 0 && (
-              <Emis
-                cards={f.emiCards}
-                summary={f.emisSummary}
-                onPay={f.pay}
-                onEdit={f.openEmiEdit}
-                loading={f.loading}
-              />
-            )}
+            <Emis
+              cards={f.emiCards}
+              summary={f.emisSummary}
+              onPay={f.pay}
+              onEdit={f.openEmiEdit}
+              loading={f.loading}
+              onAdd={() => f.openSheet("expense", { isBill: true, billKind: "emi" })}
+            />
             {(f.loading || f.income.length > 0) && (
-              <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
+              <Income
+                income={f.income}
+                incomeTotal={f.incomeTotal}
+                incomeCompact={f.incomeCompact}
+                loading={f.loading}
+                onAdd={() => f.openSheet("income")}
+              />
             )}
             <div style={{ flex: 1, minHeight: 0 }}>
               <Investments
@@ -221,14 +227,15 @@ export default function DesktopHome() {
                 sips={portfolio.sips}
                 loading={portfolio.loading}
                 fill
+                onAdd={() => f.openSheet("investment")}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Same frosted action pill as mobile (fixed bottom-center), not a big button row */}
-      <FloatingActionBar onOpen={f.openSheet} />
+      {/* Add-actions live in each card header (contextual "+"), not a floating pill —
+          keeps the dashboard unobstructed (specs/features/desktop-dashboard.md). */}
 
       {/* Shared overlays — mounted once, identical to MobileHome */}
       {f.sheet && (

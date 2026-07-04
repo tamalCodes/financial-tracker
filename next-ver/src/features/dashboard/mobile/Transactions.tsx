@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
+import AddButton from "./AddButton";
 import type { TxView } from "./useFinance";
 
 // "Recent payments" card — pixel from Transactions.dc.html (handoff §5.2).
@@ -22,6 +23,7 @@ interface Props {
   fill?: boolean; // desktop: fill column height + internal scroll pagination
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  onAdd?: () => void; // desktop: contextual "+" in the header → add expense
 }
 
 const CARD_SHADOW =
@@ -37,6 +39,7 @@ export default function Transactions({
   fill,
   onLoadMore,
   loadingMore,
+  onAdd,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -149,7 +152,7 @@ export default function Transactions({
     <div
       style={{
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "center",
         justifyContent: "space-between",
         gap: 12,
         paddingBottom: 8,
@@ -159,6 +162,7 @@ export default function Transactions({
       <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
         Recent payments
       </span>
+      {onAdd && <AddButton variant="expense" label="Add expense" onClick={onAdd} />}
     </div>
   );
 

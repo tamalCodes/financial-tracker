@@ -2,6 +2,7 @@
 
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
+import AddButton from "./AddButton";
 
 // "Income" card — mirrors BillsEmis layout (handoff §5.3), credit semantics (green).
 // Renders the month's credits[] as read-only rows; no actions.
@@ -17,6 +18,7 @@ interface Props {
   incomeTotal: string;
   incomeCompact: string;
   loading?: boolean;
+  onAdd?: () => void; // desktop: contextual "+" in the header → add income
 }
 
 const CARD_SHADOW =
@@ -64,7 +66,7 @@ function IncomeRow({ item }: { item: IncomeView }) {
   );
 }
 
-export default function Income({ income, incomeCompact, loading }: Props) {
+export default function Income({ income, incomeCompact, loading, onAdd }: Props) {
   return (
     <div
       style={{
@@ -83,28 +85,31 @@ export default function Income({ income, incomeCompact, loading }: Props) {
         <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
           Income
         </span>
-        {loading ? (
-          <Skeleton width={56} height={24} radius={999} />
-        ) : (
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              font: `600 11.5px ${DISPLAY}`,
-              color: "#047857",
-              background:
-                "linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.09))",
-              border: "1px solid rgba(16,185,129,0.34)",
-              borderRadius: 999,
-              padding: "5px 10px",
-              fontVariantNumeric: "tabular-nums",
-              whiteSpace: "nowrap",
-              flex: "none",
-            }}
-          >
-            ₹{incomeCompact}
-          </span>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
+          {loading ? (
+            <Skeleton width={56} height={24} radius={999} />
+          ) : (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                font: `600 11.5px ${DISPLAY}`,
+                color: "#047857",
+                background:
+                  "linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.09))",
+                border: "1px solid rgba(16,185,129,0.34)",
+                borderRadius: 999,
+                padding: "5px 10px",
+                fontVariantNumeric: "tabular-nums",
+                whiteSpace: "nowrap",
+                flex: "none",
+              }}
+            >
+              ₹{incomeCompact}
+            </span>
+          )}
+          {onAdd && <AddButton variant="income" label="Add income" onClick={onAdd} />}
+        </div>
       </div>
 
       {loading ? (

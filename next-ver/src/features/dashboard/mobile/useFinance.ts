@@ -286,13 +286,19 @@ export function useFinance() {
     }
   };
 
-  const openSheet = (mode: SheetMode) => {
+  // opts pre-scopes the sheet for the contextual "+" buttons (desktop cards): the Bills
+  // card opens straight to a one-off bill, the EMIs card to an EMI. Mode is always
+  // "expense" for those two (bills/EMIs live under the expense sheet's toggle).
+  const openSheet = (
+    mode: SheetMode,
+    opts?: { isBill?: boolean; billKind?: "once" | "emi" }
+  ) => {
     setSheet(mode);
     setFormAmount("");
     setFormNote("");
     setFormCat("food");
-    setFormIsBill(false);
-    setFormBillKind("once");
+    setFormIsBill(opts?.isBill ?? false);
+    setFormBillKind(opts?.billKind ?? "once");
     setFormEmiTotal("");
     setFormEmiMonths("");
   };

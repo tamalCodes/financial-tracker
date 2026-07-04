@@ -4,7 +4,9 @@
 > Reverse-engineered from `src/features/dashboard/Dashboard.tsx`,
 > `features/dashboard/hooks/{useMediaQuery,useTrendData}.ts`,
 > `features/dashboard/desktop/{DesktopHome,TrendChart}.tsx`,
-> `features/dashboard/mobile/FloatingActionBar.tsx` (reused for desktop actions),
+> `features/dashboard/mobile/AddButton.tsx` (contextual per-card "+" for desktop actions),
+> `features/dashboard/mobile/{Transactions,Bills,Emis,Income,Investments}.tsx` (opt-in `onAdd`),
+> `features/dashboard/mobile/useFinance.ts` (`openSheet(mode, opts?)` pre-scoping),
 > `src/app/api/trend/route.ts`, `lib/api/trend.ts`, `lib/api/schemas.ts` (trendQuerySchema).
 > Related: [dashboard.md](dashboard.md), DATA_MODEL, DECISIONS D13/D14/D16.
 
@@ -72,9 +74,17 @@ All `"use client"`. Mobile path is **untouched**.
   mode the card fills its column, the header pins, and the list body scrolls with a subtle scrollbar
   (`.subtle-scroll` in globals.css). `Transactions` replaces its Prev/Next pager with **append-on-scroll**
   (`onLoadMore` fires when the body nears its bottom). Mobile keeps the pager (no `fill`).
-- **Actions**: the **mobile `FloatingActionBar`** is reused verbatim (fixed bottom-center frosted pill,
-  three icon-only buttons). The mock's separate `QuickActions` button row was dropped — the user wants
-  the identical pill on desktop, not a big-button row.
+- **Actions (contextual per-card `+`)**: desktop drops the global `FloatingActionBar` (the fixed
+  bottom-center pill occluded Recent payments + the cards below it). Instead each card header carries a
+  small glass `+` (`mobile/AddButton.tsx`), scoped to that card and coloured to its semantic:
+  Recent payments → expense (red), Bills → one-off bill (indigo), EMIs → EMI (indigo), Income →
+  income (green), Portfolio value → investment (purple). Each card gained an **opt-in `onAdd` prop**;
+  only `DesktopHome` passes it, so **mobile is pixel-unchanged** (still uses the FAB). Bills/EMI adds go
+  through `openSheet("expense", { isBill, billKind })` — a new pre-scoping arg on `useFinance.openSheet`
+  that opens `AddSheet` straight to the right toggle. `FloatingActionBar.tsx` stays (mobile only).
+  - The **EMIs card always renders on desktop** (unlike mobile, which hides it at zero EMIs) so its `+`
+    is always reachable; with no EMIs the body shows an empty-state line ("No EMIs yet — tap + to add
+    one"). Mobile still guards `emiCards.length > 0`, so the empty state never shows there.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
   glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,
@@ -82,8 +92,9 @@ All `"use client"`. Mobile path is **untouched**.
 - **`hooks/useInfiniteExpenses.ts`** (new) — desktop-only scroll pagination for Recent payments:
   fetches `/api/expenses?page=` in batches of 12 and appends via `loadMore()`. Resets on month change;
   reloads when the expense count shifts (add/delete). Maps `Expense → TxView` like `useFinance`.
-- **Reused as-is (no props change):** `HeroBalance`, `Bills`, `Emis`, `Income`, `AddSheet`,
-  `EditSheet`, `BillEditSheet`, `Toaster`. **Extended (opt-in `fill`):** `Transactions`, `Investments`.
+- **Reused as-is (no props change):** `HeroBalance`, `AddSheet`, `EditSheet`, `BillEditSheet`,
+  `Toaster`. **Extended (opt-in `fill`):** `Transactions`, `Investments`. **Extended (opt-in `onAdd`):**
+  `Transactions`, `Bills`, `Emis`, `Income`, `Investments`.
 
 ## Acceptance criteria
 - [ ] Viewport < 1024px renders the **current mobile UI, pixel-unchanged**.
@@ -100,10 +111,13 @@ All `"use client"`. Mobile path is **untouched**.
 - `src/features/dashboard/hooks/useMediaQuery.ts` — new, SSR-safe.
 - `src/features/dashboard/hooks/useTrendData.ts` — new.
 - `src/features/dashboard/hooks/useInfiniteExpenses.ts` — new (desktop scroll pagination).
-- `src/features/dashboard/desktop/DesktopHome.tsx` — new shell (reuses `mobile/FloatingActionBar`).
+- `src/features/dashboard/desktop/DesktopHome.tsx` — new shell; wires per-card `onAdd`, no FAB.
 - `src/features/dashboard/desktop/TrendChart.tsx` — new (Recharts).
-- `src/features/dashboard/mobile/Transactions.tsx` — add `fill` (scroll + append-on-scroll) mode.
-- `src/features/dashboard/mobile/Investments.tsx` — add `fill` (scroll) mode.
+- `src/features/dashboard/mobile/AddButton.tsx` — new; contextual glass `+`, 4 semantic variants.
+- `src/features/dashboard/mobile/Transactions.tsx` — add `fill` mode + `onAdd`.
+- `src/features/dashboard/mobile/Investments.tsx` — add `fill` mode + `onAdd`.
+- `src/features/dashboard/mobile/{Bills,Emis,Income}.tsx` — add `onAdd`.
+- `src/features/dashboard/mobile/useFinance.ts` — `openSheet(mode, opts?)` pre-scoping for bill/EMI.
 - `src/app/globals.css` — `.subtle-scroll` thin translucent scrollbar utility.
 - `src/app/api/trend/route.ts` — new GET.
 - `src/lib/api/trend.ts` — new aggregation.

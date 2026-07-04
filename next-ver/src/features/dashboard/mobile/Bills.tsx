@@ -2,6 +2,7 @@
 
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
+import AddButton from "./AddButton";
 
 // "Bills" card — one-off bills only (EMIs live in their own card). A bill is PAID the
 // moment it's added (added == already paid), so there's no Pay button and no paid/total
@@ -24,6 +25,7 @@ interface Props {
   onPageChange: (page: number) => void;
   onEdit: (b: BillView) => void;
   loading?: boolean;
+  onAdd?: () => void; // desktop: contextual "+" in the header → add bill
 }
 
 const CARD_SHADOW =
@@ -111,7 +113,7 @@ function PagerButton({ label, disabled, onClick }: { label: string; disabled: bo
   );
 }
 
-export default function Bills({ bills, page, pages, onPageChange, onEdit, loading }: Props) {
+export default function Bills({ bills, page, pages, onPageChange, onEdit, loading, onAdd }: Props) {
   return (
     <div
       style={{
@@ -126,13 +128,16 @@ export default function Bills({ bills, page, pages, onPageChange, onEdit, loadin
         gap: 4,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 3, paddingBottom: 8 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
-          Bills
-        </span>
-        <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
-          What you pay monthly — rent, utilities, recharge, insurance
-        </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+            Bills
+          </span>
+          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
+            What you pay monthly — rent, utilities, recharge, insurance
+          </span>
+        </div>
+        {onAdd && <AddButton variant="bill" label="Add bill" onClick={onAdd} />}
       </div>
 
       {loading
