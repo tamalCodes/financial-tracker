@@ -15,6 +15,7 @@ export interface Expense {
   category: ExpenseCategory;
   created_at: string;
   tags?: string[]; // legacy free-form labels (optional)
+  tag?: string | null; // single free-form tag (mobile edit modal)
 }
 
 // Per-month investment FLOW entry (drives the "Invested" tile + Left-in-bank).

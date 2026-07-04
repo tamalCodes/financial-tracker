@@ -12,6 +12,7 @@ import BillsEmis from "./BillsEmis";
 import Investments from "./Investments";
 import FloatingActionBar from "./FloatingActionBar";
 import AddSheet from "./AddSheet";
+import EditSheet from "./EditSheet";
 
 // Identity for the greeting (§2.6): derive a display name + initials from the auth email.
 function identityFrom(email: string | null | undefined) {
@@ -68,6 +69,7 @@ export default function MobileHome() {
             page={f.expPage}
             pages={f.expPages}
             onPageChange={f.setExpPage}
+            onEdit={f.openEdit}
             loading={f.loading}
           />
           {(f.loading || f.income.length > 0) && (
@@ -100,6 +102,23 @@ export default function MobileHome() {
           onCat={f.setCat}
           onSave={f.saveEntry}
           onClose={f.closeSheet}
+        />
+      )}
+
+      {f.editId && (
+        <EditSheet
+          amount={f.editAmount}
+          title={f.editTitle}
+          tag={f.editTag}
+          cat={f.editCat}
+          cats={f.cats}
+          saving={f.editSaving}
+          onAmount={f.setEditAmount}
+          onTitle={f.setEditTitle}
+          onTag={f.setEditTag}
+          onCat={f.setEditCat}
+          onSave={f.saveEdit}
+          onClose={f.closeEdit}
         />
       )}
     </div>

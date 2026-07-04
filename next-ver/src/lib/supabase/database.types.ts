@@ -44,11 +44,13 @@ type CreditInsert = {
 type ExpenseRow = CreditRow & {
   category: ExpenseCategory;
   tags: string[] | null; // legacy free-form labels
+  tag: string | null; // single free-form tag (mobile edit modal)
 };
 
 type ExpenseInsert = CreditInsert & {
   category?: ExpenseCategory;
   tags?: string[] | null;
+  tag?: string | null;
 };
 
 export type Database = {

@@ -12,6 +12,9 @@ const amount = z.coerce
 // just bounds count + length so a bad client can't blow up a row.
 const tags = z.array(z.string().trim().min(1).max(32)).max(20).optional();
 
+// Single free-form tag (expenses only, mobile edit modal). Empty string clears it.
+const tag = z.string().trim().max(32).nullish();
+
 /** Expense category enum (mobile redesign). Optional on the wire; defaults to 'other'. */
 export const expenseCategory = z.enum([
   "food",
@@ -29,6 +32,7 @@ export const mutationCreateSchema = z.object({
   amount,
   category: expenseCategory.optional(),
   tags,
+  tag,
 });
 
 /** PUT body for credits / expenses. */
@@ -38,6 +42,7 @@ export const mutationUpdateSchema = z.object({
   amount,
   category: expenseCategory.optional(),
   tags,
+  tag,
 });
 
 /** POST body for bills. `due_date` is a display string (e.g. '25 Jun'). */

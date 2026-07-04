@@ -45,6 +45,7 @@ create table if not exists public.expenses (
   carry_forward       boolean not null default false,      -- DEPRECATED (unused)
   carried_from_month  text,                                -- DEPRECATED (unused)
   tags                text[] not null default '{}',        -- legacy free-form labels (optional)
+  tag                 text,                                 -- single free-form tag (mobile edit modal)
   created_at          timestamptz not null default now()
 );
 create index if not exists expenses_user_month_idx on public.expenses (user_id, month);

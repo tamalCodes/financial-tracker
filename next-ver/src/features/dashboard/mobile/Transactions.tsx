@@ -2,23 +2,17 @@
 
 import { BODY, DISPLAY } from "./data";
 import Skeleton from "./Skeleton";
+import type { TxView } from "./useFinance";
 
 // "Recent payments" card — pixel from Transactions.dc.html (handoff §5.2).
 // No minus sign (debits understood). No trash icon — matches the design reference.
-interface TxView {
-  merchant: string;
-  category: string;
-  date: string;
-  amount: string;
-  rgb: string;
-  text: string;
-}
-
+// Tap a row to edit it (amount / title / tag / category) — handled by MobileHome.
 interface Props {
   transactions: TxView[];
   page: number;
   pages: number;
   onPageChange: (page: number) => void;
+  onEdit: (tx: TxView) => void;
   loading?: boolean;
 }
 
@@ -30,6 +24,7 @@ export default function Transactions({
   page,
   pages,
   onPageChange,
+  onEdit,
   loading,
 }: Props) {
   return (
@@ -85,8 +80,11 @@ export default function Transactions({
 
       {!loading &&
         transactions.map((tx, i) => (
-        <div
-          key={`${tx.merchant}-${i}`}
+        <button
+          type="button"
+          key={`${tx.id}-${i}`}
+          onClick={() => onEdit(tx)}
+          aria-label={`Edit ${tx.merchant}`}
           style={{
             display: "flex",
             alignItems: "center",
@@ -94,6 +92,15 @@ export default function Transactions({
             gap: 10,
             padding: "11px 1px",
             borderTop: "1px solid #f1f5f9",
+            border: "none",
+            borderTopColor: "#f1f5f9",
+            borderTopStyle: "solid",
+            borderTopWidth: 1,
+            background: "transparent",
+            width: "100%",
+            textAlign: "left",
+            cursor: "pointer",
+            font: "inherit",
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
@@ -110,6 +117,24 @@ export default function Transactions({
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
               <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{tx.date}</span>
+              {tx.tag && (
+                <span
+                  style={{
+                    font: `600 10.5px ${BODY}`,
+                    color: `rgb(${tx.rgb})`,
+                    background: `rgba(${tx.rgb},0.12)`,
+                    border: `1px solid rgba(${tx.rgb},0.28)`,
+                    borderRadius: 999,
+                    padding: "1px 8px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 140,
+                  }}
+                >
+                  {tx.tag}
+                </span>
+              )}
             </div>
           </div>
           <span
@@ -122,7 +147,7 @@ export default function Transactions({
           >
             ₹{tx.amount}
           </span>
-        </div>
+        </button>
       ))}
 
       {pages > 1 && (

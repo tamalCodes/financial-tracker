@@ -19,6 +19,21 @@ import {
 // in the dashboard payload, pages 2+ are fetched from GET /api/expenses.
 const EXPENSES_PAGE_SIZE = 6;
 
+// One "recent payment" row as the mobile UI consumes it (display strings + raw fields
+// needed to prefill the edit sheet).
+export interface TxView {
+  id: string;
+  merchant: string;
+  category: string;
+  categoryKey: CategoryKey;
+  tag: string | null;
+  date: string;
+  amount: string;
+  rawAmount: number;
+  rgb: string;
+  text: string;
+}
+
 // Real finance state for the mobile home — backed by /api/dashboard (+ mutation routes).
 // Returns the same shape the old in-memory useFinanceDemo did, so the leaf components
 // (HeroBalance/Transactions/BillsEmis/AddSheet) stay untouched. Money model is computed
@@ -108,10 +123,14 @@ export function useFinance() {
       expensesPage.map((e: Expense) => {
         const c = catOf(e.category as CategoryKey);
         return {
+          id: e.id,
           merchant: e.description,
           category: c.label,
+          categoryKey: e.category as CategoryKey,
+          tag: e.tag ?? null,
           date: e.created_at ? formatTxnDate(e.created_at) : "",
           amount: fmt(Number(e.amount)),
+          rawAmount: Number(e.amount),
           rgb: c.rgb,
           text: c.text,
         };
@@ -239,6 +258,56 @@ export function useFinance() {
     }
   };
 
+  // ── Edit an existing expense (tap a recent payment) ──────────────────────────
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editAmount, setEditAmount] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editTag, setEditTag] = useState("");
+  const [editCat, setEditCat] = useState<CategoryKey>("food");
+  const [editSaving, setEditSaving] = useState(false);
+
+  const openEdit = (tx: TxView) => {
+    setEditId(tx.id);
+    setEditAmount(String(tx.rawAmount));
+    setEditTitle(tx.merchant);
+    setEditTag(tx.tag ?? "");
+    setEditCat(tx.categoryKey);
+  };
+  const closeEdit = () => setEditId(null);
+  const setEditAmountSan = (v: string) => setEditAmount(v.replace(/[^0-9]/g, ""));
+
+  const saveEdit = async () => {
+    const amount = parseInt(editAmount.replace(/[^0-9]/g, ""), 10);
+    if (!editId || !amount || editSaving) return;
+    const description = editTitle.trim() || catOf(editCat).label;
+    setEditSaving(true);
+    try {
+      const res = await fetch("/api/expenses", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editId,
+          description,
+          amount,
+          category: editCat,
+          tag: editTag.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("edit failed");
+      const { item } = (await res.json()) as { item: Expense };
+      upsertExpense(item); // page 1
+      setPageRows((prev) =>
+        prev ? prev.map((e) => (e.id === item.id ? item : e)) : prev
+      ); // page 2+
+      await reload(); // totals may shift (amount changed)
+      setEditId(null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
   return {
     loading: isBootstrapping,
     month: monthLabel,
@@ -269,6 +338,20 @@ export function useFinance() {
     saveEntry,
     saving,
     cats: CATS,
+    // edit sheet
+    editId,
+    openEdit,
+    closeEdit,
+    editAmount,
+    editTitle,
+    editTag,
+    editCat,
+    setEditAmount: setEditAmountSan,
+    setEditTitle,
+    setEditTag,
+    setEditCat,
+    saveEdit,
+    editSaving,
   };
 }
 

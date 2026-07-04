@@ -12,8 +12,9 @@ import { NextResponse } from "next/server";
 
 // Per-month spend with a category enum (mobile redesign). No balance side-effects —
 // spent_m and Left-in-bank are computed on read (DECISIONS D13).
-// NOTE: `tags` is NOT selected/written — the live DB has no such column (schema drift).
-const SELECT = "id, description, amount, category, created_at";
+// NOTE: `tags` (array) is NOT selected/written — the live DB has no such column (schema drift).
+// `tag` (single, nullable) IS a live column — migration 004; used by the mobile edit modal.
+const SELECT = "id, description, amount, category, tag, created_at";
 
 // Paginated recent payments. Page 1 ships inside /api/dashboard; this serves 2+.
 // `page` is 1-based; rows are newest-first to match the dashboard order.
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { currentMonth, description, amount, category } = validate(
+    const { currentMonth, description, amount, category, tag } = validate(
       mutationCreateSchema,
       await request.json()
     );
@@ -76,6 +77,7 @@ export async function POST(request: Request) {
         description,
         amount,
         category: category ?? "other",
+        tag: tag ? tag : null,
       })
       .select(SELECT)
       .single();
@@ -95,7 +97,7 @@ export async function PUT(request: Request) {
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { id, description, amount, category } = validate(
+    const { id, description, amount, category, tag } = validate(
       mutationUpdateSchema,
       await request.json()
     );
@@ -105,6 +107,8 @@ export async function PUT(request: Request) {
 
     const update: Record<string, unknown> = { description, amount };
     if (category) update.category = category;
+    // `tag` present in the body → set it (trimmed string) or clear it (empty → null).
+    if (tag !== undefined) update.tag = tag ? tag : null;
 
     const { data: updated, error } = await supabase
       .from("expenses")

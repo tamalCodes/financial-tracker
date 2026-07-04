@@ -98,7 +98,7 @@ export const loadDashboardData = async (
       // Display rows: first page only (newest first).
       supabase
         .from("expenses")
-        .select("id, description, amount, category, created_at")
+        .select("id, description, amount, category, tag, created_at")
         .eq("user_id", userId)
         .eq("month", currentMonth)
         .order("created_at", { ascending: false })
