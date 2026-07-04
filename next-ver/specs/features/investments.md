@@ -1,45 +1,46 @@
 # Investments
 
 Reverse-engineered from `src/app/api/investments/route.ts`, `lib/api/dashboard.ts`,
-`features/dashboard/components/InvestmentForm.tsx`. Differs from credits/expenses: **no copy
-on carry-forward**, **soft delete**, **no PUT**.
+`features/dashboard/mobile/{AddSheet,Investments,useFinance}.tsx`. Post mobile redesign —
+DECISIONS D15 (recurring/soft-delete model **removed**).
 
-## Problem
-Users record recurring or one-off investments. An investment reduces the balance and (if
-`carry_forward`) counts every month from its `start_month` onward, without duplicating rows.
+## Two distinct concepts (D15)
+1. **Investment FLOW** — this spec. Plain per-month rows that drive the **Invested** tile +
+   Left-in-bank.
+2. **Portfolio panel** — manual, display-only reference (`holdings`, `sips`, `portfolio_totals`);
+   does **not** affect the money model. Separate routes/UI.
+
+## Problem (flow)
+Users log per-month money moved into investments; it feeds `invested_m` and reduces Left-in-bank.
+No recurring model, no soft delete, no balance side-effect — computed on read (D13/D15).
 
 ## Data model touched
-`investments` table: `id, user_id, start_month, description, amount, is_active, carry_forward,
-created_at`. Mutations adjust `monthly_balances.closing_balance`.
+`investments` table: `id, user_id, month, description, amount, created_at`. Deprecated/unused:
+`start_month, is_active, carry_forward` (old recurring/soft-delete model — D15). Feeds
+`invested_m` + Left-in-bank.
 
 ## API contract — `/api/investments`
-- **POST** — `{ currentMonth, description, amount, carry_forward? }`. Inserts with
-  `start_month = currentMonth`, `is_active = true`. → `{ item, balance }`.
-  Balance delta **`-amount`**.
-- **DELETE** — `?id=`; re-fetch (user-scoped) → 404 → **soft delete** (`is_active=false`).
-  → `{ ok: true, balance }`. Balance delta **`+amount`** on the row's `start_month`.
-- **No PUT** today.
-- Errors: 400 / 401 / 404 / 429.
-- `select`: `"id, description, amount, carry_forward, start_month, created_at, is_active"`.
-- Rate limit: `investments:{post,delete}` `{ limit: 30, windowMs: 60_000 }`. Auth via `requireUser`.
+- **POST** — `{ currentMonth, description, amount }` → `{ item }`. Inserts `month = currentMonth`.
+- **PUT** — `{ id, description, amount }` → `{ item }` (edit).
+- **DELETE** — `?id=` → **hard delete** → `{ ok: true }`.
+- **No `balance` in any response.** Errors 400/401/404/429. Rate limit
+  `investments:{post,put,delete}` 30/60s. Auth `requireUser`, `.eq("user_id")`.
+- `select`: `"id, description, amount, month, created_at"`.
 
-## Carry-forward (NOT copied)
-Read filter: `lte("start_month", currentMonth)` + `is_active=true`, then keep rows where
-`carry_forward` is true OR `start_month === currentMonth`. One row spans months.
-
-## UI / components
-`InvestmentForm` (`"use client"`), `TransactionSection`/`TransactionList`. `useDashboardData`:
-`upsertInvestment` / `removeInvestment`.
+## UI / components (mobile)
+AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. The Investments panel
+(portfolio value + Holdings/SIPs) is manual reference — see DATA_MODEL `holdings`/`sips`/
+`portfolio_totals`.
 
 ## Acceptance criteria
-- [ ] POST subtracts amount; DELETE (soft) adds it back, both on `start_month`.
-- [ ] carry_forward investment counts in all months ≥ start_month, exactly once each.
-- [ ] non-carry investment counts only in its start_month.
+- [ ] POST/PUT/DELETE change `invested_m` + Left-in-bank; no balance row written.
+- [ ] Per-month rows only — no `start_month`/`is_active`/`carry_forward`/soft-delete logic.
 - [ ] user_id scoping on all queries.
 
 ## Files to touch
-`src/app/api/investments/route.ts`, `InvestmentForm.tsx`, `useDashboardData.ts`,
-`lib/api/dashboard.ts` (filter logic).
+`src/app/api/investments/route.ts`, `lib/api/schemas.ts`, `lib/api/dashboard.ts`,
+`features/dashboard/mobile/{AddSheet,Investments,useFinance}.tsx`.
 
 ## Out of scope
-Returns/valuation tracking, sell flow, PUT/edit (add later).
+Returns/valuation feeds, sell flow. Portfolio panel CRUD (holdings/sips/portfolio) tracked
+separately.

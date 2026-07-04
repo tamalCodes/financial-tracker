@@ -1,52 +1,60 @@
 # Dashboard
 
-Reverse-engineered from `src/app/api/dashboard/route.ts`, `src/app/api/balances/route.ts`,
-`lib/api/dashboard.ts`, `lib/api/balances.ts`, `features/dashboard/*`.
+Reverse-engineered from `src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`,
+`features/dashboard/mobile/*`. Post mobile redesign — money model in DATA_MODEL; DECISIONS
+D13/D14/D16/D20.
 
 ## Problem
-Single per-month view: starting/closing balance + the month's credits, expenses, and active
-investments. Users navigate months and set/edit the month's starting balance.
+Per-month home view: the cumulative **Left in bank** hero + three per-month tiles
+(Earned/Spent/Invested) + the month's credits, expenses (page 1), investments, and bills.
+Users step months; there is **no starting/closing balance** to set — `monthly_balances` and the
+whole `/api/balances` route are gone (D13).
 
-## Data model touched
-Reads `monthly_balances`, `credits`, `expenses`, `investments` (all user-scoped, by month).
-Writes `monthly_balances` (seed on rollover, self-heal closing, starting-balance edits).
+## Data model touched (read-only)
+Reads `profiles.opening_balance`, `credits`, `expenses`, `investments`, `bills` — all user-scoped.
+Cumulative reads sweep every month ≤ current; the per-month display reads the current month only.
+**Writes nothing** — mutations live on the resource routes and have no balance side-effect.
 
-## API contract
-### `GET /api/dashboard?month=YYYY-MM-01`
-- → `{ balance: MonthlyBalance|null, credits[], expenses[], investments[] }`.
-- Runs carry-forward (credits+expenses), seeds balance from previous month if absent,
-  self-heals `closing_balance`, filters investments. All in `loadDashboardData`.
-- Errors: 400 missing month, 401 unauth, 500 unexpected (message-based status mapping).
+## API contract — `GET /api/dashboard?month=YYYY-MM-01`
+Returns (`loadDashboardData`):
+```
+{
+  summary: { leftInBank, earned, spent, invested },   // numbers
+  credits:  Credit[],                                  // current month
+  expenses: Expense[],                                 // page 1 only, newest-first (D20)
+  expensesTotal: number,                               // full-month count
+  loggedTotal:   number,                               // full-month Σ expenses
+  investments: Investment[],                           // current month
+  bills: Bill[],                                       // current month (one-off + EMI installments)
+}
+```
+- `leftInBank = opening_balance + Σ_{m ≤ month}(earned − spent − paidBills − invested)` — cumulative
+  (D16). `spent` includes **paid bills** (D14). Tiles are current-month only and reset monthly.
+- Expenses are **paginated** (D20): the payload carries page 1; the Spent tile / "N this month" use
+  `expensesTotal`/`loggedTotal` from a separate amounts-only sweep, not the page. Pages 2+ via
+  `GET /api/expenses?page=`.
+- Errors: 400 missing month, 401 unauth, 500 unexpected. Rate limit `dashboard:get` 60/60s. Auth via
+  `requireUser`.
 
-### `POST /api/balances`
-- `{ currentMonth, startingBalance }` → creates `monthly_balances` row (starting = closing =
-  value) via `createStartingBalance`. → `{ ok: true }`.
+> Related feature routes (own specs): [expenses.md](./expenses.md), [bills.md](./bills.md) (+ EMIs),
+> [credits.md](./credits.md), [investments.md](./investments.md).
 
-### `PUT /api/balances`
-- `{ currentMonth, startingBalance }` → `loadDashboardData` then `updateClosingBalance(...,
-  { updateStarting: true })` → recomputes closing from full lists. → `{ ok: true, balance }`.
-
-- Auth via `requireUser`; rate limits `dashboard:get` 60, `balances:{post,put}` 30 (per 60s).
-
-## Balances invariant
-`closing = starting + Σcredits − Σexpenses − Σinvestments` (DATA_MODEL). Hot-path mutations
-use `applyBalanceDelta`; full edits use `updateClosingBalance`; reads self-heal drift.
-
-## UI / components
-`Dashboard.tsx` orchestrates. `useDashboardState` (month nav, `YYYY-MM-01`, can't go past
-current month, starting-balance form state). `useDashboardData(month)` fetches + holds lists,
-optimistic `upsert*/remove*`, `reload`. Components: `BalancePanel`, `MonthHeader`,
-`StartingBalanceModal`, `TransactionSection`, `TransactionList`, `*Form`.
+## UI / components (mobile)
+`MobileHome` composes: `GreetingHeader` → `HeroBalance` (Left-in-bank + 3 tiles) → `Transactions`
+(recent payments) → `BillsEmis` → `Investments`, overlaid by `FloatingActionBar` + `AddSheet` +
+`EditSheet` + `Toaster`. `useFinance(month)` fetches `/api/dashboard`, holds lists + summary,
+optimistic add/edit/remove per resource, `reload()`. Month nav can't go past the current month.
 
 ## Acceptance criteria
-- [ ] Month with no balance seeds from previous month's closing.
-- [ ] Stored closing self-heals to match recomputed value.
+- [ ] `leftInBank` cumulates across months and starts from `opening_balance`.
+- [ ] Spent tile = Σ current-month expenses + Σ paid bills that month.
+- [ ] Tiles isolated to the current month; no read/write of `monthly_balances`.
 - [ ] Cannot navigate to a future month.
-- [ ] Editing starting balance recomputes closing from current lists.
+- [ ] `expensesTotal`/`loggedTotal` reflect the whole month, not page 1.
 
 ## Files to touch
-`src/app/api/dashboard/route.ts`, `src/app/api/balances/route.ts`, `lib/api/dashboard.ts`,
-`lib/api/balances.ts`, `features/dashboard/Dashboard.tsx` + `hooks/` + `components/`.
+`src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`,
+`features/dashboard/mobile/{MobileHome,HeroBalance,GreetingHeader,useFinance}.tsx`.
 
 ## Out of scope
-Charts/analytics, multi-month reports, export.
+Charts/analytics, multi-month reports, export. Starting/closing balance (removed — D13).

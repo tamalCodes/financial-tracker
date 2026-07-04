@@ -9,11 +9,12 @@
    `createSupabaseServerClient()` → `requireUser(supabase)`.
 3. **Auth guard** (`requireUser`, `src/lib/supabase/auth.ts`) — local JWT cookie first, then
    `supabase.auth.getUser()`; throws a 401 `NextResponse` otherwise.
-4. **Supabase query** — always `.eq("user_id", userId)`. Reads in `lib/api/dashboard.ts`,
-   mutations inline in the route.
-5. **Balance sync** — mutations call `applyBalanceDelta` (`lib/api/balances.ts`) to keep
-   `monthly_balances.closing_balance` consistent (see DATA_MODEL invariant).
-6. **JSON response** — `{ item, balance }` / `{ ok: true, balance }` / `{ error }`.
+4. **Supabase query** — always `.eq("user_id", userId)` (RLS also on, D21). Reads in
+   `lib/api/dashboard.ts`, mutations inline in the route.
+5. **No balance sync** — mutations have **no balance side-effect** (D13). `monthly_balances` and
+   `applyBalanceDelta`/`lib/api/balances.ts` are gone; Left-in-bank and the per-month tiles are
+   computed on read in `loadDashboardData` (DATA_MODEL money model).
+6. **JSON response** — `{ item }` / `{ ok: true }` / `{ error }` (no `balance` object anymore).
 
 ## Auth model
 - **Two clients, two purposes:**
@@ -44,7 +45,17 @@
   `src/lib/{api,supabase}`. Absolute `@/` imports throughout.
 
 ## State & data fetching pattern
-`useDashboardState` owns the selected month (`YYYY-MM-01`) + UI flags. `useDashboardData(month)`
-fetches `/api/dashboard?month=`, exposes `balance/credits/expenses/investments` plus optimistic
-`upsert*/remove*` mutators and `reload()`. Mutations hit the resource routes, then the hook
-either patches local state optimistically or `reload()`s.
+Mobile: `useFinance(month)` fetches `/api/dashboard?month=`, exposes `summary` (leftInBank + tiles)
++ `credits/expenses/investments/bills` plus optimistic add/edit/remove per resource and `reload()`.
+Expenses are paginated (D20) — page 1 in the dashboard payload, 2+ via `GET /api/expenses?page=`.
+Mutations hit the resource routes, then the hook patches local state optimistically or `reload()`s.
+(Legacy desktop `useDashboardState`/`useDashboardData` were torn down with the demo — commit
+`refactor(dashboard): teardown demo`.)
+
+## Security headers (CSP + hardening) — D19
+`next.config.ts` `headers()` sends on every route: **Content-Security-Policy** (default-src 'self';
+`'unsafe-inline'` for script/style until a nonce middleware lands; dev-only `'unsafe-eval'` + ws for
+HMR, gated on `NODE_ENV`; `connect-src` allowlists the Supabase origin as defense-in-depth),
+**HSTS** (2y, preload), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin`, and a locked-down `Permissions-Policy`. Set at
+the config layer (not middleware) so it applies uniformly and survives static/edge responses.

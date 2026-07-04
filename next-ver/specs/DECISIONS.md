@@ -125,3 +125,52 @@ Two distinct concepts now:
 Owner decision: no automation/valuation feeds exist, so everything is manual; the panel is
 reference, the tile is cash flow. Open sub-decision (assumed NO): SIP payments do not feed the
 monthly Invested tile — log them as flow entries if that changes.
+
+## D16 — One-time signup `opening_balance` seeds Left-in-bank (not income)
+Migration `002_profiles_opening_balance.sql` adds `profiles.opening_balance` — the bank balance
+the user has *before* any tracked month. `leftInBank` starts from it:
+`leftInBank(month) = opening_balance + Σ_{m ≤ month}(earned − spent − paidBills − invested)`.
+It is a **starting point, not income** — it never feeds the per-month `earned` tile, only the
+cumulative bank figure. Captured once at signup; edited via the profile, not a monthly mutation.
+
+## D17 — EMIs are pre-created installment rows on the `bills` ledger (not a new table)
+An EMI is modelled as N normal `bills` rows — one per month from `currentMonth`, all sharing an
+`emi_id` (uuid), with `emi_seq` (1-based index), `emi_months` (duration), `emi_total` (loan total,
+display-only). `POST /api/emis` expands the EMI into those rows in one insert; **paying an
+installment is a normal `PATCH /api/bills` on that month's row** — no special path. This reuses the
+whole bills money model (D14: a paid installment counts toward that month's spend) for free. One-off
+bills leave every `emi_*` column null. `GET /api/emis` rolls the rows up per `emi_id` into progress
+(paid/remaining count + amount). Alternative rejected: a separate `emis` table with a payment
+schedule — would duplicate the bills pay/spend logic. `monthly × months` may exceed `emi_total`
+(interest), so the total is display-only, never summed into spend.
+
+## D18 — Single free-form `tag` on expenses + tap-to-edit; legacy `tags[]` never shipped
+The mobile Recent-payments row is tappable → opens `EditSheet` (amount, title/description, one
+free-form `tag`, category). Migration `004_expense_tag.sql` adds a **single nullable `tag` text**
+column — deliberately *not* the legacy `tags text[]` (which was designed but never migrated to the
+live DB; `schemas.ts` still declares `tags` for back-compat but the route neither selects nor writes
+it). One tag keeps the edit UI a single field. Empty string clears it (→ null). Editing an expense
+is `PUT /api/expenses`; it has **no balance side-effect** (D13 — spend is computed on read).
+
+## D19 — Security headers (CSP + hardening) via `next.config` `headers()`
+`next.config.ts` sends a Content-Security-Policy plus HSTS, `X-Frame-Options: DENY`,
+`X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a locked
+`Permissions-Policy` on every route. CSP uses `'unsafe-inline'` for script/style because the App
+Router injects inline bootstrap/hydration scripts and Tailwind emits inline styles — a nonce-based
+middleware is the intended follow-up. Dev additionally allows `'unsafe-eval'` + `ws:`/`wss:` for HMR
+(never shipped to prod, gated on `NODE_ENV`). `connect-src` allowlists the Supabase origin as
+defense-in-depth even though Supabase is called server-side only. Set at the config layer (not
+middleware) so it applies uniformly and survives static/edge responses.
+
+## D20 — Recent payments are paginated; totals come from an amounts-only sweep
+`/api/dashboard` returns only the first page of expenses (`EXPENSES_PAGE_SIZE`, newest-first);
+pages 2+ load lazily via `GET /api/expenses?page=`. The Spent tile and "N this month" line must
+reflect the **whole month**, not the page — so `loadDashboardData` also runs a separate
+amounts-only sweep of the month to produce `expensesTotal` (count) and `loggedTotal` (Σ),
+independent of the page window. Chosen over fetching every row: the list can grow unbounded but the
+tiles need only aggregates.
+
+## D21 — RLS added as defense-in-depth; query-layer ownership stays primary
+Migration `003_rls.sql` enables Postgres row-level security on the user tables. This does **not**
+change D-era practice: every query still filters `.eq("user_id", userId)` in code (ARCHITECTURE
+step 4). RLS is a second wall in case a query ever forgets the filter — not a replacement for it.

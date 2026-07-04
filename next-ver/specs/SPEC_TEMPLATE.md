@@ -13,10 +13,11 @@ Note the balance-delta impact (does this mutation change `monthly_balances`?).
 ## API contract
 For each route (`<METHOD> /api/<path>`):
 - **Request**: body / query params, required vs optional.
-- **Response**: success shape (`{ item, balance }` / `{ ok: true, balance }` / custom).
+- **Response**: success shape (`{ item }` / `{ ok: true }` / custom). No `balance` object (D13).
 - **Errors**: status → meaning (400 validation, 401 unauth, 404 not found, 429 limited, 500).
 - **Rate limit**: prefix + `{ limit, windowMs }`.
-- **Balance delta**: sign per op (CONVENTIONS §4) or "none".
+- **Money-model effect**: which tile(s) / Left-in-bank it feeds — computed on read, never a balance
+  write (CONVENTIONS §4, D13).
 
 ## UI / components
 Pages, components, hooks. New vs reused. Client (`"use client"`) or server? State flow

@@ -1,42 +1,75 @@
 # Expenses
 
 Reverse-engineered from `src/app/api/expenses/route.ts`, `lib/api/dashboard.ts`,
-`features/dashboard/components/ExpenseForm.tsx`. Mirrors credits with **opposite** balance signs.
+`lib/api/schemas.ts`, `features/dashboard/mobile/{AddSheet,EditSheet,AmountField,CatPill,Transactions,useFinance}.tsx`.
+Post mobile redesign — see DECISIONS D13/D18/D20, DATA_MODEL money model.
 
 ## Problem
-Users record spending for a month; it reduces that month's balance. Recurring expenses (rent,
-subscriptions) carry forward automatically.
+Users log spending for a month ("Recent payments"). Spend is shown per-month (Spent tile) and
+rolled into the cumulative Left-in-bank. **No balance side-effects** — spend is computed on read
+(D13); mutations never touch a balance row.
 
 ## Data model touched
-`expenses` table: `id, user_id, month, description, amount, carry_forward,
-carried_from_month, created_at`. Mutations adjust `monthly_balances.closing_balance`.
+`expenses`: `id, user_id, month, description, amount, category, tag, created_at`. Deprecated/unused:
+`carry_forward, carried_from_month, tags[]` (the array never migrated to the live DB — D18).
+- **`category`** ∈ `food | shopping | transport | health | groceries | other` (default `other`) —
+  drives the colored pill + AddSheet picker.
+- **`tag`** — single nullable free-form label (migration 004), set via the mobile edit modal.
+  Empty string clears it (→ null).
 
 ## API contract — `/api/expenses`
-- **POST** — `{ currentMonth, description, amount, carry_forward? }` → `{ item, balance }`.
-  Balance delta **`-amount`**.
-- **PUT** — `{ id, description, amount, carry_forward? }`; re-fetch → 404. → `{ item, balance }`.
-  Balance delta **`oldAmt − newAmt`** (note: opposite of credits).
-- **DELETE** — `?id=`; re-fetch → 404 → hard delete → `{ ok: true, balance }`.
-  Balance delta **`+amount`**.
+- **GET** `?month=YYYY-MM-01&page=&pageSize=` — paginated recent payments, newest-first, user-scoped.
+  Page 1 also ships inside `/api/dashboard`; this serves 2+ (D20). `page` 1-based, `pageSize`
+  defaults to `EXPENSES_PAGE_SIZE`. → `{ items, total }` (`total` = full-month count).
+- **POST** — `{ currentMonth, description, amount, category?, tag? }` → `{ item }`.
+  `category` defaults to `other`; `tag` stored trimmed or null. **No balance delta.**
+- **PUT** — `{ id, description, amount, category?, tag? }`; re-fetch missing → 404. → `{ item }`.
+  Powers tap-to-edit (EditSheet). `category` set only if provided; `tag` set/cleared only if the
+  key is present in the body. **No balance delta.**
+- **DELETE** — `?id=` → hard delete → `{ ok: true }`. **No balance delta.**
 - Errors: 400 / 401 / 404 / 429.
-- `select`: `"id, description, amount, created_at, carry_forward, carried_from_month"`.
-- Rate limit: `expenses:{post,put,delete}` `{ limit: 30, windowMs: 60_000 }`. Auth via `requireUser`.
+- `select`: `"id, description, amount, category, tag, created_at"`.
+- Rate limit: `expenses:{get 60, post/put/delete 30}` per 60s. Auth via `requireUser`, all queries
+  `.eq("user_id", userId)`.
 
-## Carry-forward
-Same as credits: `carry_forward=true` rows copied from previous month, deduped by
-`description|amount`, `carried_from_month` set. See `ensureCarryForwardExpenses`.
+## No carry-forward
+Removed with the redesign (D13). `carry_forward`/`carried_from_month` columns retained but unused;
+cumulative Left-in-bank replaces the old copy-forward behavior.
 
-## UI / components
-`ExpenseForm` (`"use client"`), `TransactionSection`/`TransactionList`. `useDashboardData`:
-`upsertExpense` / `removeExpense`.
+## UI / components (mobile)
+- **AddSheet** — expense mode: amount, category picker (6 pills, default Food), note. A **type
+  toggle** (Expense / Bill / EMI) can reroute the entry to the bills/EMI ledger instead — see
+  [bills.md](./bills.md).
+  - **Inline calculator ("AI" math)** — the Amount field accepts an arithmetic expression
+    (`900+300`, `900 plus 300`, `×`/`x`/`divided by`…). Extracted to the shared **`AmountField`**
+    component (used by AddSheet and EditSheet). It holds the operator-capable draft in local `expr`
+    state (the parent `onAmount` only ever receives sanitised digits, so operators never
+    round-trip). `evalExpr` parses it with a no-`eval` shunting-yard evaluator. On a complete
+    expression the field pauses ~900ms, runs a ~0.75s indigo "thinking" state (border glow +
+    sweeping shimmer + ✦/pulsing-dots badge), then reveals the result with an easeOutCubic count-up
+    + glow pop and pushes the final integer up via `onAmount`. Reports its animating state via
+    `onCalcActiveChange` so the parent can disable Save. Optional `prefix` (e.g. `₹`) and
+    `placeholder`. Indigo-only per design system.
+  - **Category pills** — the slim glassy chip is the shared **`CatPill`** component (also used by
+    EditSheet): 30px tall, 10px radius, dot + label, category-tinted gradient when selected.
+- **EditSheet** — tap a Recent-payments row → edit amount, title (description), single `tag`, and
+  category → `PUT /api/expenses`. Uses the shared `AmountField` (₹-prefixed) and `CatPill`. The
+  `tag` is a **chip**: a dashed "+ Add tag" pill when empty; tapping it (or the filled indigo chip)
+  drops into a compact inline input committed on blur/Enter; the chip's ✕ clears the tag.
+- **Transactions** — Recent-payments list: merchant + category pill + date + amount, no minus sign;
+  count subtitle + red total pill. Paginated ("load more" via `GET /api/expenses?page=`).
+- **useFinance** — optimistic `addExpense` / `editExpense` / `removeExpense` + `reload()`.
 
 ## Acceptance criteria
-- [ ] Create/update/delete adjust closing balance with correct (negative-leaning) sign.
+- [ ] POST/PUT persist category + tag; empty tag stores null.
+- [ ] No mutation writes any balance row (spend computed on read).
+- [ ] Tapping a payment opens EditSheet pre-filled; save updates the row and Spent tile.
+- [ ] `total` reflects the whole month, not the current page.
 - [ ] user_id scoping on all queries.
-- [ ] carry_forward expenses appear next month, no dupes on reload.
 
 ## Files to touch
-`src/app/api/expenses/route.ts`, `ExpenseForm.tsx`, `useDashboardData.ts`, `lib/api/dashboard.ts`.
+`src/app/api/expenses/route.ts`, `lib/api/schemas.ts`, `lib/api/dashboard.ts`,
+`features/dashboard/mobile/{AddSheet,EditSheet,AmountField,CatPill,Transactions,useFinance}.tsx`.
 
 ## Out of scope
-Expense categories/budgets, receipts, split transactions.
+Budgets, receipts, split transactions, multi-tag. Bills/EMIs live in [bills.md](./bills.md).

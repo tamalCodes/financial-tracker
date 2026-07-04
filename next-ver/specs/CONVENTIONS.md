@@ -28,12 +28,15 @@ try {
 `handleError` / `tooManyRequests` live in `src/lib/api/responses.ts` — import them, don't
 re-define. For read endpoints pass `handleError(e, 500)` so server errors aren't masked as 400.
 
-> All five data routes (`credits`, `expenses`, `investments`, `dashboard`, `balances`) and all
-> auth routes now follow this pattern. Keep it that way.
+> All data routes (`credits`, `expenses`, `investments`, `bills`, `emis`, `holdings`, `sips`,
+> `portfolio`, `dashboard`) and all auth routes follow this pattern. (`balances` was removed —
+> D13.) Keep it that way.
 
 ## 2. Error / response shapes — `src/app/api/*/route.ts`
 - Error: `NextResponse.json({ error: "<msg>" }, { status })`.
-- Success (mutation): `NextResponse.json({ item, balance })`; delete: `{ ok: true, balance }`.
+- Success (mutation): `NextResponse.json({ item })`; delete: `{ ok: true }`. **No `balance`
+  object** — removed with `monthly_balances` (DECISIONS D13). EMI create returns
+  `{ emi_id, installments }` (see [features/bills.md](./features/bills.md)).
 - Status codes: **400** missing field / insert error / generic mutation failure ·
   **401** unauthorized · **404** row not found (after a user-scoped fetch) ·
   **429** rate-limited · **500** unexpected (e.g. dashboard GET catch-all).
@@ -53,26 +56,18 @@ if (!limit.ok) {
 Limits in use: login 10, signup 6, logout 30, me 60, dashboard 60, all mutations 30 (per 60s). In-memory
 Map keyed by `<prefix>:<client-ip>` — resets on server restart; fine for a single instance.
 
-## 4. Balance-delta rule — `src/lib/api/balances.ts`, `src/app/api/credits/route.ts`
-Every create/update/delete of a credit/expense/investment MUST call `applyBalanceDelta`
-so `monthly_balances.closing_balance` stays correct. Signs:
-
-| op | credit | expense | investment |
-|----|--------|---------|------------|
-| create | `+amount` | `-amount` | `-amount` |
-| update (PUT) | `newAmt − oldAmt` | `oldAmt − newAmt` | (no PUT today) |
-| delete | `-amount` | `+amount` | `+amount` (soft delete: set `is_active:false`) |
-
-For update/delete: re-fetch the row (scoped by `user_id` + `id`, `.maybeSingle()`) to read
-its `amount`/`month` (`start_month` for investments) before computing the reversing delta.
-`applyBalanceDelta` no-ops (returns `null`) if no balance row exists for that month.
-
-When the set of credits/expenses/investments is recomputed wholesale (starting-balance
-edits), use `updateClosingBalance(...)` instead — see `src/app/api/balances/route.ts`.
+## 4. No balance side-effects — computed on read (DECISIONS D13)
+**Removed.** Mutations no longer touch any balance row. `monthly_balances`,
+`applyBalanceDelta`, `updateClosingBalance`, and `src/lib/api/balances.ts` are gone. "Left in
+bank" + the per-month Earned/Spent/Invested tiles are computed on read in
+`loadDashboardData` (`src/lib/api/dashboard.ts`) — cumulative across months, seeded by
+`profiles.opening_balance` (D16). See DATA_MODEL money model. A create/update/delete just
+inserts/updates/deletes the row (user-scoped) and returns `{ item }` / `{ ok: true }`.
 
 ## 5. user_id scoping — every query
-Always `.eq("user_id", userId)` on select/update/delete. There is no row-level security
-assumed in code — ownership is enforced in the query. Ref: `credits/route.ts` PUT/DELETE.
+Always `.eq("user_id", userId)` on select/update/delete — ownership is enforced in the query.
+**RLS** is also enabled (migration `003_rls`) as defense-in-depth (D21), but code never relies
+on it alone; the `.eq` filter is still mandatory. Ref: `credits/route.ts` PUT/DELETE.
 
 ## 6. Validation — zod (`src/lib/api/schemas.ts`)
 JSON bodies are validated with a zod schema via `validate(schema, data)`, which throws a
