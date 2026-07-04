@@ -2,54 +2,31 @@
 
 import { useEffect } from "react";
 
+// Caching is fully removed. This component used to register a caching service
+// worker; it now does the opposite — on every load it unregisters ANY service
+// worker and deletes ALL caches, so no stale bundle can ever be served again.
+//
+// We still register /sw.js once as a one-shot kill switch: a browser that has
+// the old caching SW installed only fetches an updated sw.js on navigation, and
+// the kill-switch version tears itself (and its caches) down on activate. After
+// that there is no SW left. Nothing here ever caches anything.
 export default function ServiceWorkerRegister() {
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if ("caches" in window) {
+      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+    }
+
     if (!("serviceWorker" in navigator)) return;
 
-    // Auto-reload once when a new SW takes control, so a fresh deploy shows
-    // instantly with no manual refresh. `controllerchange` also fires on the
-    // very first registration (no prior controller) — guard on that so the
-    // initial page load doesn't reload on itself.
-    const hadController = Boolean(navigator.serviceWorker.controller);
-    let refreshing = false;
-    const onControllerChange = () => {
-      if (!hadController || refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    };
-    navigator.serviceWorker.addEventListener(
-      "controllerchange",
-      onControllerChange
-    );
-
-    const register = async () => {
-      try {
-        const registration = await navigator.serviceWorker.register("/sw.js");
-        if (registration.waiting) {
-          registration.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed") {
-              newWorker.postMessage({ type: "SKIP_WAITING" });
-            }
-          });
-        });
-      } catch (error) {
-        console.error("Service worker registration failed", error);
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      if (regs.length > 0) {
+        // Old caching SW present — hand control to the kill switch, which will
+        // unregister itself and wipe caches, then reload the tab.
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
       }
-    };
-
-    register();
-
-    return () => {
-      navigator.serviceWorker.removeEventListener(
-        "controllerchange",
-        onControllerChange
-      );
-    };
+    });
   }, []);
 
   return null;
