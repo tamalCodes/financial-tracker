@@ -57,7 +57,9 @@ function UnpaidRow({ bill, onPay }: { bill: BillView; onPay: (id: string) => voi
           <span style={{ font: `600 14px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {bill.name}
           </span>
-          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>Due {bill.due}</span>
+          {bill.due && (
+            <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{bill.isEmi ? bill.due : `Due ${bill.due}`}</span>
+          )}
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
@@ -107,7 +109,9 @@ function PaidRow({ bill }: { bill: BillView }) {
           >
             {bill.name}
           </span>
-          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{bill.due}</span>
+          {bill.due && (
+            <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{bill.due}</span>
+          )}
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>

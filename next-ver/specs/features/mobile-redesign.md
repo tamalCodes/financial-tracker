@@ -105,7 +105,7 @@ Each phase: implement → `tsc --noEmit` + lint + vitest → commit on `main`. C
 
 ## Phase B3 — Bills domain
 **Files:** new `src/app/api/bills/route.ts`, `schemas.ts` (`billCreateSchema`, `billPatchSchema`), `dashboard.ts` (already fetches bills in B1).
-1. Route: GET `?month=` (user-scoped, by month, order due_date) · POST `{currentMonth,name,amount,due_date}` · PATCH `{id,paid}` (toggle) · DELETE `?id=`. All follow CONVENTIONS (try/catch, `requireUser`, `rateLimit` `bills:{get,post,patch,delete}` 30–60/60s, `validate`, `handleError`, `.eq("user_id")`).
+1. Route: GET `?month=` (user-scoped, by month, order due_date) · POST `{currentMonth,name,amount}` (due_date column retained but no longer sent by the mobile AddSheet) · PATCH `{id,paid}` (toggle) · DELETE `?id=`. All follow CONVENTIONS (try/catch, `requireUser`, `rateLimit` `bills:{get,post,patch,delete}` 30–60/60s, `validate`, `handleError`, `.eq("user_id")`).
 2. Response shapes per CONVENTIONS §2 (`{item}` / `{ok:true}`). No balance object (balances gone).
 
 **Acceptance (vitest):** pay toggles `paid`; `paidTotal` recomputes; paid bill raises `spent_m` in dashboard; unpaid does not; ownership enforced.
@@ -151,7 +151,8 @@ High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `
 - AddSheet: one bottom sheet, 3 modes (mode matrix §6) — grabber, amount field (strip non-digits, `inputmode=numeric`, reuse AmountInput), expense-only category picker (6 pills, default Food), mode-dependent 2nd field (Note/Source/Fund), indigo submit. Routes: expense→`/api/expenses` (+category), income→`/api/credits`, invest→`/api/investments`. Replaces `ExpenseForm`/`CreditForm`/`InvestmentForm`. Handoff §5.6.
 
 ## Phase F4 — Bills & EMIs card
-- Unpaid row (line icon + name + Due date + amount + Pay pill) / paid row (green check + strikethrough + "Paid"). "Paid this month" total recomputes. Optimistic Pay → PATCH. **No overdue.** `/api/bills`. Handoff §5.3.
+- Unpaid row (line icon + name + amount + Pay pill) / paid row (green check + strikethrough + "Paid"). Sub-label renders only when present: EMI rows show "Installment n of m"; one-off bills have **no due date** (AddSheet no longer collects one; `due_date` column retained but unused). "Paid this month" total recomputes. Optimistic Pay → PATCH. **No overdue.** `/api/bills`. Handoff §5.3.
+- AddSheet expense mode carries an Expense / Bill / EMI toggle. Bill = name + amount only (no due date). EMI = total loan + months + monthly amount. Once Total and Months are both filled, the Monthly field auto-computes `total ÷ months` and plays the AmountField AI think→reveal animation (debounced ~650ms); user can still override it. `AmountField.revealValue(n)` drives this programmatic reveal.
 
 ## Phase F5 — Investments panel (tabbed)
 - Portfolio value (manual, inline-editable → `/api/portfolio`) + segmented Holdings/Active SIPs control (local UI state). Holdings = FD + Mutual Funds sections (`/api/holdings`); SIPs = monthly/due/paid rows (`/api/sips`). Manual add/edit. Handoff §5.4.

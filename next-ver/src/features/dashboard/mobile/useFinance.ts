@@ -110,7 +110,6 @@ export function useFinance() {
   const [formNote, setFormNote] = useState("");
   const [formCat, setFormCat] = useState<CategoryKey>("food");
   const [formIsBill, setFormIsBill] = useState(false); // expense sheet → route to bills ledger
-  const [formDue, setFormDue] = useState(""); // bill due date (free text, optional)
   const [formBillKind, setFormBillKind] = useState<"once" | "emi">("once"); // one-off bill vs EMI
   const [formEmiTotal, setFormEmiTotal] = useState(""); // EMI: total loan amount
   const [formEmiMonths, setFormEmiMonths] = useState(""); // EMI: duration in months
@@ -227,7 +226,6 @@ export function useFinance() {
     setFormNote("");
     setFormCat("food");
     setFormIsBill(false);
-    setFormDue("");
     setFormBillKind("once");
     setFormEmiTotal("");
     setFormEmiMonths("");
@@ -281,7 +279,6 @@ export function useFinance() {
             currentMonth,
             name: note || "Bill",
             amount,
-            due_date: formDue.trim() || undefined,
           }),
         });
         if (!res.ok) throw new Error("save failed");
@@ -289,7 +286,6 @@ export function useFinance() {
         setSheet(null);
         setFormAmount("");
         setFormNote("");
-        setFormDue("");
         setFormIsBill(false);
         reload().catch((e) => console.error(e));
         toast.success("Bill added");
@@ -452,8 +448,6 @@ export function useFinance() {
     setCat: setFormCat,
     formIsBill,
     setFormIsBill,
-    formDue,
-    setFormDue,
     formBillKind,
     setFormBillKind,
     formEmiTotal,

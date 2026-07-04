@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import AmountField, {
+  OperatorBar,
+  type AmountFieldHandle,
+} from "./AmountField";
+import CatPill from "./CatPill";
 import {
   BODY,
   DISPLAY,
@@ -12,11 +17,6 @@ import {
   type CategoryKey,
   type SheetMode,
 } from "./data";
-import AmountField, {
-  OperatorBar,
-  type AmountFieldHandle,
-} from "./AmountField";
-import CatPill from "./CatPill";
 
 // AddSheet — pixel from AddSheet.dc.html (handoff §5.6 + mode matrix §6).
 // One sheet, three modes. Category picker shows for expense only.
@@ -27,7 +27,6 @@ interface Props {
   cat: CategoryKey;
   cats: Category[];
   isBill: boolean; // expense mode only: route this entry to the bills / EMI ledger
-  due: string; // bill due date (free text, optional)
   billKind: "once" | "emi"; // bill sub-mode: one-off bill vs multi-month EMI
   emiTotal: string; // EMI: total loan amount
   emiMonths: string; // EMI: duration in months
@@ -35,7 +34,6 @@ interface Props {
   onNote: (v: string) => void;
   onCat: (key: CategoryKey) => void;
   onToggleBill: (v: boolean) => void;
-  onDue: (v: string) => void;
   onBillKind: (v: "once" | "emi") => void;
   onEmiTotal: (v: string) => void;
   onEmiMonths: (v: string) => void;
@@ -50,7 +48,6 @@ export default function AddSheet({
   cat,
   cats,
   isBill,
-  due,
   billKind,
   emiTotal,
   emiMonths,
@@ -58,7 +55,6 @@ export default function AddSheet({
   onNote,
   onCat,
   onToggleBill,
-  onDue,
   onBillKind,
   onEmiTotal,
   onEmiMonths,
@@ -66,7 +62,6 @@ export default function AddSheet({
   onClose,
 }: Props) {
   const [noteFocus, setNoteFocus] = useState(false);
-  const [dueFocus, setDueFocus] = useState(false);
   // Amount calculator lives in AmountField; it reports when it's animating so we
   // can gate the Save button.
   const [calcActive, setCalcActive] = useState(false);
@@ -84,6 +79,21 @@ export default function AddSheet({
   const isExpense = mode === "expense";
   const asBill = isExpense && isBill;
   const asEmi = asBill && billKind === "emi";
+
+  // EMI: once both Total and Months are filled, auto-compute the monthly
+  // (total ÷ months) and drop it into the Amount field with the AI reveal
+  // effect. Debounced so it waits for the user to finish typing months.
+  useEffect(() => {
+    if (!asEmi) return;
+    const total = parseInt(emiTotal, 10);
+    const months = parseInt(emiMonths, 10);
+    if (!Number.isFinite(total) || !Number.isFinite(months) || months <= 0)
+      return;
+    const monthly = Math.round(total / months);
+    if (monthly <= 0 || String(monthly) === amount) return; // already there
+    const t = setTimeout(() => amountRef.current?.revealValue(monthly), 650);
+    return () => clearTimeout(t);
+  }, [asEmi, emiTotal, emiMonths, amount]);
 
   return (
     <div
@@ -243,6 +253,7 @@ export default function AddSheet({
                 marginBottom: 18,
               }}
             >
+              <style>{`.emi-num::placeholder{font-size:15px;font-weight:500;letter-spacing:0;color:#cbd5e1;}`}</style>
               <div
                 style={{
                   display: "flex",
@@ -260,15 +271,20 @@ export default function AddSheet({
                     onEmiTotal(e.target.value.replace(/[^0-9]/g, ""))
                   }
                   inputMode="numeric"
+                  className="emi-num"
                   placeholder="e.g. 32600"
+                  autoFocus={true}
                   style={{
                     width: "100%",
                     border: "1px solid #e2e8f0",
                     borderRadius: 14,
                     padding: "0 15px",
-                    height: 50,
-                    fontFamily: BODY,
-                    fontSize: 16,
+                    height: 62,
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 28,
+                    letterSpacing: "-0.01em",
+                    fontVariantNumeric: "tabular-nums",
                     color: "#0f172a",
                     background: "#f8fafc",
                     outline: "none",
@@ -292,6 +308,7 @@ export default function AddSheet({
                     onEmiMonths(e.target.value.replace(/[^0-9]/g, ""))
                   }
                   inputMode="numeric"
+                  className="emi-num"
                   maxLength={3}
                   placeholder="e.g. 8"
                   style={{
@@ -299,9 +316,12 @@ export default function AddSheet({
                     border: "1px solid #e2e8f0",
                     borderRadius: 14,
                     padding: "0 15px",
-                    height: 50,
-                    fontFamily: BODY,
-                    fontSize: 16,
+                    height: 62,
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 28,
+                    letterSpacing: "-0.01em",
+                    fontVariantNumeric: "tabular-nums",
                     color: "#0f172a",
                     background: "#f8fafc",
                     outline: "none",
@@ -365,7 +385,7 @@ export default function AddSheet({
               display: "flex",
               flexDirection: "column",
               gap: 8,
-              marginBottom: asBill ? 18 : 22,
+              marginBottom: 22,
             }}
           >
             <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
@@ -393,42 +413,6 @@ export default function AddSheet({
               }}
             />
           </div>
-
-          {/* Due date (one-off bill only, optional) */}
-          {asBill && !asEmi && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                marginBottom: 22,
-              }}
-            >
-              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
-                Due date · optional
-              </span>
-              <input
-                value={due}
-                onChange={(e) => onDue(e.target.value)}
-                onFocus={() => setDueFocus(true)}
-                onBlur={() => setDueFocus(false)}
-                maxLength={32}
-                placeholder="e.g. 5 Jul"
-                style={{
-                  width: "100%",
-                  border: `1px solid ${dueFocus ? "#818cf8" : "#e2e8f0"}`,
-                  borderRadius: 14,
-                  padding: "0 15px",
-                  height: 50,
-                  fontFamily: BODY,
-                  fontSize: 16,
-                  color: "#0f172a",
-                  background: "#f8fafc",
-                  outline: "none",
-                }}
-              />
-            </div>
-          )}
 
           {/* CTA slot — while the Amount field is focused (touch), this becomes the
               glassy operator bar; otherwise the Save button. Disabled mid-calc. */}

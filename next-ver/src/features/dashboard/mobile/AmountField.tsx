@@ -88,6 +88,9 @@ interface Props {
 // the field (the bar lives in the sheet's CTA slot, not inside this component).
 export interface AmountFieldHandle {
   insertOp: (op: string) => void;
+  // Programmatically run the AI think→reveal sequence to a computed value
+  // (e.g. EMI monthly = total ÷ months). No-op if already animating.
+  revealValue: (n: number) => void;
 }
 
 const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
@@ -212,7 +215,13 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
     });
   }
 
-  useImperativeHandle(ref, () => ({ insertOp }));
+  function revealValue(n: number) {
+    if (calcActive) return; // don't interrupt an in-flight animation
+    if (!Number.isFinite(n) || n <= 0) return;
+    startThink(Math.round(n));
+  }
+
+  useImperativeHandle(ref, () => ({ insertOp, revealValue }));
 
   return (
     <div

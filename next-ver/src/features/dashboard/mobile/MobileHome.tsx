@@ -99,7 +99,6 @@ export default function MobileHome() {
           cat={f.formCat}
           cats={f.cats}
           isBill={f.formIsBill}
-          due={f.formDue}
           billKind={f.formBillKind}
           emiTotal={f.formEmiTotal}
           emiMonths={f.formEmiMonths}
@@ -107,7 +106,6 @@ export default function MobileHome() {
           onNote={f.setNote}
           onCat={f.setCat}
           onToggleBill={f.setFormIsBill}
-          onDue={f.setFormDue}
           onBillKind={f.setFormBillKind}
           onEmiTotal={f.setFormEmiTotal}
           onEmiMonths={f.setFormEmiMonths}
