@@ -39,14 +39,11 @@ export interface Category {
 export const CATS: Category[] = [
   { key: "food", label: "Food", rgb: "245,158,11", text: "#b45309" },
   { key: "shopping", label: "Shopping", rgb: "139,92,246", text: "#6d28d9" },
-  { key: "transport", label: "Transport", rgb: "14,165,233", text: "#0369a1" },
-  { key: "health", label: "Health", rgb: "16,185,129", text: "#047857" },
-  { key: "groceries", label: "Groceries", rgb: "20,184,166", text: "#0f766e" },
   { key: "other", label: "Other", rgb: "100,116,139", text: "#475569" },
 ];
 
 export const catOf = (key: CategoryKey): Category =>
-  CATS.find((c) => c.key === key) ?? CATS[5];
+  CATS.find((c) => c.key === key) ?? CATS[CATS.length - 1];
 
 // ── Bill icons (D-C) ─────────────────────────────────────────────────────────
 // The bills table has no icon column. Derive an icon from the bill name keyword;
