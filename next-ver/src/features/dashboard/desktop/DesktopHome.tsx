@@ -59,8 +59,8 @@ export default function DesktopHome() {
   return (
     <div
       style={{
-        height: "100vh",
-        overflow: "hidden",
+        minHeight: "100vh",
+        overflowY: "auto",
         background: "radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef)",
         display: "flex",
         flexDirection: "column",
@@ -151,7 +151,11 @@ export default function DesktopHome() {
             gap: 24,
             alignItems: "stretch",
             flex: 1,
-            minHeight: 0,
+            // Height floor: on short viewports (MacBook Air, split-screen) the flex
+            // fill would crush the fill cards (Recent payments / Portfolio) to near
+            // zero. Give the grid a minimum so cards stay usable; the root scrolls to
+            // reveal the overflow while each fill card keeps its own internal scroll.
+            minHeight: 640,
           }}
         >
           {/* Left column */}
@@ -173,7 +177,7 @@ export default function DesktopHome() {
               window={trend.window}
               onWindow={trend.setWindow}
             />
-            <div style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 260 }}>
               <Transactions
                 transactions={tx.rows}
                 page={f.expPage}
@@ -219,7 +223,7 @@ export default function DesktopHome() {
                 onAdd={() => f.openSheet("income")}
               />
             )}
-            <div style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 260 }}>
               <Investments
                 portfolioTotal={portfolio.portfolioTotal}
                 fds={portfolio.fds}

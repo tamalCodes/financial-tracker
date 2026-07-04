@@ -63,13 +63,18 @@ All `"use client"`. Mobile path is **untouched**.
   `useInfiniteExpenses()`. Mounts the shared sheets (`AddSheet`/`EditSheet`/`BillEditSheet`) + `Toaster`
   once (same as MobileHome). Layout per mock:
   - **Header**: "Overview" icon-badge + greeting/month subline + month pill + avatar (mock 73–85).
-  - **Grid** `1.32fr / 1fr`, `max-width ~1360px`, centered. **Fixed-height dashboard**: the root is
-    `height:100vh` flex-column; header pins; the grid takes `flex:1` with
-    `grid-template-rows: minmax(0,1fr)` so both columns stretch to the same height and their bottoms
-    **align** (the original bug: Recent payments vs Portfolio ended at different heights).
+  - **Grid** `1.32fr / 1fr`, `max-width ~1360px`, centered. **Scrollable dashboard with a height
+    floor**: the root is a `minHeight:100vh` flex-column with `overflowY:auto` (the whole page
+    scrolls); header pins to the top of the flow; the grid takes `flex:1` with
+    `grid-template-rows: minmax(0,1fr)` so on a tall viewport both columns stretch to the same height
+    and their bottoms **align** (the original bug: Recent payments vs Portfolio ended at different
+    heights). The grid also carries `min-height:640` so on short viewports (MacBook Air, split-screen)
+    the flex fill can't crush the bottom cards to near-zero — the grid keeps its floor and the root
+    scrolls to reveal the overflow.
   - **Left col**: `HeroBalance` → `TrendChart` → `Transactions` (**fill**, scrolls).
   - **Right col**: `Bills` → `Emis` → `Income` → `Investments` (**fill**, scrolls).
-  - The bottom card in each column gets `flex:1` and scrolls its body internally; the header/tabs pin.
+  - The bottom card in each column gets `flex:1` (wrapper `min-height:260` so it never collapses) and
+    scrolls its body internally; the header/tabs pin. Page scroll and per-card internal scroll coexist.
 - **Fill / scroll-pagination**: `Transactions` and `Investments` gain an optional `fill` prop. In fill
   mode the card fills its column, the header pins, and the list body scrolls with a subtle scrollbar
   (`.subtle-scroll` in globals.css). `Transactions` replaces its Prev/Next pager with **append-on-scroll**
@@ -84,7 +89,9 @@ All `"use client"`. Mobile path is **untouched**.
   that opens `AddSheet` straight to the right toggle. `FloatingActionBar.tsx` stays (mobile only).
   - The **EMIs card always renders on desktop** (unlike mobile, which hides it at zero EMIs) so its `+`
     is always reachable; with no EMIs the body shows an empty-state line ("No EMIs yet — tap + to add
-    one"). Mobile still guards `emiCards.length > 0`, so the empty state never shows there.
+    one") and the header **hides the `₹paid / ₹total` pair** (would otherwise read a meaningless
+    `₹0 / ₹0`) — `PaidTotal` renders only when `cards.length > 0`. Mobile still guards
+    `emiCards.length > 0`, so the empty state never shows there.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
   glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,

@@ -131,9 +131,9 @@ export default function Emis({ cards, summary, onPay, onEdit, loading, onAdd }: 
         <div style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
           {loading ? (
             <Skeleton width={96} height={18} />
-          ) : (
+          ) : cards.length > 0 ? (
             <PaidTotal paid={summary.paid} total={summary.total} />
-          )}
+          ) : null}
           {onAdd && <AddButton variant="bill" label="Add EMI" onClick={onAdd} />}
         </div>
       </div>
