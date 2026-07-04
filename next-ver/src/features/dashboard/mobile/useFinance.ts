@@ -101,6 +101,8 @@ export function useFinance() {
   const [formAmount, setFormAmount] = useState("");
   const [formNote, setFormNote] = useState("");
   const [formCat, setFormCat] = useState<CategoryKey>("food");
+  const [formIsBill, setFormIsBill] = useState(false); // expense sheet → route to bills ledger
+  const [formDue, setFormDue] = useState(""); // bill due date (free text, optional)
   const [saving, setSaving] = useState(false);
 
   // ── Derived money model (server-computed; we only format) ────────────────────
@@ -203,6 +205,8 @@ export function useFinance() {
     setFormAmount("");
     setFormNote("");
     setFormCat("food");
+    setFormIsBill(false);
+    setFormDue("");
   };
   const closeSheet = () => setSheet(null);
   const setAmount = (v: string) => setFormAmount(v.replace(/[^0-9]/g, ""));
@@ -213,6 +217,27 @@ export function useFinance() {
     const note = formNote.trim();
     setSaving(true);
     try {
+      if (sheet === "expense" && formIsBill) {
+        // Marked as Bill / EMI → separate ledger, not a plain expense.
+        const res = await fetch("/api/bills", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentMonth,
+            name: note || "Bill",
+            amount,
+            due_date: formDue.trim() || undefined,
+          }),
+        });
+        if (!res.ok) throw new Error("save failed");
+        await reload();
+        setSheet(null);
+        setFormAmount("");
+        setFormNote("");
+        setFormDue("");
+        setFormIsBill(false);
+        return;
+      }
       if (sheet === "expense") {
         const res = await fetch("/api/expenses", {
           method: "POST",
@@ -335,6 +360,10 @@ export function useFinance() {
     setAmount,
     setNote: setFormNote,
     setCat: setFormCat,
+    formIsBill,
+    setFormIsBill,
+    formDue,
+    setFormDue,
     saveEntry,
     saving,
     cats: CATS,

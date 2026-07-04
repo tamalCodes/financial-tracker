@@ -97,9 +97,13 @@ export default function MobileHome() {
           note={f.formNote}
           cat={f.formCat}
           cats={f.cats}
+          isBill={f.formIsBill}
+          due={f.formDue}
           onAmount={f.setAmount}
           onNote={f.setNote}
           onCat={f.setCat}
+          onToggleBill={f.setFormIsBill}
+          onDue={f.setFormDue}
           onSave={f.saveEntry}
           onClose={f.closeSheet}
         />

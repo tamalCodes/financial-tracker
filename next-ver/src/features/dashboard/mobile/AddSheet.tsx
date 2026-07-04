@@ -21,9 +21,13 @@ interface Props {
   note: string;
   cat: CategoryKey;
   cats: Category[];
+  isBill: boolean; // expense mode only: route this entry to the bills / EMI ledger
+  due: string; // bill due date (free text, optional)
   onAmount: (v: string) => void;
   onNote: (v: string) => void;
   onCat: (key: CategoryKey) => void;
+  onToggleBill: (v: boolean) => void;
+  onDue: (v: string) => void;
   onSave: () => void;
   onClose: () => void;
 }
@@ -63,14 +67,20 @@ export default function AddSheet({
   note,
   cat,
   cats,
+  isBill,
+  due,
   onAmount,
   onNote,
   onCat,
+  onToggleBill,
+  onDue,
   onSave,
   onClose,
 }: Props) {
   const [noteFocus, setNoteFocus] = useState(false);
+  const [dueFocus, setDueFocus] = useState(false);
   const isExpense = mode === "expense";
+  const asBill = isExpense && isBill;
 
   return (
     <div
@@ -111,7 +121,7 @@ export default function AddSheet({
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "#0f172a" }}>
-              {SHEET_TITLE[mode]}
+              {asBill ? "Add bill / EMI" : SHEET_TITLE[mode]}
             </span>
             <button
               onClick={onClose}
@@ -133,6 +143,46 @@ export default function AddSheet({
               ✕
             </button>
           </div>
+
+          {/* Type toggle (expense only): plain expense vs bill / EMI */}
+          {isExpense && (
+            <div
+              style={{
+                display: "flex",
+                gap: 4,
+                padding: 4,
+                marginBottom: 18,
+                background: "#f1f5f9",
+                borderRadius: 14,
+              }}
+            >
+              {[
+                { label: "Expense", on: !isBill, click: () => onToggleBill(false) },
+                { label: "Bill / EMI", on: isBill, click: () => onToggleBill(true) },
+              ].map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  onClick={t.click}
+                  style={{
+                    cursor: "pointer",
+                    flex: 1,
+                    height: 40,
+                    borderRadius: 10,
+                    border: "none",
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 13.5,
+                    color: t.on ? "#4f46e5" : "#64748b",
+                    background: t.on ? "#fff" : "transparent",
+                    boxShadow: t.on ? "0 1px 3px rgba(15,23,42,0.10)" : "none",
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Amount */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
@@ -171,8 +221,8 @@ export default function AddSheet({
             </div>
           </div>
 
-          {/* Category picker (expense only) */}
-          {isExpense && (
+          {/* Category picker (plain expense only — bills have no category) */}
+          {isExpense && !isBill && (
             <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 18 }}>
               <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>Category</span>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -183,15 +233,17 @@ export default function AddSheet({
             </div>
           )}
 
-          {/* Note / Source / Fund */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
-            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>{NOTE_LABEL[mode]}</span>
+          {/* Note / Source / Fund / (bill) Name */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: asBill ? 18 : 22 }}>
+            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+              {asBill ? "Name" : NOTE_LABEL[mode]}
+            </span>
             <input
               value={note}
               onChange={(e) => onNote(e.target.value)}
               onFocus={() => setNoteFocus(true)}
               onBlur={() => setNoteFocus(false)}
-              placeholder={NOTE_PLACEHOLDER[mode]}
+              placeholder={asBill ? "e.g. Electricity, Car EMI" : NOTE_PLACEHOLDER[mode]}
               style={{
                 width: "100%",
                 border: `1px solid ${noteFocus ? "#818cf8" : "#e2e8f0"}`,
@@ -206,6 +258,33 @@ export default function AddSheet({
               }}
             />
           </div>
+
+          {/* Due date (bill / EMI only, optional) */}
+          {asBill && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
+              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>Due date · optional</span>
+              <input
+                value={due}
+                onChange={(e) => onDue(e.target.value)}
+                onFocus={() => setDueFocus(true)}
+                onBlur={() => setDueFocus(false)}
+                maxLength={32}
+                placeholder="e.g. 5 Jul"
+                style={{
+                  width: "100%",
+                  border: `1px solid ${dueFocus ? "#818cf8" : "#e2e8f0"}`,
+                  borderRadius: 14,
+                  padding: "0 15px",
+                  height: 50,
+                  fontFamily: BODY,
+                  fontSize: 16,
+                  color: "#0f172a",
+                  background: "#f8fafc",
+                  outline: "none",
+                }}
+              />
+            </div>
+          )}
 
           {/* Submit */}
           <button
@@ -224,7 +303,7 @@ export default function AddSheet({
               boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
             }}
           >
-            {SHEET_SAVE[mode]}
+            {asBill ? "Add bill / EMI" : SHEET_SAVE[mode]}
           </button>
         </div>
       </div>
