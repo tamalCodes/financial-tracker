@@ -3,7 +3,7 @@
 import { useToasts, dismissToast, type ToastVariant } from "./toast";
 import { BODY } from "./data";
 
-// Frosted, minimal toast stack. Fixed above the FloatingActionBar, centred on the
+// Frosted, minimal toast stack. Fixed at the top of the viewport, centred on the
 // 412-wide mobile column. Translucent glass — never opaque saturated fills (design
 // system). Colour semantics: success=green, error=red, info=indigo (brand accent).
 
@@ -27,7 +27,7 @@ export default function Toaster() {
         position: "fixed",
         left: 0,
         right: 0,
-        bottom: "calc(96px + env(safe-area-inset-bottom))",
+        top: "calc(16px + env(safe-area-inset-top))",
         zIndex: 60,
         display: "flex",
         flexDirection: "column",
@@ -97,7 +97,7 @@ export default function Toaster() {
           </div>
         );
       })}
-      <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}`}</style>
+      <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}`}</style>
     </div>
   );
 }
