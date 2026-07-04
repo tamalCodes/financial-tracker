@@ -6,6 +6,11 @@
 ## Source of truth
 - This codebase is the single source of truth. Never store plans, specs, or artifacts in scratchpad, Claude memory, or external/desktop locations — write them into the repo (e.g. `next-ver/specs/`).
 
+## Spec-first (read before coding)
+- **Before writing or searching code, consult `next-ver/specs/` first.** Start at `next-ver/specs/INDEX.md` — grep it, match the task to a feature row, open that spec, then jump straight to the code files it lists ("Reverse-engineered from"). This is faster than blind code search.
+- A `UserPromptSubmit` hook (`.claude/hooks/inject-spec-index.sh`) auto-injects the index each prompt, so the map is always in context.
+- Keep `INDEX.md` current: when a feature's files move or a new spec is added, update the matching index row in the same change.
+
 ## Keep specs current
 - Specs in `next-ver/specs/` document the app **as built**, not as planned. They drift stale fast.
 - **After shipping any feature (or a batch of related feature commits), update the affected spec files in the same or immediately following change.** A feature is not "done" until its spec reflects it.

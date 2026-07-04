@@ -18,6 +18,7 @@ interface DashboardData {
   loggedTotal: number;
   investments: Investment[];
   bills: Bill[];
+  billsTotal: number;
   emis: EmiProgress[];
 }
 
@@ -36,6 +37,7 @@ export const useDashboardData = (currentMonth: string) => {
   const [loggedTotal, setLoggedTotal] = useState(0);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [bills, setBills] = useState<Bill[]>([]);
+  const [billsTotal, setBillsTotal] = useState(0);
   const [emis, setEmis] = useState<EmiProgress[]>([]);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -71,6 +73,7 @@ export const useDashboardData = (currentMonth: string) => {
         setLoggedTotal(payload.loggedTotal ?? 0);
         setInvestments(payload.investments ?? []);
         setBills(payload.bills ?? []);
+        setBillsTotal(payload.billsTotal ?? 0);
         setEmis(payload.emis ?? []);
       }
     } catch (error) {
@@ -99,6 +102,7 @@ export const useDashboardData = (currentMonth: string) => {
     investments,
     bills,
     setBills,
+    billsTotal,
     emis,
     isBootstrapping,
     isRefreshing,

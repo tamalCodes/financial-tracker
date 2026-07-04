@@ -8,11 +8,13 @@ import GreetingHeader from "./GreetingHeader";
 import HeroBalance from "./HeroBalance";
 import Transactions from "./Transactions";
 import Income from "./Income";
-import BillsEmis from "./BillsEmis";
+import Bills from "./Bills";
+import Emis from "./Emis";
 import Investments from "./Investments";
 import FloatingActionBar from "./FloatingActionBar";
 import AddSheet from "./AddSheet";
 import EditSheet from "./EditSheet";
+import BillEditSheet from "./BillEditSheet";
 import Toaster from "./Toaster";
 
 // Identity for the greeting (§2.6): derive a display name + initials from the auth email.
@@ -77,7 +79,23 @@ export default function MobileHome() {
             <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
           )}
           {(f.loading || f.bills.length > 0) && (
-            <BillsEmis bills={f.bills} paidTotal={f.paidTotal} emis={f.emis} onPay={f.pay} loading={f.loading} />
+            <Bills
+              bills={f.bills}
+              page={f.billPage}
+              pages={f.billPages}
+              onPageChange={f.setBillPage}
+              onEdit={f.openBillEdit}
+              loading={f.loading}
+            />
+          )}
+          {f.emiCards.length > 0 && (
+            <Emis
+              cards={f.emiCards}
+              summary={f.emisSummary}
+              onPay={f.pay}
+              onEdit={f.openEmiEdit}
+              loading={f.loading}
+            />
           )}
           <Investments
             portfolioTotal={portfolio.portfolioTotal}
@@ -130,6 +148,24 @@ export default function MobileHome() {
           onSave={f.saveEdit}
           onDelete={f.deleteEdit}
           onClose={f.closeEdit}
+        />
+      )}
+
+      {f.billEdit && (
+        <BillEditSheet
+          kind={f.billEdit.kind}
+          name={f.billEdit.name}
+          amount={f.billEdit.amount}
+          total={f.billEdit.total}
+          months={f.billEdit.months}
+          saving={f.billEditSaving}
+          deleting={f.billEditDeleting}
+          onName={f.setBillEditName}
+          onAmount={f.setBillEditAmount}
+          onTotal={f.setBillEditTotal}
+          onSave={f.saveBillEdit}
+          onDelete={f.deleteBillEdit}
+          onClose={f.closeBillEdit}
         />
       )}
 

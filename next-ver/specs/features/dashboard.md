@@ -4,6 +4,10 @@ Reverse-engineered from `src/app/api/dashboard/route.ts`, `lib/api/dashboard.ts`
 `features/dashboard/mobile/*`, `features/dashboard/hooks/useDashboardData.ts`. Post mobile redesign —
 money model in DATA_MODEL; DECISIONS D13/D14/D16/D20.
 
+> **Responsive:** this doc describes the **mobile** home. On viewports ≥ 1024px the same data
+> hooks/cards reflow into a two-column dashboard with a monthly-trend chart — see
+> [desktop-dashboard.md](desktop-dashboard.md). `Dashboard.tsx` branches on `useMediaQuery`.
+
 ## Problem
 Per-month home view: the cumulative **Left in bank** hero + three per-month tiles
 (Earned/Spent/Invested) + the month's credits, expenses (page 1), investments, and bills.

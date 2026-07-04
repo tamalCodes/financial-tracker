@@ -53,11 +53,18 @@ export const billCreateSchema = z.object({
   due_date: z.string().trim().max(32).optional(),
 });
 
-/** PATCH body for bills — toggle paid. */
-export const billPatchSchema = z.object({
-  id: z.string().min(1),
-  paid: z.boolean(),
-});
+/** PATCH body for bills — toggle paid and/or edit name/amount. At least one field. */
+export const billPatchSchema = z
+  .object({
+    id: z.string().min(1),
+    paid: z.boolean().optional(),
+    name: z.string().min(1).optional(),
+    amount: amount.optional(),
+  })
+  .refine(
+    (b) => b.paid !== undefined || b.name !== undefined || b.amount !== undefined,
+    { message: "Nothing to update." }
+  );
 
 /**
  * POST body for an EMI. Expands into `months` installment rows on the bills ledger
@@ -71,6 +78,19 @@ export const emiCreateSchema = z.object({
   total: amount, // total loan amount (display only)
   months: z.coerce.number().int().min(1).max(120),
 });
+
+/** PATCH body for an EMI group — edits every installment sharing `emi_id`. */
+export const emiPatchSchema = z
+  .object({
+    emi_id: z.string().min(1),
+    name: z.string().min(1).optional(),
+    monthly: amount.optional(), // per-installment amount (applies to all rows)
+    total: amount.optional(), // total loan amount (display only)
+  })
+  .refine(
+    (b) => b.name !== undefined || b.monthly !== undefined || b.total !== undefined,
+    { message: "Nothing to update." }
+  );
 
 // Portfolio panel — manual reference data (no money-model effect; DECISIONS D15).
 export const holdingKind = z.enum(["fd", "mutual_fund"]);
@@ -112,6 +132,18 @@ export const signupSchema = z.object({
     .refine((n) => n >= 0, { message: "openingBalance must be ≥ 0" })
     .optional()
     .default(0),
+});
+
+/**
+ * Query for GET /api/trend — anchor month (the month being viewed) + window size.
+ * `months` is restricted to the two UI toggle values (desktop-dashboard spec).
+ */
+export const trendQuerySchema = z.object({
+  month: z.string().regex(/^\d{4}-\d{2}-01$/, "month must be YYYY-MM-01"),
+  months: z.coerce
+    .number()
+    .int()
+    .refine((n) => n === 6 || n === 12, { message: "months must be 6 or 12" }),
 });
 
 /**

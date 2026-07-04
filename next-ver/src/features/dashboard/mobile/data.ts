@@ -53,6 +53,13 @@ export const BILL_ICON = {
   bolt: "M11 2 5 11h4l-1 5 6-8h-4l1-6z", // electricity
   wifi: "M3 8c4-3 10-3 14 0 M6 11c2.5-2 5.5-2 8 0 M10 14h.01", // wifi / broadband
   flame: "M10 3c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 2-3 2-5 1 1 2 1 2 2z", // gas
+  phone: "M6 3h8v14H6z M9 14h2", // recharge / mobile
+  home: "M3 9l7-6 7 6 M5 8v9h10V8", // rent / housing
+  fork: "M6 3v6a2 2 0 0 0 4 0V3 M8 9v8 M14 3v14 M14 3c-2 1-2 5 0 6", // food
+  users: "M7 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M2 17c0-3 2.5-5 5-5s5 2 5 5 M14 12c2 0 4 2 4 5", // family
+  shield: "M10 2l6 3v5c0 4-3 6-6 8-3-2-6-4-6-8V5l6-3z", // insurance
+  cross: "M10 4v12 M4 10h12", // medical / emergency / health
+  spark: "M10 2l1.6 4.4L16 8l-4.4 1.6L10 14l-1.6-4.4L4 8l4.4-1.6z M15 13l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z", // AI subscriptions
 } as const;
 
 export const billIconFor = (name: string): string => {
@@ -60,6 +67,13 @@ export const billIconFor = (name: string): string => {
   if (/electr|power|bijli/.test(n)) return BILL_ICON.bolt;
   if (/wifi|broadband|internet|\bnet\b|fiber|fibre/.test(n)) return BILL_ICON.wifi;
   if (/gas|lpg|piped/.test(n)) return BILL_ICON.flame;
+  if (/recharge|mobile|phone|prepaid|postpaid|\bsim\b|airtel|jio/.test(n)) return BILL_ICON.phone;
+  if (/rent|house|housing|maintenance|society/.test(n)) return BILL_ICON.home;
+  if (/food|grocer|mess|tiffin|meal|dining|swiggy|zomato/.test(n)) return BILL_ICON.fork;
+  if (/family|kids|school|tuition/.test(n)) return BILL_ICON.users;
+  if (/insur|premium|policy|lic\b/.test(n)) return BILL_ICON.shield;
+  if (/medical|emergency|hospital|health|pharma|doctor|medicine/.test(n)) return BILL_ICON.cross;
+  if (/\bai\b|chatgpt|openai|claude|gemini|copilot|midjourney|perplexity|llm|gpt/.test(n)) return BILL_ICON.spark;
   return BILL_ICON.card;
 };
 

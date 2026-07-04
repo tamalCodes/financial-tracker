@@ -13,6 +13,10 @@ import { loadEmiProgress } from "@/lib/api/emis";
 // 2+ are fetched lazily via GET /api/expenses. Keep in sync with the client.
 export const EXPENSES_PAGE_SIZE = 6;
 
+// One-off bills paginate like Recent payments: page 1 ships here, pages 2+ via GET
+// /api/bills. Keep in sync with the client (useFinance).
+export const BILLS_PAGE_SIZE = 6;
+
 interface DashboardPayload {
   summary: MonthSummary;
   credits: Credit[];
@@ -20,7 +24,8 @@ interface DashboardPayload {
   expensesTotal: number; // full month count (for pagination + the "N this month" line)
   loggedTotal: number; // full month Σ expenses (for the chip badge) — page-independent
   investments: Investment[];
-  bills: Bill[];
+  bills: Bill[]; // first page of one-off bills + all of this month's EMI installment rows
+  billsTotal: number; // full month count of one-off bills (for Bills-card pagination)
   emis: EmiProgress[]; // EMI progress across all months — seeds the panel on first paint
 }
 
@@ -109,7 +114,9 @@ export const loadDashboardData = async (
     expensesRes,
     expenseAmountsRes,
     investmentsRes,
-    billsRes,
+    oneOffBillsRes,
+    emiBillsRes,
+    billAmountsRes,
     leftInBank,
     emis,
   ] = await Promise.all([
@@ -139,6 +146,7 @@ export const loadDashboardData = async (
         .eq("user_id", userId)
         .eq("month", currentMonth)
         .order("created_at", { ascending: false }),
+      // One-off bills: first page only (newest-first), like Recent payments.
       supabase
         .from("bills")
         .select(
@@ -146,7 +154,26 @@ export const loadDashboardData = async (
         )
         .eq("user_id", userId)
         .eq("month", currentMonth)
-        .order("due_date", { ascending: true }),
+        .is("emi_id", null)
+        .order("created_at", { ascending: false })
+        .range(0, BILLS_PAGE_SIZE - 1),
+      // EMI installment rows for this month — all of them (the EMIs card needs every
+      // one to render this month's Pay pill); there are few per user.
+      supabase
+        .from("bills")
+        .select(
+          "id, name, amount, due_date, paid, month, created_at, emi_id, emi_seq, emi_months, emi_total"
+        )
+        .eq("user_id", userId)
+        .eq("month", currentMonth)
+        .not("emi_id", "is", null),
+      // Amounts-only sweep across ALL of this month's bills: count of one-off bills
+      // (for pagination) + Σ paid bills (for `spent`), page-independent.
+      supabase
+        .from("bills")
+        .select("amount, paid, emi_id")
+        .eq("user_id", userId)
+        .eq("month", currentMonth),
       cumulativeLeftInBank(supabase, userId, currentMonth),
       loadEmiProgress(supabase, userId),
     ]);
@@ -155,13 +182,23 @@ export const loadDashboardData = async (
   const expenses = (expensesRes.data ?? []) as Expense[];
   const expenseAmounts = (expenseAmountsRes.data ?? []) as { amount: number }[];
   const investments = (investmentsRes.data ?? []) as Investment[];
-  const bills = (billsRes.data ?? []) as Bill[];
+  const oneOffBills = (oneOffBillsRes.data ?? []) as Bill[];
+  const emiBills = (emiBillsRes.data ?? []) as Bill[];
+  const billAmounts = (billAmountsRes.data ?? []) as {
+    amount: number;
+    paid: boolean;
+    emi_id: string | null;
+  }[];
+
+  // Bills payload = page 1 of one-off bills + all EMI installment rows for the month
+  // (the client filters by emi_id into the two cards).
+  const bills = [...oneOffBills, ...emiBills];
 
   // Per-month tiles (reset each month). spent includes paid bills (DECISIONS D14).
   // Totals come from the full-month amounts sweep, NOT the paginated display rows.
   const earned = sumAmount(credits);
   const loggedTotal = sumAmount(expenseAmounts);
-  const spent = loggedTotal + sumAmount(bills.filter((b) => b.paid));
+  const spent = loggedTotal + sumAmount(billAmounts.filter((b) => b.paid));
   const invested = sumAmount(investments);
 
   const summary: MonthSummary = { leftInBank, earned, spent, invested };
@@ -174,6 +211,7 @@ export const loadDashboardData = async (
     loggedTotal,
     investments,
     bills,
+    billsTotal: billAmounts.filter((b) => b.emi_id === null).length,
     emis,
   };
 };
