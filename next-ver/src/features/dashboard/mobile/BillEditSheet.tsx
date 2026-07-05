@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { BODY, DISPLAY } from "./data";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+import { parseMonthKey } from "../utils/dates";
 import AmountField, {
   OperatorBar,
   type AmountFieldHandle,
@@ -16,11 +18,15 @@ interface Props {
   amount: string; // bill amount, or EMI per-installment (monthly)
   total: string; // EMI total loan (kind "emi" only)
   months: number | null; // EMI installment count (display only)
+  paidCount: number; // EMI: installments already paid (0..months)
+  startMonth: string; // EMI: month key of the first installment (emi_seq 1)
   saving?: boolean;
   deleting?: boolean;
   onName: (v: string) => void;
   onAmount: (v: string) => void;
   onTotal: (v: string) => void;
+  onPaidCount: (v: number) => void;
+  onShiftStart: (delta: number) => void; // EMI: shift schedule ±1 month
   onSave: () => void;
   onDelete: () => void;
   onClose: () => void;
@@ -31,22 +37,43 @@ const FIELD_LABEL: React.CSSProperties = {
   color: "#475569",
 };
 
+// Glassy indigo stepper button (± / ‹ ›), shared by the Started + Months-paid rows.
+const STEP_BTN: React.CSSProperties = {
+  width: 44,
+  height: 44,
+  borderRadius: 12,
+  border: "1px solid rgba(79,70,229,0.18)",
+  background: "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+  color: "#4f46e5",
+  fontSize: 24,
+  fontWeight: 600,
+  lineHeight: 1,
+  cursor: "pointer",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+};
+
 export default function BillEditSheet({
   kind,
   name,
   amount,
   total,
   months,
+  paidCount,
+  startMonth,
   saving,
   deleting,
   onName,
   onAmount,
   onTotal,
+  onPaidCount,
+  onShiftStart,
   onSave,
   onDelete,
   onClose,
 }: Props) {
   const isEmi = kind === "emi";
+  // Desktop (≥1024px): centered dialog card; below that, mobile bottom sheet.
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [nameFocus, setNameFocus] = useState(false);
   const [calcActive, setCalcActive] = useState(false);
   const saveDisabled = saving || calcActive;
@@ -73,8 +100,9 @@ export default function BillEditSheet({
         backdropFilter: "blur(3px)",
         WebkitBackdropFilter: "blur(3px)",
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: isDesktop ? "center" : "flex-end",
         justifyContent: "center",
+        padding: isDesktop ? 24 : 0,
       }}
     >
       <div
@@ -82,9 +110,13 @@ export default function BillEditSheet({
         style={{
           width: 460,
           maxWidth: "100%",
+          maxHeight: isDesktop ? "calc(100vh - 48px)" : undefined,
+          overflowY: isDesktop ? "auto" : undefined,
           background: "#fff",
-          borderRadius: "30px 30px 0 0",
-          boxShadow: "0 -18px 60px -18px rgba(15,23,42,0.45)",
+          borderRadius: isDesktop ? 24 : "30px 30px 0 0",
+          boxShadow: isDesktop
+            ? "0 24px 70px -20px rgba(15,23,42,0.45)"
+            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
         }}
       >
         <div
@@ -93,8 +125,8 @@ export default function BillEditSheet({
             padding: "10px 22px calc(24px + env(safe-area-inset-bottom))",
           }}
         >
-          {/* Grabber */}
-          <div style={{ display: "flex", justifyContent: "center", padding: "4px 0 16px" }}>
+          {/* Grabber (mobile bottom-sheet affordance only) */}
+          <div style={{ display: isDesktop ? "none" : "flex", justifyContent: "center", padding: "4px 0 16px" }}>
             <span style={{ width: 42, height: 5, borderRadius: 999, background: "#e2e8f0" }} />
           </div>
 
@@ -173,6 +205,125 @@ export default function BillEditSheet({
                 placeholder="0"
                 prefix="₹"
               />
+            </div>
+          )}
+
+          {/* EMI start month — re-anchor the whole schedule. Back-date (◀) so
+              already-paid installments land on past months. */}
+          {isEmi && startMonth && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
+              <span style={FIELD_LABEL}>Started</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 16,
+                  background: "#f8fafc",
+                  height: 62,
+                  padding: "0 10px",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => onShiftStart(-1)}
+                  aria-label="Earlier month"
+                  style={STEP_BTN}
+                >
+                  ‹
+                </button>
+                <span
+                  style={{
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 20,
+                    letterSpacing: "-0.01em",
+                    color: "#0f172a",
+                  }}
+                >
+                  {parseMonthKey(startMonth).toLocaleDateString("en-IN", {
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onShiftStart(1)}
+                  aria-label="Later month"
+                  style={STEP_BTN}
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* EMI months paid — record how many installments are already paid.
+              Flips the first N installments' paid flags on save (feeds spend). */}
+          {isEmi && months != null && months > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
+              <span style={FIELD_LABEL}>Months paid</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 16,
+                  background: "#f8fafc",
+                  height: 62,
+                  padding: "0 10px 0 16px",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: DISPLAY,
+                    fontWeight: 600,
+                    fontSize: 28,
+                    letterSpacing: "-0.01em",
+                    fontVariantNumeric: "tabular-nums",
+                    color: "#0f172a",
+                  }}
+                >
+                  {paidCount}
+                  <span style={{ fontSize: 15, fontWeight: 500, color: "#94a3b8" }}>
+                    {" "}
+                    / {months}
+                  </span>
+                </span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[
+                    { label: "−", delta: -1, disabled: paidCount <= 0 },
+                    { label: "+", delta: 1, disabled: paidCount >= months },
+                  ].map((b) => (
+                    <button
+                      key={b.label}
+                      type="button"
+                      onClick={() => onPaidCount(paidCount + b.delta)}
+                      disabled={b.disabled}
+                      aria-label={b.delta > 0 ? "One more paid" : "One less paid"}
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 12,
+                        border: "1px solid rgba(79,70,229,0.18)",
+                        background:
+                          "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+                        color: "#4f46e5",
+                        fontSize: 24,
+                        fontWeight: 600,
+                        lineHeight: 1,
+                        cursor: b.disabled ? "default" : "pointer",
+                        opacity: b.disabled ? 0.4 : 1,
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+                      }}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

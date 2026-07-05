@@ -130,6 +130,7 @@ export type Database = {
           emi_total?: number | null;
         };
         Update: Partial<{
+          month: string;
           name: string;
           amount: number;
           due_date: string | null;

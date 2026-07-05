@@ -54,13 +54,18 @@ export async function POST(request: Request) {
 
 // Edit an EMI group: name/monthly/total apply to every installment sharing emi_id.
 // Changing `monthly` rewrites `amount` on all rows (incl. already-paid ones, so past
-// spend reflects the correction). Returns the refreshed roll-up.
+// spend reflects the correction). `startMonth` re-anchors the whole schedule (each
+// installment's month = startMonth + emi_seq-1) — set it to a past month to back-date
+// an EMI that started earlier. `paidCount` marks the first N installments (by emi_seq)
+// paid and the rest unpaid, so a user can record "I've already paid 4 of 8" — this
+// flips `paid` flags, which is exactly what feeds each month's spend. With a past
+// startMonth those paid installments land on past months. Returns the refreshed roll-up.
 export async function PATCH(request: Request) {
   const limit = rateLimit(request, "emis:patch", { limit: 15, windowMs: 60_000 });
   if (!limit.ok) return tooManyRequests(limit.resetMs);
 
   try {
-    const { emi_id, name, monthly, total } = validate(
+    const { emi_id, name, monthly, total, paidCount, startMonth } = validate(
       emiPatchSchema,
       await request.json()
     );
@@ -73,13 +78,60 @@ export async function PATCH(request: Request) {
     if (monthly !== undefined) patch.amount = monthly;
     if (total !== undefined) patch.emi_total = total;
 
-    const { error } = await supabase
-      .from("bills")
-      .update(patch)
-      .eq("emi_id", emi_id)
-      .eq("user_id", userId);
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    if (Object.keys(patch).length > 0) {
+      const { error } = await supabase
+        .from("bills")
+        .update(patch)
+        .eq("emi_id", emi_id)
+        .eq("user_id", userId);
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+    }
+
+    // startMonth: re-anchor each installment's month by its emi_seq (1-based).
+    if (startMonth !== undefined) {
+      const { data: rows, error: fetchErr } = await supabase
+        .from("bills")
+        .select("id, emi_seq")
+        .eq("emi_id", emi_id)
+        .eq("user_id", userId);
+      if (fetchErr) {
+        return NextResponse.json({ error: fetchErr.message }, { status: 400 });
+      }
+      const results = await Promise.all(
+        (rows ?? []).map((r) =>
+          supabase
+            .from("bills")
+            .update({ month: shiftMonthKey(startMonth, Number(r.emi_seq) - 1) })
+            .eq("id", r.id as string)
+            .eq("user_id", userId)
+        )
+      );
+      const err = results.find((res) => res.error)?.error;
+      if (err) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
+    }
+
+    // paidCount: first N installments (emi_seq 1..N) paid, the rest unpaid.
+    if (paidCount !== undefined) {
+      const paidRes = await supabase
+        .from("bills")
+        .update({ paid: true })
+        .eq("emi_id", emi_id)
+        .eq("user_id", userId)
+        .lte("emi_seq", paidCount);
+      const unpaidRes = await supabase
+        .from("bills")
+        .update({ paid: false })
+        .eq("emi_id", emi_id)
+        .eq("user_id", userId)
+        .gt("emi_seq", paidCount);
+      const err = paidRes.error ?? unpaidRes.error;
+      if (err) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
     }
 
     const items = await loadEmiProgress(supabase, userId);

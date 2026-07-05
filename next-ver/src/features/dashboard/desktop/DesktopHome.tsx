@@ -291,11 +291,15 @@ export default function DesktopHome() {
           amount={f.billEdit.amount}
           total={f.billEdit.total}
           months={f.billEdit.months}
+          paidCount={f.billEdit.paidCount}
+          startMonth={f.billEdit.startMonth}
           saving={f.billEditSaving}
           deleting={f.billEditDeleting}
           onName={f.setBillEditName}
           onAmount={f.setBillEditAmount}
           onTotal={f.setBillEditTotal}
+          onPaidCount={f.setBillEditPaidCount}
+          onShiftStart={f.shiftBillEditStart}
           onSave={f.saveBillEdit}
           onDelete={f.deleteBillEdit}
           onClose={f.closeBillEdit}

@@ -86,9 +86,16 @@ export const emiPatchSchema = z
     name: z.string().min(1).optional(),
     monthly: amount.optional(), // per-installment amount (applies to all rows)
     total: amount.optional(), // total loan amount (display only)
+    paidCount: z.coerce.number().int().min(0).max(120).optional(), // mark first N installments paid
+    startMonth: month.optional(), // re-anchor installment months (emi_seq i → startMonth + i-1)
   })
   .refine(
-    (b) => b.name !== undefined || b.monthly !== undefined || b.total !== undefined,
+    (b) =>
+      b.name !== undefined ||
+      b.monthly !== undefined ||
+      b.total !== undefined ||
+      b.paidCount !== undefined ||
+      b.startMonth !== undefined,
     { message: "Nothing to update." }
   );
 

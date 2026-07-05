@@ -5,6 +5,7 @@ import AmountField, {
   OperatorBar,
   type AmountFieldHandle,
 } from "./AmountField";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import CatPill from "./CatPill";
 import {
   BODY,
@@ -76,6 +77,10 @@ export default function AddSheet({
   }, []);
   const showOps = touch && amountFocus;
 
+  // Desktop (≥1024px): render as a centered dialog card — full radius, no
+  // bottom-sheet grabber. Below that, keep the mobile bottom sheet.
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
   const isExpense = mode === "expense";
   const asBill = isExpense && isBill;
   const asEmi = asBill && billKind === "emi";
@@ -83,6 +88,10 @@ export default function AddSheet({
   // EMI: once both Total and Months are filled, auto-compute the monthly
   // (total ÷ months) and drop it into the Amount field with the AI reveal
   // effect. Debounced so it waits for the user to finish typing months.
+  // Keyed on Total/Months ONLY (not `amount`): the auto-fill is a suggestion —
+  // once it lands, editing the monthly amount by hand must stick, so a manual
+  // edit (which changes `amount`) must never re-trigger this and revert it.
+  const lastAutoKey = useRef<string>("");
   useEffect(() => {
     if (!asEmi) return;
     const total = parseInt(emiTotal, 10);
@@ -90,10 +99,13 @@ export default function AddSheet({
     if (!Number.isFinite(total) || !Number.isFinite(months) || months <= 0)
       return;
     const monthly = Math.round(total / months);
-    if (monthly <= 0 || String(monthly) === amount) return; // already there
+    if (monthly <= 0) return;
+    const key = `${total}/${months}`;
+    if (key === lastAutoKey.current) return; // this Total/Months combo already auto-filled
+    lastAutoKey.current = key;
     const t = setTimeout(() => amountRef.current?.revealValue(monthly), 650);
     return () => clearTimeout(t);
-  }, [asEmi, emiTotal, emiMonths, amount]);
+  }, [asEmi, emiTotal, emiMonths]);
 
   return (
     <div
@@ -106,8 +118,9 @@ export default function AddSheet({
         backdropFilter: "blur(3px)",
         WebkitBackdropFilter: "blur(3px)",
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: isDesktop ? "center" : "flex-end",
         justifyContent: "center",
+        padding: isDesktop ? 24 : 0,
       }}
     >
       <div
@@ -115,9 +128,13 @@ export default function AddSheet({
         style={{
           width: 460,
           maxWidth: "100%",
+          maxHeight: isDesktop ? "calc(100vh - 48px)" : undefined,
+          overflowY: isDesktop ? "auto" : undefined,
           background: "#fff",
-          borderRadius: "30px 30px 0 0",
-          boxShadow: "0 -18px 60px -18px rgba(15,23,42,0.45)",
+          borderRadius: isDesktop ? 24 : "30px 30px 0 0",
+          boxShadow: isDesktop
+            ? "0 24px 70px -20px rgba(15,23,42,0.45)"
+            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
         }}
       >
         <div
@@ -126,10 +143,10 @@ export default function AddSheet({
             padding: "10px 22px calc(24px + env(safe-area-inset-bottom))",
           }}
         >
-          {/* Grabber */}
+          {/* Grabber (mobile bottom-sheet affordance only) */}
           <div
             style={{
-              display: "flex",
+              display: isDesktop ? "none" : "flex",
               justifyContent: "center",
               padding: "4px 0 16px",
             }}
@@ -347,7 +364,7 @@ export default function AddSheet({
               ref={amountRef}
               amount={amount}
               onAmount={onAmount}
-              autoFocus
+              autoFocus={!asEmi}
               onCalcActiveChange={setCalcActive}
               onFocusChange={setAmountFocus}
             />

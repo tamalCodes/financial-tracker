@@ -58,6 +58,7 @@ export interface EmiProgress {
   monthly: number; // per-installment amount
   total: number; // total loan amount (display only)
   months: number; // total installments
+  startMonth: string; // month key (YYYY-MM-01) of the first installment (emi_seq 1)
   paidCount: number; // installments paid so far
   paidAmount: number; // Σ paid installments
   remainingCount: number; // installments still due

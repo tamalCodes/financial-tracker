@@ -55,11 +55,18 @@ emi_months (int), emi_total (numeric)`.
   `monthly × months` may exceed `total` (interest) — `total` is **display only**, never summed
   into spend.
 - **GET** → `{ items: EmiProgress[] }` — groups every EMI row by `emi_id` into
-  `{ emi_id, name, monthly, total, months, paidCount, paidAmount, remainingCount, remainingAmount }`.
+  `{ emi_id, name, monthly, total, months, startMonth, paidCount, paidAmount, remainingCount, remainingAmount }`.
+  `startMonth` = the `emi_seq` 1 row's `month` (fallback: earliest month in the group).
   Sorted active-first (something still due), then by name.
-- **PATCH** `{ emi_id, name?, monthly?, total? }` → `{ items: EmiProgress[] }` (refreshed rollup) —
-  edits the whole EMI group: applies `name`/`emi_total`/`amount` to **every** installment sharing
-  the `emi_id` (incl. already-paid rows, so past spend reflects a corrected `monthly`). ≥1 field.
+- **PATCH** `{ emi_id, name?, monthly?, total?, paidCount?, startMonth? }` → `{ items: EmiProgress[] }`
+  (refreshed rollup) — edits the whole EMI group: applies `name`/`emi_total`/`amount` to **every**
+  installment sharing the `emi_id` (incl. already-paid rows, so past spend reflects a corrected
+  `monthly`). `startMonth` (month key) **re-anchors the schedule**: each installment's `month` is
+  rewritten to `startMonth + (emi_seq − 1)` — set it to a past month to **back-date** an EMI that
+  began earlier. `paidCount` (0..120) records how many installments are already paid: marks the
+  **first N** rows by `emi_seq` `paid = true` and the rest `paid = false` — flipping `paid` flags is
+  exactly what feeds each month's spend, so with a past `startMonth`, "4 of 8 paid" raises `spent_m`
+  on those four **past** months. ≥1 field.
 - **DELETE** `?emi_id=` → `{ ok: true }` — drops every installment row of the EMI.
 - Rate limit `emis:{post 15, get 60, patch 15, delete 15}` per 60s.
 
@@ -77,11 +84,19 @@ emi_months (int), emi_total (numeric)`.
     `Paid ₹x / ₹total`. Keeps the compact **paid / total** header (green paid, muted total) and the
     inline **Pay ₹monthly** pill on this month's due instalment. Tapping a strip opens the EMI edit
     sheet. Header total = Σ EMI `total`; paid = Σ `paidAmount`.
-- **BillEditSheet** — one bottom sheet, two kinds. Bill → name + amount, Save (`PATCH /api/bills`),
-  Delete (`DELETE /api/bills?id=`). EMI → name + monthly + total loan, Save (`PATCH /api/emis`),
-  Delete whole EMI (`DELETE /api/emis?emi_id=`). Mirrors the recent-payment EditSheet UX.
+- **BillEditSheet** — one sheet, two kinds. Bill → name + amount, Save (`PATCH /api/bills`),
+  Delete (`DELETE /api/bills?id=`). EMI → name + monthly + total loan + a **Started** month stepper
+  (`‹`/`›`, shifts the whole schedule ±1 month, shows e.g. "Apr 2025") + a **Months paid** stepper
+  (`−`/`+`, clamped 0..months, shows `N / months`), Save (`PATCH /api/emis` incl. `startMonth` +
+  `paidCount`), Delete whole EMI (`DELETE /api/emis?emi_id=`). Back-date via Started, then set Months
+  paid so past installments land paid. Mirrors the recent-payment EditSheet UX.
+  **Responsive:** self-detects `≥1024px` (`useMediaQuery`) → centered dialog card (24px radius, no
+  grabber, `max-height: calc(100vh - 48px)` + scroll); mobile bottom sheet unchanged below 1024px.
+  Same treatment as `AddSheet`.
 - **useFinance** — `pay` (EMI installments only now) / `openBillEdit` / `openEmiEdit` /
-  `saveBillEdit` / `deleteBillEdit`, one-off bill pagination (`billPage` / `billPages` /
+  `saveBillEdit` / `deleteBillEdit` (EMI edit state carries `paidCount` — clamped 0..months via
+  `setBillEditPaidCount` — and `startMonth` — shifted ±1 month via `shiftBillEditStart`; both sent on
+  save), one-off bill pagination (`billPage` / `billPages` /
   `setBillPage`, page 2+ fetched from `GET /api/bills`), plus derived `emiCards`, `emisSummary` +
   reload. Adding a bill resets `billPage` to 1 (newest lands on page 1).
 
@@ -95,6 +110,11 @@ emi_months (int), emi_total (numeric)`.
 - [ ] `GET /api/emis` rollup counts paid vs remaining correctly; `emi_total` never enters spend.
 - [ ] Editing a bill (name/amount) or an EMI (name/monthly/total) persists and re-renders; delete
       removes the bill / whole EMI. Bills and EMIs render as two separate cards.
+- [ ] Editing an EMI's **Months paid** to N marks the first N installments paid + the rest unpaid,
+      raising/lowering `spent_m` on those months accordingly; the rollup `paidCount` updates.
+- [ ] Editing an EMI's **Started** month rewrites every installment's `month` to
+      `startMonth + (emi_seq−1)`; with a past start + Months paid = N, the N paid installments land on
+      past months and raise those months' `spent_m` / lower cumulative Left-in-bank.
 - [ ] No overdue state anywhere. user_id scoping on all queries.
 
 ## Files to touch

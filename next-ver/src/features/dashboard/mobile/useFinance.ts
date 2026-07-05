@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
-import { formatTxnDate } from "@/features/dashboard/utils/dates";
+import { formatTxnDate, shiftMonthKey } from "@/features/dashboard/utils/dates";
 import type {
   Bill,
   Credit,
@@ -501,15 +501,17 @@ export function useFinance() {
     amount: string;
     total: string;
     months: number | null;
+    paidCount: number; // EMI only: installments already paid (0..months)
+    startMonth: string; // EMI only: month key of the first installment (emi_seq 1)
   }>(null);
   const [billEditSaving, setBillEditSaving] = useState(false);
   const [billEditDeleting, setBillEditDeleting] = useState(false);
 
   const openBillEdit = (b: { id: string; name: string; rawAmount: number }) =>
-    setBillEdit({ kind: "bill", id: b.id, name: b.name, amount: String(b.rawAmount), total: "", months: null });
+    setBillEdit({ kind: "bill", id: b.id, name: b.name, amount: String(b.rawAmount), total: "", months: null, paidCount: 0, startMonth: "" });
 
   const openEmiEdit = (e: EmiProgress) =>
-    setBillEdit({ kind: "emi", id: e.emi_id, name: e.name, amount: String(e.monthly), total: String(e.total), months: e.months });
+    setBillEdit({ kind: "emi", id: e.emi_id, name: e.name, amount: String(e.monthly), total: String(e.total), months: e.months, paidCount: e.paidCount, startMonth: e.startMonth });
 
   const closeBillEdit = () => setBillEdit(null);
   const setBillEditName = (v: string) => setBillEdit((p) => (p ? { ...p, name: v } : p));
@@ -517,6 +519,16 @@ export function useFinance() {
     setBillEdit((p) => (p ? { ...p, amount: v.replace(/[^0-9]/g, "") } : p));
   const setBillEditTotal = (v: string) =>
     setBillEdit((p) => (p ? { ...p, total: v.replace(/[^0-9]/g, "") } : p));
+  // Clamp paid installments to 0..months so the UI can't record more paid than exist.
+  const setBillEditPaidCount = (v: number) =>
+    setBillEdit((p) =>
+      p ? { ...p, paidCount: Math.max(0, Math.min(v, p.months ?? 0)) } : p
+    );
+  // Shift the EMI's first-installment month by ±delta months (back-date / forward).
+  const shiftBillEditStart = (delta: number) =>
+    setBillEdit((p) =>
+      p && p.startMonth ? { ...p, startMonth: shiftMonthKey(p.startMonth, delta) } : p
+    );
 
   const saveBillEdit = async () => {
     if (!billEdit || billEditSaving) return;
@@ -532,7 +544,7 @@ export function useFinance() {
         const res = await fetch("/api/emis", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ emi_id: billEdit.id, name, monthly: amount, total }),
+          body: JSON.stringify({ emi_id: billEdit.id, name, monthly: amount, total, paidCount: billEdit.paidCount, startMonth: billEdit.startMonth }),
         });
         if (!res.ok) throw new Error("edit failed");
       } else {
@@ -604,6 +616,8 @@ export function useFinance() {
     setBillEditName,
     setBillEditAmount,
     setBillEditTotal,
+    setBillEditPaidCount,
+    shiftBillEditStart,
     saveBillEdit,
     deleteBillEdit,
     billEditSaving,

@@ -11,7 +11,7 @@ export const loadEmiProgress = async (
 ): Promise<EmiProgress[]> => {
   const { data, error } = await supabase
     .from("bills")
-    .select("emi_id, name, amount, paid, emi_months, emi_total")
+    .select("emi_id, name, amount, paid, month, emi_seq, emi_months, emi_total")
     .eq("user_id", userId)
     .not("emi_id", "is", null);
 
@@ -28,12 +28,17 @@ export const loadEmiProgress = async (
         monthly: Number(r.amount),
         total: Number(r.emi_total ?? 0),
         months: Number(r.emi_months ?? 0),
+        startMonth: r.month as string, // provisional; corrected by emi_seq 1 / earliest below
         paidCount: 0,
         paidAmount: 0,
         remainingCount: 0,
         remainingAmount: 0,
       };
       groups.set(id, g);
+    }
+    // Start month = the emi_seq 1 row's month (fallback: earliest month seen).
+    if (Number(r.emi_seq) === 1 || (r.month as string) < g.startMonth) {
+      g.startMonth = r.month as string;
     }
     if (r.paid) {
       g.paidCount += 1;

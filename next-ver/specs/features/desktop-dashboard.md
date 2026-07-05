@@ -99,8 +99,11 @@ All `"use client"`. Mobile path is **untouched**.
 - **`hooks/useInfiniteExpenses.ts`** (new) — desktop-only scroll pagination for Recent payments:
   fetches `/api/expenses?page=` in batches of 12 and appends via `loadMore()`. Resets on month change;
   reloads when the expense count shifts (add/delete). Maps `Expense → TxView` like `useFinance`.
-- **Reused as-is (no props change):** `HeroBalance`, `AddSheet`, `EditSheet`, `BillEditSheet`,
-  `Toaster`. **Extended (opt-in `fill`):** `Transactions`, `Investments`. **Extended (opt-in `onAdd`):**
+- **Reused as-is (no props change):** `HeroBalance`, `EditSheet`, `BillEditSheet`,
+  `Toaster`. **`AddSheet`** self-detects `≥1024px` (`useMediaQuery`) and renders as a centered
+  dialog card (full 24px radius, no grabber, `max-height: calc(100vh - 48px)` + scroll); the mobile
+  bottom sheet is unchanged below 1024px. **Extended (opt-in `fill`):** `Transactions`, `Investments`.
+  **Extended (opt-in `onAdd`):**
   `Transactions`, `Bills`, `Emis`, `Income`, `Investments`.
 
 ## Acceptance criteria
@@ -137,5 +140,6 @@ All `"use client"`. Mobile path is **untouched**.
 - Charts other than the monthly trend (no category donut, no portfolio charts) — deferred.
 - Left-in-bank trend line / cumulative series.
 - Trend Postgres RPC optimization (JS loop is v1).
-- Desktop-specific modal styling for the add/edit sheets (reuse the bottom-sheet as-is v1).
 - Persisting the 6/12 window across sessions.
+- ~~Desktop-specific modal styling for the add/edit sheets~~ — **done for `AddSheet`** (centered
+  dialog ≥1024px); `EditSheet`/`BillEditSheet` still reuse the bottom sheet.
