@@ -1,8 +1,9 @@
 # Bills & EMIs
 
 Reverse-engineered from `src/app/api/bills/route.ts`, `src/app/api/emis/route.ts`,
-`lib/api/schemas.ts`, `lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Bills,Emis,
-BillEditSheet,useFinance,data}.tsx`, migrations `005_bill_emi.sql`, `007_bills_autopaid_pagination.sql`.
+`lib/api/{schemas,emis}.ts`, `lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Bills,Emis,
+BillEditSheet,MonthPicker,useFinance,data}.tsx`, `features/dashboard/types/types.ts`,
+migrations `005_bill_emi.sql`, `007_bills_autopaid_pagination.sql`.
 Decisions: D14 (bills), D17 (EMIs).
 
 ## Problem
@@ -85,18 +86,21 @@ emi_months (int), emi_total (numeric)`.
     inline **Pay ₹monthly** pill on this month's due instalment. Tapping a strip opens the EMI edit
     sheet. Header total = Σ EMI `total`; paid = Σ `paidAmount`.
 - **BillEditSheet** — one sheet, two kinds. Bill → name + amount, Save (`PATCH /api/bills`),
-  Delete (`DELETE /api/bills?id=`). EMI → name + monthly + total loan + a **Started** month stepper
-  (`‹`/`›`, shifts the whole schedule ±1 month, shows e.g. "Apr 2025") + a **Months paid** stepper
-  (`−`/`+`, clamped 0..months, shows `N / months`), Save (`PATCH /api/emis` incl. `startMonth` +
-  `paidCount`), Delete whole EMI (`DELETE /api/emis?emi_id=`). Back-date via Started, then set Months
-  paid so past installments land paid. Mirrors the recent-payment EditSheet UX.
+  Delete (`DELETE /api/bills?id=`). EMI → name + monthly + total loan + a **Started** month picker
+  (`MonthPicker`: click to drop a calendar popover — year pager `‹ 2026 ›` over a 3×4 month grid —
+  emits a month key) + a **Months paid** stepper (`−`/`+`, clamped 0..months, shows `N / months`),
+  Save (`PATCH /api/emis` incl. `startMonth` + `paidCount`), Delete whole EMI
+  (`DELETE /api/emis?emi_id=`). Back-date via Started, then set Months paid so past installments land
+  paid. Mirrors the recent-payment EditSheet UX.
   **Responsive:** self-detects `≥1024px` (`useMediaQuery`) → centered dialog card (24px radius, no
-  grabber, `max-height: calc(100vh - 48px)` + scroll); mobile bottom sheet unchanged below 1024px.
-  Same treatment as `AddSheet`.
+  grabber); **EMI edit widens to 660px and lays fields out in a 2-column grid** (Name full-width,
+  Monthly/Total + Started/Months-paid paired), with Save + Delete side by side. Bills stay single
+  column (460px). Mobile bottom sheet unchanged below 1024px. Same desktop-dialog treatment as
+  `AddSheet`.
 - **useFinance** — `pay` (EMI installments only now) / `openBillEdit` / `openEmiEdit` /
   `saveBillEdit` / `deleteBillEdit` (EMI edit state carries `paidCount` — clamped 0..months via
-  `setBillEditPaidCount` — and `startMonth` — shifted ±1 month via `shiftBillEditStart`; both sent on
-  save), one-off bill pagination (`billPage` / `billPages` /
+  `setBillEditPaidCount` — and `startMonth` — set absolutely via `setBillEditStartMonth` from the
+  month picker; both sent on save), one-off bill pagination (`billPage` / `billPages` /
   `setBillPage`, page 2+ fetched from `GET /api/bills`), plus derived `emiCards`, `emisSummary` +
   reload. Adding a bill resets `billPage` to 1 (newest lands on page 1).
 

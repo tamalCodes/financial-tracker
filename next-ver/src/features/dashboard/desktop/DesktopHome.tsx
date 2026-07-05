@@ -1,22 +1,22 @@
 "use client";
 
-import { useMemo } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
+import { useTrendData } from "@/features/dashboard/hooks/useTrendData";
+import AddSheet from "@/features/dashboard/mobile/AddSheet";
+import BillEditSheet from "@/features/dashboard/mobile/BillEditSheet";
+import Bills from "@/features/dashboard/mobile/Bills";
+import { BODY, DISPLAY } from "@/features/dashboard/mobile/data";
+import EditSheet from "@/features/dashboard/mobile/EditSheet";
+import Emis from "@/features/dashboard/mobile/Emis";
+import HeroBalance from "@/features/dashboard/mobile/HeroBalance";
+import Income from "@/features/dashboard/mobile/Income";
+import Investments from "@/features/dashboard/mobile/Investments";
+import Toaster from "@/features/dashboard/mobile/Toaster";
+import Transactions from "@/features/dashboard/mobile/Transactions";
 import { useFinance } from "@/features/dashboard/mobile/useFinance";
 import { usePortfolioData } from "@/features/dashboard/mobile/usePortfolioData";
-import { useTrendData } from "@/features/dashboard/hooks/useTrendData";
-import { BODY, DISPLAY } from "@/features/dashboard/mobile/data";
-import HeroBalance from "@/features/dashboard/mobile/HeroBalance";
-import Transactions from "@/features/dashboard/mobile/Transactions";
-import Income from "@/features/dashboard/mobile/Income";
-import Bills from "@/features/dashboard/mobile/Bills";
-import Emis from "@/features/dashboard/mobile/Emis";
-import Investments from "@/features/dashboard/mobile/Investments";
-import AddSheet from "@/features/dashboard/mobile/AddSheet";
-import EditSheet from "@/features/dashboard/mobile/EditSheet";
-import BillEditSheet from "@/features/dashboard/mobile/BillEditSheet";
-import Toaster from "@/features/dashboard/mobile/Toaster";
-import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
+import { useMemo } from "react";
 import TrendChart from "./TrendChart";
 
 // Identity for the greeting — mirrors MobileHome (derive name/initials from the email).
@@ -27,7 +27,10 @@ function identityFrom(email: string | null | undefined) {
     ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ")
     : "there";
   const initials =
-    (parts.map((p) => p.charAt(0).toUpperCase()).join("").slice(0, 2)) || "U";
+    parts
+      .map((p) => p.charAt(0).toUpperCase())
+      .join("")
+      .slice(0, 2) || "U";
   return { name, initials };
 }
 
@@ -37,9 +40,12 @@ function greetingForHour(hour: number) {
   return "Good evening";
 }
 
-const INDIGO_PILL = "linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.09))";
-const INDIGO_AVATAR = "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
-const INDIGO_BADGE = "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
+const INDIGO_PILL =
+  "linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.09))";
+const INDIGO_AVATAR =
+  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
+const INDIGO_BADGE =
+  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
 
 // Desktop / tablet-landscape home. Reuses the same data hooks and cards as MobileHome
 // (specs/features/desktop-dashboard.md), reflowed into a two-column dashboard with a
@@ -53,7 +59,10 @@ export default function DesktopHome() {
   // when the month changes (handled inside) or the expense count shifts (add/delete).
   const tx = useInfiniteExpenses(f.currentMonth, f.derived.count);
 
-  const { name, initials } = useMemo(() => identityFrom(user?.email), [user?.email]);
+  const { name, initials } = useMemo(
+    () => identityFrom(user?.email),
+    [user?.email],
+  );
   const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
 
   return (
@@ -61,7 +70,8 @@ export default function DesktopHome() {
       style={{
         minHeight: "100vh",
         overflowY: "auto",
-        background: "radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef)",
+        background:
+          "radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -80,7 +90,15 @@ export default function DesktopHome() {
         }}
       >
         {/* Header — "Overview" (handoff desktop block) */}
-        <div style={{ flex: "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
+        <div
+          style={{
+            flex: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 14,
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <span
               style={{
@@ -94,16 +112,33 @@ export default function DesktopHome() {
                 border: "1px solid rgba(99,102,241,0.45)",
               }}
             >
-              <svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#4338ca" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="21"
+                height="21"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="#4338ca"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M4 13l4-4 3 3 5-6" />
               </svg>
             </span>
             <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 19, letterSpacing: "-0.01em", color: "#0f172a" }}>
+              <span
+                style={{
+                  fontFamily: DISPLAY,
+                  fontWeight: 600,
+                  fontSize: 19,
+                  letterSpacing: "-0.01em",
+                  color: "#0f172a",
+                }}
+              >
                 Overview
               </span>
               <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>
-                {greeting}, {name} · {f.month}
+                {greeting}, {name}
               </span>
             </div>
           </div>
@@ -159,7 +194,14 @@ export default function DesktopHome() {
           }}
         >
           {/* Left column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              minHeight: 0,
+            }}
+          >
             <HeroBalance
               net={f.derived.net}
               month={f.month}
@@ -194,7 +236,14 @@ export default function DesktopHome() {
           </div>
 
           {/* Right column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              minHeight: 0,
+            }}
+          >
             {(f.loading || f.bills.length > 0) && (
               <Bills
                 bills={f.bills}
@@ -203,7 +252,9 @@ export default function DesktopHome() {
                 onPageChange={f.setBillPage}
                 onEdit={f.openBillEdit}
                 loading={f.loading}
-                onAdd={() => f.openSheet("expense", { isBill: true, billKind: "once" })}
+                onAdd={() =>
+                  f.openSheet("expense", { isBill: true, billKind: "once" })
+                }
               />
             )}
             <Emis
@@ -212,7 +263,9 @@ export default function DesktopHome() {
               onPay={f.pay}
               onEdit={f.openEmiEdit}
               loading={f.loading}
-              onAdd={() => f.openSheet("expense", { isBill: true, billKind: "emi" })}
+              onAdd={() =>
+                f.openSheet("expense", { isBill: true, billKind: "emi" })
+              }
             />
             {(f.loading || f.income.length > 0) && (
               <Income
@@ -299,7 +352,7 @@ export default function DesktopHome() {
           onAmount={f.setBillEditAmount}
           onTotal={f.setBillEditTotal}
           onPaidCount={f.setBillEditPaidCount}
-          onShiftStart={f.shiftBillEditStart}
+          onStartMonth={f.setBillEditStartMonth}
           onSave={f.saveBillEdit}
           onDelete={f.deleteBillEdit}
           onClose={f.closeBillEdit}

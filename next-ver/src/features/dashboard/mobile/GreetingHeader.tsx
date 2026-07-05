@@ -11,8 +11,10 @@ interface Props {
   month: string;
 }
 
-const INDIGO_PILL = "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))";
-const INDIGO_AVATAR = "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
+const INDIGO_PILL =
+  "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))";
+const INDIGO_AVATAR =
+  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
 
 export default function GreetingHeader({
   greeting = "Good evening",
@@ -30,8 +32,18 @@ export default function GreetingHeader({
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>{greeting}</span>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 19, letterSpacing: "-0.01em", color: "#0f172a" }}>
+        <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>
+          {greeting}
+        </span>
+        <span
+          style={{
+            fontFamily: DISPLAY,
+            fontWeight: 600,
+            fontSize: 19,
+            letterSpacing: "-0.01em",
+            color: "#0f172a",
+          }}
+        >
           {name}
         </span>
       </div>

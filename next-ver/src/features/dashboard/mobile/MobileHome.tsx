@@ -1,21 +1,21 @@
 "use client";
 
-import { useMemo } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
-import { useFinance } from "./useFinance";
-import { usePortfolioData } from "./usePortfolioData";
+import { useMemo } from "react";
+import AddSheet from "./AddSheet";
+import BillEditSheet from "./BillEditSheet";
+import Bills from "./Bills";
+import EditSheet from "./EditSheet";
+import Emis from "./Emis";
+import FloatingActionBar from "./FloatingActionBar";
 import GreetingHeader from "./GreetingHeader";
 import HeroBalance from "./HeroBalance";
-import Transactions from "./Transactions";
 import Income from "./Income";
-import Bills from "./Bills";
-import Emis from "./Emis";
 import Investments from "./Investments";
-import FloatingActionBar from "./FloatingActionBar";
-import AddSheet from "./AddSheet";
-import EditSheet from "./EditSheet";
-import BillEditSheet from "./BillEditSheet";
 import Toaster from "./Toaster";
+import Transactions from "./Transactions";
+import { useFinance } from "./useFinance";
+import { usePortfolioData } from "./usePortfolioData";
 
 // Identity for the greeting (§2.6): derive a display name + initials from the auth email.
 function identityFrom(email: string | null | undefined) {
@@ -25,7 +25,10 @@ function identityFrom(email: string | null | undefined) {
     ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ")
     : "there";
   const initials =
-    (parts.map((p) => p.charAt(0).toUpperCase()).join("").slice(0, 2)) || "U";
+    parts
+      .map((p) => p.charAt(0).toUpperCase())
+      .join("")
+      .slice(0, 2) || "U";
   return { name, initials };
 }
 
@@ -41,13 +44,35 @@ export default function MobileHome() {
   const f = useFinance();
   const portfolio = usePortfolioData();
 
-  const { name, initials } = useMemo(() => identityFrom(user?.email), [user?.email]);
+  const { name, initials } = useMemo(
+    () => identityFrom(user?.email),
+    [user?.email],
+  );
   const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f1f5f9", display: "flex", justifyContent: "center" }}>
-      <div style={{ width: "100%", maxWidth: 640, display: "flex", flexDirection: "column" }}>
-        <GreetingHeader greeting={greeting} name={name} initials={initials} month={f.month} />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f1f5f9",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 640,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <GreetingHeader
+          greeting={greeting}
+          name={name}
+          initials={initials}
+          month={f.month}
+        />
 
         <div
           style={{
@@ -76,7 +101,12 @@ export default function MobileHome() {
             loading={f.loading}
           />
           {(f.loading || f.income.length > 0) && (
-            <Income income={f.income} incomeTotal={f.incomeTotal} incomeCompact={f.incomeCompact} loading={f.loading} />
+            <Income
+              income={f.income}
+              incomeTotal={f.incomeTotal}
+              incomeCompact={f.incomeCompact}
+              loading={f.loading}
+            />
           )}
           {(f.loading || f.bills.length > 0) && (
             <Bills
@@ -166,7 +196,7 @@ export default function MobileHome() {
           onAmount={f.setBillEditAmount}
           onTotal={f.setBillEditTotal}
           onPaidCount={f.setBillEditPaidCount}
-          onShiftStart={f.shiftBillEditStart}
+          onStartMonth={f.setBillEditStartMonth}
           onSave={f.saveBillEdit}
           onDelete={f.deleteBillEdit}
           onClose={f.closeBillEdit}

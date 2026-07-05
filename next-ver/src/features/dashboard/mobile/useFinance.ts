@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "@/features/dashboard/hooks/useDashboardData";
 import { useDashboardState } from "@/features/dashboard/hooks/useDashboardState";
-import { formatTxnDate, shiftMonthKey } from "@/features/dashboard/utils/dates";
+import { formatTxnDate } from "@/features/dashboard/utils/dates";
 import type {
   Bill,
   Credit,
@@ -524,11 +524,9 @@ export function useFinance() {
     setBillEdit((p) =>
       p ? { ...p, paidCount: Math.max(0, Math.min(v, p.months ?? 0)) } : p
     );
-  // Shift the EMI's first-installment month by ±delta months (back-date / forward).
-  const shiftBillEditStart = (delta: number) =>
-    setBillEdit((p) =>
-      p && p.startMonth ? { ...p, startMonth: shiftMonthKey(p.startMonth, delta) } : p
-    );
+  // Set the EMI's first-installment month absolutely (from the month picker).
+  const setBillEditStartMonth = (monthKey: string) =>
+    setBillEdit((p) => (p ? { ...p, startMonth: monthKey } : p));
 
   const saveBillEdit = async () => {
     if (!billEdit || billEditSaving) return;
@@ -617,7 +615,7 @@ export function useFinance() {
     setBillEditAmount,
     setBillEditTotal,
     setBillEditPaidCount,
-    shiftBillEditStart,
+    setBillEditStartMonth,
     saveBillEdit,
     deleteBillEdit,
     billEditSaving,
