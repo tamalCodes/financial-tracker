@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/features/auth/AuthContext";
+import { identityFrom } from "@/features/auth/identity";
 import { useMemo } from "react";
 import AddSheet from "./AddSheet";
 import BillEditSheet from "./BillEditSheet";
@@ -17,21 +18,6 @@ import Transactions from "./Transactions";
 import { useFinance } from "./useFinance";
 import { usePortfolioData } from "./usePortfolioData";
 
-// Identity for the greeting (§2.6): derive a display name + initials from the auth email.
-function identityFrom(email: string | null | undefined) {
-  const local = (email ?? "").split("@")[0] ?? "";
-  const parts = local.split(/[._-]+/).filter(Boolean);
-  const name = parts.length
-    ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ")
-    : "there";
-  const initials =
-    parts
-      .map((p) => p.charAt(0).toUpperCase())
-      .join("")
-      .slice(0, 2) || "U";
-  return { name, initials };
-}
-
 function greetingForHour(hour: number) {
   if (hour < 12) return "Good morning";
   if (hour < 17) return "Good afternoon";
@@ -45,8 +31,8 @@ export default function MobileHome() {
   const portfolio = usePortfolioData();
 
   const { name, initials } = useMemo(
-    () => identityFrom(user?.email),
-    [user?.email],
+    () => identityFrom(user?.fullName, user?.email),
+    [user?.fullName, user?.email],
   );
   const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
 

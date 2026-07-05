@@ -21,17 +21,28 @@ export async function GET(request: Request) {
   const localUser = await getUserFromCookies();
   if (localUser?.id) {
     return NextResponse.json({
-      user: { id: localUser.id, email: localUser.email ?? null },
+      user: {
+        id: localUser.id,
+        email: localUser.email ?? null,
+        fullName: localUser.fullName ?? null,
+      },
     });
   }
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
 
-  if (error) {
+  if (error || !data.user) {
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
-  return NextResponse.json({ user: data.user ?? null });
+  const fullName = data.user.user_metadata?.full_name;
+  return NextResponse.json({
+    user: {
+      id: data.user.id,
+      email: data.user.email ?? null,
+      fullName: typeof fullName === "string" ? fullName : null,
+    },
+  });
 }
 

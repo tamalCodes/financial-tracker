@@ -53,9 +53,13 @@ export const getUserFromCookies = async () => {
     const { payload } = await jwtVerify(accessToken, secret);
     const userId = payload.sub;
     if (!userId) return null;
+    // full_name rides along in the JWT user_metadata (set at signup), so /me can
+    // read the display name without an extra profiles query.
+    const meta = (payload.user_metadata ?? {}) as { full_name?: unknown };
     return {
       id: userId,
       email: typeof payload.email === "string" ? payload.email : null,
+      fullName: typeof meta.full_name === "string" ? meta.full_name : null,
       accessToken,
     };
   } catch {

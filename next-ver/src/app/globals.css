@@ -207,6 +207,9 @@ h2 {
   --c-expense-2: #991b1b;
   --c-expense-3: #ef4444;
 
+  /* Food category (amber) text */
+  --c-amber: #b45309;
+
   /* White text on colored CTAs — stays white in both themes */
   --c-onaccent: #ffffff;
 }
@@ -249,6 +252,8 @@ html.dark {
   --c-expense: #f87171;
   --c-expense-2: #f87171;
   --c-expense-3: #f87171;
+
+  --c-amber: #fbbf24;
 }
 
 /*

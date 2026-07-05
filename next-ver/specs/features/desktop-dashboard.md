@@ -92,6 +92,19 @@ All `"use client"`. Mobile path is **untouched**.
     one") and the header **hides the `₹paid / ₹total` pair** (would otherwise read a meaningless
     `₹0 / ₹0`) — `PaidTotal` renders only when `cards.length > 0`. Mobile still guards
     `emiCards.length > 0`, so the empty state never shows there.
+  - Same treatment for **Bills**: the card **always renders on desktop** (DesktopHome drops the
+    `bills.length > 0` gate) so its `+` is reachable; `Bills.tsx` shows an empty-state line ("No bills
+    yet — tap + to add one") at zero. Mobile still guards `bills.length > 0`.
+- **Empty states (fresh account).** Every dashboard card degrades to an inline empty line instead of a
+  blank card so a new user sees guidance, not a void:
+  - `Transactions` — "No payments yet — tap + to log your first spend" (`transactions.length === 0`;
+    shows on mobile + desktop).
+  - `Bills` — "No bills yet — tap + to add one".
+  - `Investments` — per-tab via `EmptyPortfolio`: Holdings "No holdings yet — add an FD or fund…" when
+    `fds` and `funds` are both empty; Active SIPs "No active SIPs yet — set one up…" when `sips` is empty.
+    Portfolio value still reads `₹0`.
+  - `TrendChart` — when every point is zero (`hasData === false`) the chart is replaced by a centered
+    line ("Nothing to chart yet — log some income, spends or investments…") rather than a flat zero line.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
   glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,

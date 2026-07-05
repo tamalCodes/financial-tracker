@@ -140,9 +140,17 @@ export default function Bills({ bills, page, pages, onPageChange, onEdit, loadin
         {onAdd && <AddButton variant="bill" label="Add bill" onClick={onAdd} />}
       </div>
 
-      {loading
-        ? Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`skel-${i}`} />)
-        : bills.map((bill) => <BillRow key={bill.id} bill={bill} onEdit={onEdit} />)}
+      {loading ? (
+        Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`skel-${i}`} />)
+      ) : bills.length === 0 ? (
+        <div style={{ borderTop: "1px solid var(--c-field)", padding: "18px 1px", textAlign: "center" }}>
+          <span style={{ font: `500 13px ${BODY}`, color: "var(--c-muted)" }}>
+            No bills yet — tap + to add one
+          </span>
+        </div>
+      ) : (
+        bills.map((bill) => <BillRow key={bill.id} bill={bill} onEdit={onEdit} />)
+      )}
 
       {!loading && pages > 1 && (
         <div

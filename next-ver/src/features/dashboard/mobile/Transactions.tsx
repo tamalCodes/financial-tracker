@@ -53,6 +53,14 @@ export default function Transactions({
 
   const rows = (
     <>
+      {!loading && transactions.length === 0 && (
+        <div style={{ borderTop: "1px solid var(--c-field)", padding: "18px 1px", textAlign: "center" }}>
+          <span style={{ font: `500 13px ${BODY}`, color: "var(--c-muted)" }}>
+            No payments yet — tap + to log your first spend
+          </span>
+        </div>
+      )}
+
       {loading &&
         Array.from({ length: 6 }).map((_, i) => (
           <div

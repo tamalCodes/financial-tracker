@@ -135,6 +135,8 @@ export const portfolioTotalSchema = z.object({ value: amount });
 export const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  // Full name (D-A) — shown as the greeting/first name + avatar initials. Required at signup.
+  fullName: z.string().trim().min(1).max(80),
   openingBalance: amount
     .refine((n) => n >= 0, { message: "openingBalance must be ≥ 0" })
     .optional()

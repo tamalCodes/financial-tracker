@@ -169,6 +169,11 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
     () => series.map((p) => ({ ...p, label: monthShort(p.month) })),
     [series]
   );
+  // No point plotting a flat zero line — show an encouraging empty state instead.
+  const hasData = useMemo(
+    () => data.some((d) => d.earned > 0 || d.spent > 0 || d.invested > 0),
+    [data]
+  );
 
   return (
     <div
@@ -226,6 +231,8 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
           <Centered text="Couldn’t load the trend." />
         ) : loading ? (
           <Centered text="Loading trend…" />
+        ) : !hasData ? (
+          <Centered text="Nothing to chart yet — log some income, spends or investments and your trend will grow here." />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
@@ -284,9 +291,12 @@ function Centered({ text }: { text: string }) {
         justifyContent: "center",
         font: `500 13px ${BODY}`,
         color: "var(--c-muted)",
+        textAlign: "center",
+        padding: "0 24px",
+        lineHeight: 1.5,
       }}
     >
-      {text}
+      <span style={{ maxWidth: 340 }}>{text}</span>
     </div>
   );
 }

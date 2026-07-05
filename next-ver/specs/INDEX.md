@@ -8,7 +8,7 @@ those files. Keep this index + the spec's file list current when code moves (CLA
 
 | Feature | Spec | Key code files |
 |---|---|---|
-| **Auth** — email/password via Supabase, cookie-based server auth; log out via avatar menu | `features/auth.md` | `src/app/api/auth/*`, `lib/supabase/{auth,cookies}.ts`, `features/auth/AuthContext.tsx`, `src/middleware.ts`, `features/dashboard/mobile/AvatarMenu.tsx` |
+| **Auth** — email/password via Supabase, cookie-based server auth; signup captures full name + bank balance; greeting shows first name; log out via avatar menu; login/signup forced light mode | `features/auth.md` | `src/app/api/auth/*`, `lib/api/schemas.ts`, `lib/supabase/{auth,cookies}.ts`, `features/auth/{AuthContext,identity}.ts(x)`, `features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`, `supabase/migrations/008_profiles_full_name.sql`, `src/middleware.ts`, `features/dashboard/mobile/AvatarMenu.tsx` |
 | **Dashboard** — per-month home: Left-in-bank hero + Earned/Spent/Invested tiles | `features/dashboard.md` | `src/app/api/dashboard/route.ts`, `lib/api/{dashboard,emis}.ts`, `features/dashboard/mobile/*`, `features/dashboard/hooks/useDashboardData.ts` |
 | **Expenses** — log spend ("Recent payments"), edit/delete | `features/expenses.md` | `src/app/api/expenses/route.ts`, `lib/api/{dashboard,schemas}.ts`, `features/dashboard/mobile/{AddSheet,EditSheet,AmountField,CatPill,Transactions,useFinance}.tsx` |
 | **Credits** — record income → Earned tile + Left-in-bank | `features/credits.md` | `src/app/api/credits/route.ts`, `lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,useFinance}.tsx` |

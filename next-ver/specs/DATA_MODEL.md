@@ -1,8 +1,9 @@
 # DATA_MODEL — next-ver
 
-Post **mobile redesign**. Migrations `supabase/migrations/001..005`:
+Post **mobile redesign**. Migrations `supabase/migrations/001..008`:
 `001_mobile_redesign`, `002_profiles_opening_balance`, `003_rls`, `004_expense_tag`,
-`005_bill_emi`. Schema in `supabase/schema.sql`. Plan:
+`005_bill_emi`, `006_perf_leftinbank_sum`, `007_bills_autopaid_pagination`,
+`008_profiles_full_name`. Schema in `supabase/schema.sql`. Plan:
 [features/mobile-redesign.md](./features/mobile-redesign.md). All tables are owned per-user
 via `user_id`.
 
@@ -33,9 +34,12 @@ leftInBank(month) = opening_balance + Σ_{m ≤ month} ( earned_m − spent_m �
 - **No carry-forward** (credits/expenses no longer copy rows; `carry_forward`/`carried_from_month`
   columns retained but unused).
 
-### `profiles` — per-user profile (migration 002)
-`user_id (PK), opening_balance numeric default 0, …`. `opening_balance` is captured once at
-signup and feeds the cumulative Left-in-bank base (D16). Not a monthly mutation target.
+### `profiles` — per-user profile (migrations 002, 008)
+`user_id (PK), opening_balance numeric default 0, full_name text, …`. `opening_balance` is
+captured once at signup and feeds the cumulative Left-in-bank base (D16). `full_name`
+(migration 008) is captured at signup too — it drives the greeting first name + avatar
+initials and is also mirrored in the JWT `user_metadata` so `/me` needs no query. Both are
+seeded by the `handle_new_user` trigger from `raw_user_meta_data`. Not monthly mutation targets.
 
 ## Tables
 

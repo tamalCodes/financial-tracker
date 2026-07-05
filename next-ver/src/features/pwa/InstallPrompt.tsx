@@ -105,21 +105,35 @@ export default function InstallPrompt() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-surface border border-line bg-surface/80 p-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-indigo-500/10 text-indigo-500">
+      <div
+        className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-surface p-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl"
+        style={{
+          background: "var(--c-glass-strong)",
+          border: "1px solid var(--c-line)",
+        }}
+      >
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control"
+          style={{ background: "var(--c-accent-bg)", color: "var(--c-accent-2)" }}
+        >
           <Download className="h-5 w-5" />
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-ink">Install Financial Tracker</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--c-ink)" }}>
+            Install Financial Tracker
+          </p>
           {platform === "ios" ? (
-            <p className="mt-0.5 flex items-center gap-1 text-xs text-muted">
+            <p
+              className="mt-0.5 flex items-center gap-1 text-xs"
+              style={{ color: "var(--c-muted)" }}
+            >
               Tap
               <Share className="inline h-3.5 w-3.5" aria-label="the Share button" />
               then &ldquo;Add to Home Screen&rdquo;
             </p>
           ) : (
-            <p className="mt-0.5 text-xs text-muted">
+            <p className="mt-0.5 text-xs" style={{ color: "var(--c-muted)" }}>
               Add it to your home screen for quick access, offline.
             </p>
           )}
@@ -129,7 +143,8 @@ export default function InstallPrompt() {
           <button
             type="button"
             onClick={install}
-            className="shrink-0 rounded-control bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            className="shrink-0 rounded-control px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+            style={{ background: "var(--c-ink)", color: "var(--c-surface)" }}
           >
             Install
           </button>
@@ -139,7 +154,8 @@ export default function InstallPrompt() {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss install prompt"
-          className="-mr-1 shrink-0 rounded-lg p-1.5 text-faint transition-colors hover:bg-slate-100 hover:text-body"
+          className="-mr-1 shrink-0 rounded-lg p-1.5 transition-colors hover:opacity-70"
+          style={{ color: "var(--c-muted)" }}
         >
           <X className="h-4 w-4" />
         </button>

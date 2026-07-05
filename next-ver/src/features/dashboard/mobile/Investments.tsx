@@ -77,6 +77,16 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
+function EmptyPortfolio({ text }: { text: string }) {
+  return (
+    <div style={{ borderTop: "1px solid var(--c-field)", padding: "22px 1px", textAlign: "center" }}>
+      <span style={{ font: `500 13px ${BODY}`, color: "var(--c-muted)", maxWidth: 280, display: "inline-block", lineHeight: 1.5 }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
 export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill, onAdd }: Props) {
   const [tab, setTab] = useState<"holdings" | "sips">("holdings");
 
@@ -147,6 +157,9 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
           </div>
         </div>
       ) : tab === "holdings" ? (
+        fds.length === 0 && funds.length === 0 ? (
+          <EmptyPortfolio text="No holdings yet — add an FD or fund to start building your portfolio" />
+        ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
             <span style={SECTION_LABEL}>Fixed Deposits</span>
@@ -189,6 +202,9 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
             ))}
           </div>
         </div>
+        )
+      ) : sips.length === 0 ? (
+        <EmptyPortfolio text="No active SIPs yet — set one up to invest automatically each month" />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
           <span style={SECTION_LABEL}>Active SIPs</span>

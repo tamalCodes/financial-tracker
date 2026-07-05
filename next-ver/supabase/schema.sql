@@ -124,6 +124,7 @@ create table if not exists public.portfolio_totals (
 create table if not exists public.profiles (
   user_id         uuid primary key references auth.users (id) on delete cascade,
   opening_balance numeric not null default 0,
+  full_name       text,  -- captured at signup; drives greeting first name + initials (migration 008)
   created_at      timestamptz not null default now()
 );
 
@@ -148,9 +149,12 @@ create table if not exists public.monthly_balances (
 -- auth.uid() resolves; routes additionally scope by user_id (belt-and-suspenders).
 
 -- profiles seeded at signup by a SECURITY DEFINER trigger (bypasses RLS, runs before
--- the user has a session). Opening balance comes from auth user metadata:
+-- the user has a session). Opening balance + full name come from auth user metadata
+-- (migration 008 for full_name):
 --   create function public.handle_new_user() ... security definer:
---     insert into public.profiles (user_id, opening_balance)
---     values (new.id, coalesce((new.raw_user_meta_data->>'opening_balance')::numeric, 0));
+--     insert into public.profiles (user_id, opening_balance, full_name)
+--     values (new.id,
+--             coalesce((new.raw_user_meta_data->>'opening_balance')::numeric, 0),
+--             nullif(trim(new.raw_user_meta_data->>'full_name'), ''));
 --   create trigger on_auth_user_created after insert on auth.users
 --     for each row execute function public.handle_new_user();

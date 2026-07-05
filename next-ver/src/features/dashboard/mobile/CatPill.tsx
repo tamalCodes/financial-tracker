@@ -30,14 +30,15 @@ export default function CatPill({
     ? {
         ...base,
         color: cat.text,
-        background: `linear-gradient(135deg,rgba(${cat.rgb},0.30),rgba(${cat.rgb},0.15))`,
-        border: `1px solid rgba(${cat.rgb},0.50)`,
+        background: `linear-gradient(135deg,rgba(${cat.rgb},0.34),rgba(${cat.rgb},0.16))`,
+        border: `1px solid rgba(${cat.rgb},0.55)`,
+        boxShadow: `0 2px 10px -4px rgba(${cat.rgb},0.55)`,
       }
     : {
         ...base,
         color: "var(--c-body-2)",
-        background: "var(--c-surface)",
-        border: "1px solid var(--c-line)",
+        background: "var(--c-field)",
+        border: "1px solid var(--c-line-strong)",
       };
   return (
     <button type="button" onClick={onSelect} style={style}>

@@ -14,6 +14,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [openingBalance, setOpeningBalance] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
       if (isLogin) {
         await signIn(email, password);
       } else {
-        await signUp(email, password, Number(openingBalance) || 0);
+        await signUp(email, password, fullName.trim(), Number(openingBalance) || 0);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -62,6 +63,27 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {!isLogin && (
+              <div>
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Full name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  autoComplete="name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base text-slate-900 placeholder:text-slate-400"
+                  placeholder="Jane Doe"
+                />
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor="email"
@@ -75,7 +97,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base"
+                className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base text-slate-900 placeholder:text-slate-400"
                 placeholder="you@example.com"
               />
             </div>
@@ -95,7 +117,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base"
+                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base text-slate-900 placeholder:text-slate-400"
                   placeholder="Enter your password"
                 />
                 <button
@@ -123,12 +145,12 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 </label>
                 <input
                   id="openingBalance"
-                  type="number"
-                  min={0}
+                  type="text"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   value={openingBalance}
-                  onChange={(e) => setOpeningBalance(e.target.value)}
-                  className="relative w-full px-4 py-3 pr-12 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base"
+                  onChange={(e) => setOpeningBalance(e.target.value.replace(/[^0-9]/g, ""))}
+                  className="relative w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none transition-all text-base text-slate-900 placeholder:text-slate-400"
                   placeholder="e.g. 70000"
                 />
                 <p className="mt-1 text-xs text-slate-500">

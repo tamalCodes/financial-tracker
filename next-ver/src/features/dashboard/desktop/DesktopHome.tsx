@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/features/auth/AuthContext";
+import { identityFrom } from "@/features/auth/identity";
 import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
 import { useTrendData } from "@/features/dashboard/hooks/useTrendData";
 import AddSheet from "@/features/dashboard/mobile/AddSheet";
@@ -19,21 +20,6 @@ import { useFinance } from "@/features/dashboard/mobile/useFinance";
 import { usePortfolioData } from "@/features/dashboard/mobile/usePortfolioData";
 import { useMemo } from "react";
 import TrendChart from "./TrendChart";
-
-// Identity for the greeting — mirrors MobileHome (derive name/initials from the email).
-function identityFrom(email: string | null | undefined) {
-  const local = (email ?? "").split("@")[0] ?? "";
-  const parts = local.split(/[._-]+/).filter(Boolean);
-  const name = parts.length
-    ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ")
-    : "there";
-  const initials =
-    parts
-      .map((p) => p.charAt(0).toUpperCase())
-      .join("")
-      .slice(0, 2) || "U";
-  return { name, initials };
-}
 
 function greetingForHour(hour: number) {
   if (hour < 12) return "Good morning";
@@ -59,8 +45,8 @@ export default function DesktopHome() {
   const tx = useInfiniteExpenses(f.currentMonth, f.derived.count);
 
   const { name, initials } = useMemo(
-    () => identityFrom(user?.email),
-    [user?.email],
+    () => identityFrom(user?.fullName, user?.email),
+    [user?.fullName, user?.email],
   );
   const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
 
@@ -228,19 +214,19 @@ export default function DesktopHome() {
               minHeight: 0,
             }}
           >
-            {(f.loading || f.bills.length > 0) && (
-              <Bills
-                bills={f.bills}
-                page={f.billPage}
-                pages={f.billPages}
-                onPageChange={f.setBillPage}
-                onEdit={f.openBillEdit}
-                loading={f.loading}
-                onAdd={() =>
-                  f.openSheet("expense", { isBill: true, billKind: "once" })
-                }
-              />
-            )}
+            {/* Bills always renders on desktop (like EMIs) so its "+" is reachable;
+                empty state lives inside the card. Mobile still hides it at zero. */}
+            <Bills
+              bills={f.bills}
+              page={f.billPage}
+              pages={f.billPages}
+              onPageChange={f.setBillPage}
+              onEdit={f.openBillEdit}
+              loading={f.loading}
+              onAdd={() =>
+                f.openSheet("expense", { isBill: true, billKind: "once" })
+              }
+            />
             <Emis
               cards={f.emiCards}
               summary={f.emisSummary}

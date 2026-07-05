@@ -37,7 +37,7 @@ export interface Category {
 }
 
 export const CATS: Category[] = [
-  { key: "food", label: "Food", rgb: "245,158,11", text: "#b45309" },
+  { key: "food", label: "Food", rgb: "245,158,11", text: "var(--c-amber)" },
   { key: "shopping", label: "Shopping", rgb: "139,92,246", text: "var(--c-violet)" },
   { key: "other", label: "Other", rgb: "100,116,139", text: "var(--c-body)" },
 ];

@@ -114,9 +114,9 @@ export default function AddSheet({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(15,23,42,0.40)",
-        backdropFilter: "blur(3px)",
-        WebkitBackdropFilter: "blur(3px)",
+        background: "rgba(2,6,14,0.62)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
         display: "flex",
         alignItems: isDesktop ? "center" : "flex-end",
         justifyContent: "center",
@@ -131,10 +131,11 @@ export default function AddSheet({
           maxHeight: isDesktop ? "calc(100vh - 48px)" : undefined,
           overflowY: isDesktop ? "auto" : undefined,
           background: "var(--c-surface)",
+          border: "1px solid var(--c-line-strong)",
           borderRadius: isDesktop ? 24 : "30px 30px 0 0",
           boxShadow: isDesktop
-            ? "0 24px 70px -20px rgba(15,23,42,0.45)"
-            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
+            ? "0 24px 80px -12px rgba(0,0,0,0.65)"
+            : "0 -18px 70px -12px rgba(0,0,0,0.65)",
         }}
       >
         <div
