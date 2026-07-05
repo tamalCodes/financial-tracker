@@ -54,7 +54,7 @@ export default function MobileHome() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#f1f5f9",
+        background: "var(--c-field)",
         display: "flex",
         justifyContent: "center",
       }}

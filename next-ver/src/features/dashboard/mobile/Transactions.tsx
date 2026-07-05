@@ -63,7 +63,7 @@ export default function Transactions({
               justifyContent: "space-between",
               gap: 10,
               padding: "11px 1px",
-              borderTop: "1px solid #f1f5f9",
+              borderTop: "1px solid var(--c-field)",
             }}
           >
             <div style={{ display: "flex", flexDirection: "column", gap: 7, minWidth: 0, flex: 1 }}>
@@ -87,9 +87,9 @@ export default function Transactions({
             justifyContent: "space-between",
             gap: 10,
             padding: "11px 1px",
-            borderTop: "1px solid #f1f5f9",
+            borderTop: "1px solid var(--c-field)",
             border: "none",
-            borderTopColor: "#f1f5f9",
+            borderTopColor: "var(--c-field)",
             borderTopStyle: "solid",
             borderTopWidth: 1,
             background: "transparent",
@@ -103,7 +103,7 @@ export default function Transactions({
             <span
               style={{
                 font: `600 14px ${BODY}`,
-                color: "#0f172a",
+                color: "var(--c-ink)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -112,7 +112,7 @@ export default function Transactions({
               {tx.merchant}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-              <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{tx.date}</span>
+              <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>{tx.date}</span>
               {tx.tag && (
                 <span
                   style={{
@@ -137,7 +137,7 @@ export default function Transactions({
             style={{
               flex: "none",
               font: `600 14px ${DISPLAY}`,
-              color: "#b91c1c",
+              color: "var(--c-expense)",
               fontVariantNumeric: "tabular-nums",
             }}
           >
@@ -159,7 +159,7 @@ export default function Transactions({
         flex: "none",
       }}
     >
-      <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+      <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "var(--c-ink)" }}>
         Recent payments
       </span>
       {onAdd && <AddButton variant="expense" label="Add expense" onClick={onAdd} />}
@@ -172,8 +172,8 @@ export default function Transactions({
       <div
         style={{
           fontFamily: BODY,
-          background: "#fff",
-          border: "1px solid #e2e8f0",
+          background: "var(--c-surface)",
+          border: "1px solid var(--c-line)",
           borderRadius: 28,
           boxShadow: CARD_SHADOW,
           padding: "22px 22px 14px",
@@ -192,7 +192,7 @@ export default function Transactions({
         >
           {rows}
           {loadingMore && (
-            <div style={{ padding: "12px 0", textAlign: "center", font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
+            <div style={{ padding: "12px 0", textAlign: "center", font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>
               Loading…
             </div>
           )}
@@ -206,8 +206,8 @@ export default function Transactions({
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: "22px 22px 10px",
@@ -228,7 +228,7 @@ export default function Transactions({
             gap: 10,
             paddingTop: 12,
             marginTop: 4,
-            borderTop: "1px solid #f1f5f9",
+            borderTop: "1px solid var(--c-field)",
           }}
         >
           <PagerButton
@@ -236,7 +236,7 @@ export default function Transactions({
             disabled={page <= 1}
             onClick={() => onPageChange(page - 1)}
           />
-          <span style={{ font: `600 11.5px ${DISPLAY}`, color: "#94a3b8", fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ font: `600 11.5px ${DISPLAY}`, color: "var(--c-muted)", fontVariantNumeric: "tabular-nums" }}>
             {page} / {pages}
           </span>
           <PagerButton
@@ -266,9 +266,9 @@ function PagerButton({
       onClick={onClick}
       style={{
         font: `600 12px ${DISPLAY}`,
-        color: disabled ? "#cbd5e1" : "#4f46e5",
-        background: disabled ? "#f8fafc" : "rgba(79,70,229,0.08)",
-        border: `1px solid ${disabled ? "#eef2f7" : "rgba(79,70,229,0.22)"}`,
+        color: disabled ? "var(--c-line-strong)" : "var(--c-accent-2)",
+        background: disabled ? "var(--c-faint)" : "rgba(79,70,229,0.08)",
+        border: `1px solid ${disabled ? "var(--c-bg1)" : "rgba(79,70,229,0.22)"}`,
         borderRadius: 999,
         padding: "6px 16px",
         cursor: disabled ? "default" : "pointer",

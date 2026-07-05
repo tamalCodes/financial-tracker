@@ -31,7 +31,7 @@ interface Props {
 
 const FIELD_LABEL: React.CSSProperties = {
   font: `500 13px ${BODY}`,
-  color: "#475569",
+  color: "var(--c-body)",
 };
 
 // Tag as a chip: an "+ Add tag" pill when empty, an editable indigo chip once set.
@@ -76,14 +76,14 @@ function TagField({
           placeholder="Type a tag…"
           style={{
             width: "100%",
-            border: "1px solid #818cf8",
+            border: "1px solid var(--c-accent-3)",
             borderRadius: 10,
             padding: "0 15px",
             height: 40,
             fontFamily: BODY,
             fontSize: 15,
-            color: "#0f172a",
-            background: "#f8fafc",
+            color: "var(--c-ink)",
+            background: "var(--c-faint)",
             outline: "none",
           }}
         />
@@ -108,7 +108,7 @@ function TagField({
             fontWeight: 600,
             fontSize: 13,
             lineHeight: 1,
-            color: "#4338ca",
+            color: "var(--c-accent)",
             background:
               "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))",
             border: "1px solid rgba(99,102,241,0.45)",
@@ -129,7 +129,7 @@ function TagField({
               borderRadius: 7,
               border: "none",
               background: "rgba(99,102,241,0.15)",
-              color: "#4338ca",
+              color: "var(--c-accent)",
               fontSize: 11,
               display: "flex",
               alignItems: "center",
@@ -160,9 +160,9 @@ function TagField({
         fontWeight: 600,
         fontSize: 13,
         lineHeight: 1,
-        color: "#64748b",
-        background: "#fff",
-        border: "1px dashed #cbd5e1",
+        color: "var(--c-body-2)",
+        background: "var(--c-surface)",
+        border: "1px dashed var(--c-line-strong)",
       }}
     >
       <span style={{ fontSize: 15, lineHeight: 1, marginTop: -1 }}>+</span>
@@ -219,7 +219,7 @@ export default function EditSheet({
         style={{
           width: 460,
           maxWidth: "100%",
-          background: "#fff",
+          background: "var(--c-surface)",
           borderRadius: "30px 30px 0 0",
           boxShadow: "0 -18px 60px -18px rgba(15,23,42,0.45)",
         }}
@@ -232,12 +232,12 @@ export default function EditSheet({
         >
           {/* Grabber */}
           <div style={{ display: "flex", justifyContent: "center", padding: "4px 0 16px" }}>
-            <span style={{ width: 42, height: 5, borderRadius: 999, background: "#e2e8f0" }} />
+            <span style={{ width: 42, height: 5, borderRadius: 999, background: "var(--c-line)" }} />
           </div>
 
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "#0f172a" }}>
+            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "var(--c-ink)" }}>
               Edit payment
             </span>
             <button
@@ -249,9 +249,9 @@ export default function EditSheet({
                 width: 36,
                 height: 36,
                 borderRadius: 12,
-                border: "1px solid #e2e8f0",
-                background: "#f8fafc",
-                color: "#64748b",
+                border: "1px solid var(--c-line)",
+                background: "var(--c-faint)",
+                color: "var(--c-body-2)",
                 fontSize: 16,
                 display: "flex",
                 alignItems: "center",
@@ -287,14 +287,14 @@ export default function EditSheet({
               placeholder="What was this for?"
               style={{
                 width: "100%",
-                border: `1px solid ${titleFocus ? "#818cf8" : "#e2e8f0"}`,
+                border: `1px solid ${titleFocus ? "var(--c-accent-3)" : "var(--c-line)"}`,
                 borderRadius: 14,
                 padding: "0 15px",
                 height: 50,
                 fontFamily: BODY,
                 fontSize: 16,
-                color: "#0f172a",
-                background: "#f8fafc",
+                color: "var(--c-ink)",
+                background: "var(--c-faint)",
                 outline: "none",
               }}
             />
@@ -330,8 +330,8 @@ export default function EditSheet({
                 height: 54,
                 border: "none",
                 borderRadius: 16,
-                background: "#4f46e5",
-                color: "#fff",
+                background: "var(--c-accent-2)",
+                color: "var(--c-onaccent)",
                 fontFamily: DISPLAY,
                 fontWeight: 600,
                 fontSize: 15.5,
@@ -355,9 +355,9 @@ export default function EditSheet({
               height: 48,
               marginTop: 10,
               borderRadius: 16,
-              border: "1px solid #e2e8f0",
-              background: "#fff",
-              color: "#b91c1c",
+              border: "1px solid var(--c-line)",
+              background: "var(--c-surface)",
+              color: "var(--c-expense)",
               fontFamily: DISPLAY,
               fontWeight: 600,
               fontSize: 14.5,

@@ -4,6 +4,31 @@ The shared visual language for the app's UI and the **source of truth** for colo
 components. Before styling a new screen or dialog, **reuse the primitives in
 `src/features/shared/ui/`** rather than hand-rolling Tailwind, and pull color/type from here.
 
+> Reverse-engineered from `src/app/globals.css` (theme tokens), `src/features/theme/ThemeContext.tsx`,
+> `src/features/dashboard/mobile/AvatarMenu.tsx`.
+
+## Dark mode (theme tokens)
+
+The dashboard components style with **inline CSS `var(--c-*)` tokens**, not raw hex. All color
+tokens are declared twice in `globals.css`: `:root` (light — values equal the historical hex, so
+light is unchanged) and `html.dark` (dark overrides). A single `dark` class on `<html>` flips the
+whole app.
+
+- **Provider:** `ThemeContext.tsx` (`ThemeProvider` + `useTheme`). Preference order: explicit user
+  choice in `localStorage['ft-theme']` → OS `prefers-color-scheme`. `toggle()` collapses "system"
+  to an explicit light/dark. It only toggles the `<html>.dark` class; tokens do the rest.
+- **Anti-flash:** `THEME_SCRIPT` (exported from `ThemeContext`) is injected as a blocking inline
+  `<script>` in `layout.tsx` `<head>`; it sets the class before paint. `<html suppressHydrationWarning>`.
+- **Toggle UI:** in `AvatarMenu` (avatar dropdown, shared by mobile `GreetingHeader` and
+  `DesktopHome`) — Dark mode switch + Log out.
+- **Token families** (`--c-*`): surfaces (`surface`, `glass`, `glass-strong`, `bg1/bg2`), text
+  (`ink`, `ink-2`, `body`, `body-2`, `muted`), lines (`line`, `line-strong`, `field`, `faint`),
+  accent indigo (`accent`, `accent-2..4`, `accent-bg`), `violet-*`, `credit-*`, `expense-*`, plus
+  `onaccent` (white text on colored CTAs — stays white in both themes).
+- **Adding new UI:** use `var(--c-*)` for any color that must adapt. Never hardcode a slate/white
+  hex inline. `rgba(99,102,241,…)` indigo tints and `rgba(15,23,42,…)` shadows are left literal
+  (they read acceptably on both themes).
+
 > Context: the four transaction modals (expense/credit/investment/starting-balance) had each
 > drifted into its own look (different heading sizes, `gap-10` vs `gap-5`, raw checkbox vs
 > toggle, missing max-width). They were unified onto the primitives below. Keep them unified.

@@ -38,8 +38,8 @@ export interface Category {
 
 export const CATS: Category[] = [
   { key: "food", label: "Food", rgb: "245,158,11", text: "#b45309" },
-  { key: "shopping", label: "Shopping", rgb: "139,92,246", text: "#6d28d9" },
-  { key: "other", label: "Other", rgb: "100,116,139", text: "#475569" },
+  { key: "shopping", label: "Shopping", rgb: "139,92,246", text: "var(--c-violet)" },
+  { key: "other", label: "Other", rgb: "100,116,139", text: "var(--c-body)" },
 ];
 
 export const catOf = (key: CategoryKey): Category =>

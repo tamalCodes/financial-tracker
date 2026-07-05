@@ -88,6 +88,9 @@
 
 body {
   font-family: var(--font-heading), "Bricolage Grotesque", sans-serif;
+  /* Base page fill so dark mode covers the full viewport (no white flash behind the
+     app's own radial gradient, and correct on overscroll). Tokens flip with .dark. */
+  background: var(--c-bg2);
 }
 
 input,
@@ -153,6 +156,102 @@ h2 {
 }
 
 /*
+ * ===== Theme tokens (light + dark) =====
+ * Components inline these as var(--c-*) so a single `.dark` class on <html> flips the
+ * whole app. Light values equal the original hardcoded hex (zero light regression);
+ * `.dark` overrides invert surfaces/text and lift accents for dark contrast.
+ * Applied by ThemeProvider (src/features/theme/ThemeContext.tsx). Spec: DESIGN_SYSTEM §Dark.
+ */
+:root {
+  /* Page background gradient stops */
+  --c-bg1: #eef2f7;
+  --c-bg2: #e3e8ef;
+
+  /* Surfaces (cards / sheets / pills). Glass = translucent over the page gradient. */
+  --c-surface: #ffffff;
+  --c-glass: rgba(255, 255, 255, 0.6);
+  --c-glass-strong: rgba(255, 255, 255, 0.85);
+
+  /* Text */
+  --c-ink: #0f172a;      /* primary headings / values */
+  --c-ink-2: #334155;    /* strong secondary */
+  --c-body: #475569;     /* body */
+  --c-body-2: #64748b;   /* body secondary */
+  --c-muted: #94a3b8;    /* subtitles / labels */
+
+  /* Lines */
+  --c-line: #e2e8f0;         /* default border */
+  --c-line-strong: #cbd5e1;  /* strong border / faint separator / placeholder */
+  --c-field: #f1f5f9;        /* idle field bg */
+  --c-faint: #f8fafc;        /* faint fill */
+
+  /* Accent (indigo) — text on translucent indigo pills */
+  --c-accent: #4338ca;
+  --c-accent-2: #4f46e5;
+  --c-accent-3: #818cf8;
+  --c-accent-4: #a5b4fc;
+  --c-accent-bg: #eef2ff;    /* indigo-50 flat fill */
+
+  /* Investment (violet) text */
+  --c-violet: #6d28d9;
+  --c-violet-2: #5b21b6;
+  --c-violet-3: #8b5cf6;
+
+  /* Credit (emerald) text */
+  --c-credit: #047857;
+  --c-credit-2: #065f46;
+  --c-credit-3: #10b981;
+
+  /* Expense / danger (red) text */
+  --c-expense: #b91c1c;
+  --c-expense-2: #991b1b;
+  --c-expense-3: #ef4444;
+
+  /* White text on colored CTAs — stays white in both themes */
+  --c-onaccent: #ffffff;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --c-bg1: #10141d;
+  --c-bg2: #0a0d14;
+
+  --c-surface: #171c27;
+  --c-glass: rgba(30, 37, 52, 0.55);
+  --c-glass-strong: rgba(30, 37, 52, 0.78);
+
+  --c-ink: #e8ecf3;
+  --c-ink-2: #cbd3e0;
+  --c-body: #aeb8c9;
+  --c-body-2: #94a0b3;
+  --c-muted: #7c8699;
+
+  --c-line: rgba(255, 255, 255, 0.09);
+  --c-line-strong: #3a4353;
+  --c-field: #1c2230;
+  --c-faint: #191e29;
+
+  --c-accent: #a5b4fc;
+  --c-accent-2: #818cf8;
+  --c-accent-3: #a5b4fc;
+  --c-accent-4: #c7d2fe;
+  --c-accent-bg: rgba(99, 102, 241, 0.16);
+
+  --c-violet: #c4b5fd;
+  --c-violet-2: #c4b5fd;
+  --c-violet-3: #a78bfa;
+
+  --c-credit: #34d399;
+  --c-credit-2: #34d399;
+  --c-credit-3: #34d399;
+
+  --c-expense: #f87171;
+  --c-expense-2: #f87171;
+  --c-expense-3: #f87171;
+}
+
+/*
  * Subtle internal scrollbar for desktop dashboard cards whose bodies scroll
  * (Recent payments, Portfolio). Thin, translucent, appears on the track only on
  * hover — keeps the glass aesthetic (specs/features/desktop-dashboard.md).
@@ -174,4 +273,26 @@ h2 {
 }
 .subtle-scroll:hover::-webkit-scrollbar-thumb {
   background: rgb(15 23 42 / 0.22);
+}
+
+/* Dark-mode fixups for CSS-file utilities whose fills were tuned for a light bg. */
+html.dark .ft-skel {
+  background-color: rgb(255 255 255 / 0.06);
+}
+html.dark .ft-skel {
+  background-image: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 255 255 / 0.08) 50%,
+    rgb(255 255 255 / 0) 100%
+  );
+}
+html.dark .subtle-scroll {
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+html.dark .subtle-scroll::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.14);
+}
+html.dark .subtle-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.24);
 }

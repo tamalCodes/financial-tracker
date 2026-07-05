@@ -4,6 +4,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useInfiniteExpenses } from "@/features/dashboard/hooks/useInfiniteExpenses";
 import { useTrendData } from "@/features/dashboard/hooks/useTrendData";
 import AddSheet from "@/features/dashboard/mobile/AddSheet";
+import AvatarMenu from "@/features/dashboard/mobile/AvatarMenu";
 import BillEditSheet from "@/features/dashboard/mobile/BillEditSheet";
 import Bills from "@/features/dashboard/mobile/Bills";
 import { BODY, DISPLAY } from "@/features/dashboard/mobile/data";
@@ -42,8 +43,6 @@ function greetingForHour(hour: number) {
 
 const INDIGO_PILL =
   "linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.09))";
-const INDIGO_AVATAR =
-  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
 const INDIGO_BADGE =
   "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
 
@@ -71,7 +70,7 @@ export default function DesktopHome() {
         minHeight: "100vh",
         overflowY: "auto",
         background:
-          "radial-gradient(1200px 700px at 50% -200px,#eef2f7,#e3e8ef)",
+          "radial-gradient(1200px 700px at 50% -200px,var(--c-bg1),var(--c-bg2))",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -117,7 +116,7 @@ export default function DesktopHome() {
                 height="21"
                 viewBox="0 0 20 20"
                 fill="none"
-                stroke="#4338ca"
+                stroke="var(--c-accent)"
                 strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -132,12 +131,12 @@ export default function DesktopHome() {
                   fontWeight: 600,
                   fontSize: 19,
                   letterSpacing: "-0.01em",
-                  color: "#0f172a",
+                  color: "var(--c-ink)",
                 }}
               >
                 Overview
               </span>
-              <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>
+              <span style={{ font: `500 12.5px ${BODY}`, color: "var(--c-muted)" }}>
                 {greeting}, {name}
               </span>
             </div>
@@ -146,7 +145,7 @@ export default function DesktopHome() {
             <span
               style={{
                 font: `600 12.5px ${DISPLAY}`,
-                color: "#4338ca",
+                color: "var(--c-accent)",
                 background: INDIGO_PILL,
                 border: "1px solid rgba(99,102,241,0.34)",
                 borderRadius: 999,
@@ -156,22 +155,7 @@ export default function DesktopHome() {
             >
               {f.month}
             </span>
-            <span
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 999,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                font: `600 14px ${DISPLAY}`,
-                color: "#4338ca",
-                background: INDIGO_AVATAR,
-                border: "1px solid rgba(99,102,241,0.45)",
-              }}
-            >
-              {initials}
-            </span>
+            <AvatarMenu initials={initials} size={42} />
           </div>
         </div>
 

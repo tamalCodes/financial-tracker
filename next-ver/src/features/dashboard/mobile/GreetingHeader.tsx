@@ -1,5 +1,6 @@
 "use client";
 
+import AvatarMenu from "./AvatarMenu";
 import { BODY, DISPLAY } from "./data";
 
 // Greeting header — pixel from FinanceDashboard.dc.html (handoff §4).
@@ -13,8 +14,6 @@ interface Props {
 
 const INDIGO_PILL =
   "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))";
-const INDIGO_AVATAR =
-  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
 
 export default function GreetingHeader({
   greeting = "Good evening",
@@ -32,7 +31,7 @@ export default function GreetingHeader({
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ font: `500 12.5px ${BODY}`, color: "#94a3b8" }}>
+        <span style={{ font: `500 12.5px ${BODY}`, color: "var(--c-muted)" }}>
           {greeting}
         </span>
         <span
@@ -41,7 +40,7 @@ export default function GreetingHeader({
             fontWeight: 600,
             fontSize: 19,
             letterSpacing: "-0.01em",
-            color: "#0f172a",
+            color: "var(--c-ink)",
           }}
         >
           {name}
@@ -54,7 +53,7 @@ export default function GreetingHeader({
             alignItems: "center",
             gap: 5,
             font: `600 12px ${DISPLAY}`,
-            color: "#4338ca",
+            color: "var(--c-accent)",
             background: INDIGO_PILL,
             border: "1px solid rgba(99,102,241,0.36)",
             borderRadius: 999,
@@ -64,22 +63,7 @@ export default function GreetingHeader({
         >
           {month}
         </span>
-        <span
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            font: `600 14px ${DISPLAY}`,
-            color: "#4338ca",
-            background: INDIGO_AVATAR,
-            border: "1px solid rgba(99,102,241,0.45)",
-          }}
-        >
-          {initials}
-        </span>
+        <AvatarMenu initials={initials} size={40} />
       </div>
     </div>
   );

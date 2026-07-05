@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/features/auth/AuthContext";
+import { THEME_SCRIPT, ThemeProvider } from "@/features/theme/ThemeContext";
 import ServiceWorkerRegister from "@/features/pwa/ServiceWorkerRegister";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
@@ -51,14 +52,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Set the theme class before paint to avoid a light→dark flash on load. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body
         className={`${bricolageGrotesque.variable} ${geist.variable} ${bricolageGrotesque.className} antialiased`}
       >
-        <AuthProvider>
-          {children}
-          <ServiceWorkerRegister />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+            <ServiceWorkerRegister />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

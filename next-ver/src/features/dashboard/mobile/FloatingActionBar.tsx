@@ -61,7 +61,7 @@ export default function FloatingActionBar({ onOpen }: Props) {
           display: "flex",
           alignItems: "center",
           gap: 10,
-          background: "rgba(255,255,255,0.82)",
+          background: "var(--c-glass-strong)",
           backdropFilter: "blur(18px) saturate(1.8)",
           WebkitBackdropFilter: "blur(18px) saturate(1.8)",
           border: "1px solid rgba(226,232,240,0.95)",
@@ -75,7 +75,7 @@ export default function FloatingActionBar({ onOpen }: Props) {
           onClick={() => onOpen("expense")}
           gradient="linear-gradient(135deg,rgba(239,68,68,0.26),rgba(239,68,68,0.13))"
           border="rgba(239,68,68,0.42)"
-          stroke="#b91c1c"
+          stroke="var(--c-expense)"
         >
           <path d="M10 4v12" />
           <path d="M5 11l5 5 5-5" />
@@ -85,7 +85,7 @@ export default function FloatingActionBar({ onOpen }: Props) {
           onClick={() => onOpen("income")}
           gradient="linear-gradient(135deg,rgba(16,185,129,0.28),rgba(16,185,129,0.14))"
           border="rgba(16,185,129,0.45)"
-          stroke="#047857"
+          stroke="var(--c-credit)"
         >
           <path d="M10 16V4" />
           <path d="M5 9l5-5 5 5" />
@@ -95,7 +95,7 @@ export default function FloatingActionBar({ onOpen }: Props) {
           onClick={() => onOpen("investment")}
           gradient="linear-gradient(135deg,rgba(139,92,246,0.26),rgba(139,92,246,0.13))"
           border="rgba(139,92,246,0.42)"
-          stroke="#6d28d9"
+          stroke="var(--c-violet)"
         >
           <path d="M3 14l5-5 3 3 6-7" />
           <path d="M14 5h4v4" />

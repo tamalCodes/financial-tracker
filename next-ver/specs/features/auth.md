@@ -31,6 +31,9 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 ## UI / components
 `AuthContext` (`"use client"`) — `{ user, loading, signIn, signUp, signOut }`; `refreshUser`
 calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
+**Log out** is triggered from `AvatarMenu` (`features/dashboard/mobile/AvatarMenu.tsx`) — the
+avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) headers. It calls
+`signOut()` then `router.replace("/login")`. The avatar was previously inert (no logout path).
 
 ## Acceptance criteria
 - [ ] Login/signup/logout set/clear the Supabase session cookie.

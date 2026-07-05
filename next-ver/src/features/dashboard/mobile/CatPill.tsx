@@ -35,9 +35,9 @@ export default function CatPill({
       }
     : {
         ...base,
-        color: "#64748b",
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        color: "var(--c-body-2)",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
       };
   return (
     <button type="button" onClick={onSelect} style={style}>
@@ -48,7 +48,7 @@ export default function CatPill({
           width: 8,
           height: 8,
           borderRadius: 999,
-          background: selected ? cat.text : "#cbd5e1",
+          background: selected ? cat.text : "var(--c-line-strong)",
         }}
       />
       {cat.label}

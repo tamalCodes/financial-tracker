@@ -10,9 +10,9 @@ import type { EmiProgress } from "@/features/dashboard/types/types";
 function PaidTotal({ paid, total }: { paid: string; total: string }) {
   return (
     <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 18, fontVariantNumeric: "tabular-nums" }}>
-      <span style={{ color: "#047857" }}>₹{paid.toUpperCase()}</span>
-      <span style={{ color: "#cbd5e1", margin: "0 5px", fontWeight: 500 }}>/</span>
-      <span style={{ color: "#94a3b8" }}>₹{total.toUpperCase()}</span>
+      <span style={{ color: "var(--c-credit)" }}>₹{paid.toUpperCase()}</span>
+      <span style={{ color: "var(--c-line-strong)", margin: "0 5px", fontWeight: 500 }}>/</span>
+      <span style={{ color: "var(--c-muted)" }}>₹{total.toUpperCase()}</span>
     </span>
   );
 }
@@ -52,30 +52,30 @@ function EmiRow({ card, onPay, onEdit }: { card: EmiCard; onPay: (id: string) =>
         gap: 8,
         padding: "12px 14px",
         borderRadius: 16,
-        background: "#f8fafc",
-        border: "1px solid #eef2ff",
+        background: "var(--c-faint)",
+        border: "1px solid var(--c-accent-bg)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span style={{ font: `600 13.5px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <span style={{ font: `600 13.5px ${BODY}`, color: "var(--c-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {emi.name}
         </span>
-        <span style={{ font: `600 12px ${DISPLAY}`, color: cleared ? "#047857" : "#4338ca" }}>
+        <span style={{ font: `600 12px ${DISPLAY}`, color: cleared ? "var(--c-credit)" : "var(--c-accent)" }}>
           {cleared ? "Cleared" : `${emi.paidCount} of ${emi.months} paid`}
         </span>
       </div>
-      <div style={{ height: 6, borderRadius: 999, background: "#e2e8f0", overflow: "hidden" }}>
+      <div style={{ height: 6, borderRadius: 999, background: "var(--c-line)", overflow: "hidden" }}>
         <div
           style={{
             width: `${pct}%`,
             height: "100%",
             borderRadius: 999,
-            background: cleared ? "#047857" : "#4f46e5",
+            background: cleared ? "var(--c-credit)" : "var(--c-accent-2)",
           }}
         />
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8", fontVariantNumeric: "tabular-nums" }}>
+        <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)", fontVariantNumeric: "tabular-nums" }}>
           Paid ₹{fmt(emi.paidAmount)} / ₹{fmt(emi.total)}
         </span>
         {dueNow ? (
@@ -89,8 +89,8 @@ function EmiRow({ card, onPay, onEdit }: { card: EmiCard; onPay: (id: string) =>
               fontFamily: DISPLAY,
               fontWeight: 600,
               fontSize: 12.5,
-              color: "#4338ca",
-              background: "#eef2ff",
+              color: "var(--c-accent)",
+              background: "var(--c-accent-bg)",
               border: "none",
               borderRadius: 999,
               padding: "0 16px",
@@ -100,7 +100,7 @@ function EmiRow({ card, onPay, onEdit }: { card: EmiCard; onPay: (id: string) =>
             Pay ₹{fmt(emi.monthly)}
           </button>
         ) : (
-          <span style={{ font: `500 11.5px ${BODY}`, color: cleared ? "#047857" : "#64748b", fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ font: `500 11.5px ${BODY}`, color: cleared ? "var(--c-credit)" : "var(--c-body-2)", fontVariantNumeric: "tabular-nums" }}>
             {cleared ? "No EMI due" : `₹${fmt(emi.remainingAmount)} left`}
           </span>
         )}
@@ -114,8 +114,8 @@ export default function Emis({ cards, summary, onPay, onEdit, loading, onAdd }: 
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: "22px 22px 20px",
@@ -125,7 +125,7 @@ export default function Emis({ cards, summary, onPay, onEdit, loading, onAdd }: 
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 14 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "var(--c-ink)" }}>
           EMIs
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
@@ -144,8 +144,8 @@ export default function Emis({ cards, summary, onPay, onEdit, loading, onAdd }: 
             <Skeleton key={`skel-${i}`} width="100%" height={78} radius={16} />
           ))
         ) : cards.length === 0 ? (
-          <div style={{ borderTop: "1px solid #f1f5f9", padding: "18px 1px", textAlign: "center" }}>
-            <span style={{ font: `500 13px ${BODY}`, color: "#94a3b8" }}>
+          <div style={{ borderTop: "1px solid var(--c-field)", padding: "18px 1px", textAlign: "center" }}>
+            <span style={{ font: `500 13px ${BODY}`, color: "var(--c-muted)" }}>
               No EMIs yet — tap + to add one
             </span>
           </div>

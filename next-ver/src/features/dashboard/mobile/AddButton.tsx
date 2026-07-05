@@ -11,22 +11,22 @@ const VARIANTS: Record<AddVariant, { gradient: string; border: string; stroke: s
   expense: {
     gradient: "linear-gradient(135deg,rgba(239,68,68,0.22),rgba(239,68,68,0.11))",
     border: "rgba(239,68,68,0.40)",
-    stroke: "#b91c1c",
+    stroke: "var(--c-expense)",
   },
   income: {
     gradient: "linear-gradient(135deg,rgba(16,185,129,0.24),rgba(16,185,129,0.12))",
     border: "rgba(16,185,129,0.42)",
-    stroke: "#047857",
+    stroke: "var(--c-credit)",
   },
   investment: {
     gradient: "linear-gradient(135deg,rgba(139,92,246,0.22),rgba(139,92,246,0.11))",
     border: "rgba(139,92,246,0.40)",
-    stroke: "#6d28d9",
+    stroke: "var(--c-violet)",
   },
   bill: {
     gradient: "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))",
     border: "rgba(99,102,241,0.38)",
-    stroke: "#4338ca",
+    stroke: "var(--c-accent)",
   },
 };
 

@@ -20,9 +20,9 @@ const CARD_SHADOW =
 
 // Money-model colors (DESIGN_SYSTEM): credit=green, expense=red, investment=purple.
 const SERIES = [
-  { key: "earned", label: "Earned", color: "#10b981" },
-  { key: "spent", label: "Spent", color: "#ef4444" },
-  { key: "invested", label: "Invested", color: "#8b5cf6" },
+  { key: "earned", label: "Earned", color: "var(--c-credit-3)" },
+  { key: "spent", label: "Spent", color: "var(--c-expense-3)" },
+  { key: "invested", label: "Invested", color: "var(--c-violet-3)" },
 ] as const;
 
 // 'YYYY-MM-01' → 'Jun' (or 'Jun 26' at year boundaries would be nicer, but the axis
@@ -49,7 +49,7 @@ function WindowToggle({
         display: "flex",
         gap: 2,
         padding: 2,
-        background: "#f1f5f9",
+        background: "var(--c-field)",
         borderRadius: 999,
       }}
     >
@@ -65,8 +65,8 @@ function WindowToggle({
               borderRadius: 999,
               padding: "5px 13px",
               font: `600 12px ${DISPLAY}`,
-              color: active ? "#4338ca" : "#94a3b8",
-              background: active ? "#fff" : "transparent",
+              color: active ? "var(--c-accent)" : "var(--c-muted)",
+              background: active ? "var(--c-surface)" : "transparent",
               boxShadow: active ? "0 1px 2px rgba(15,23,42,0.10)" : "none",
               transition: "color 120ms",
             }}
@@ -98,17 +98,17 @@ function ChartTooltip({
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.96)",
+        background: "var(--c-glass-strong)",
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
-        border: "1px solid #e2e8f0",
+        border: "1px solid var(--c-line)",
         borderRadius: 14,
         padding: "10px 12px",
         boxShadow: "0 12px 30px -14px rgba(15,23,42,0.35)",
         minWidth: 130,
       }}
     >
-      <div style={{ font: `600 11px ${DISPLAY}`, color: "#94a3b8", marginBottom: 6 }}>
+      <div style={{ font: `600 11px ${DISPLAY}`, color: "var(--c-muted)", marginBottom: 6 }}>
         {label}
       </div>
       {payload.map((entry) => (
@@ -128,7 +128,7 @@ function ChartTooltip({
               alignItems: "center",
               gap: 6,
               font: `500 12px ${BODY}`,
-              color: "#475569",
+              color: "var(--c-body)",
             }}
           >
             <span
@@ -144,7 +144,7 @@ function ChartTooltip({
           <span
             style={{
               font: `600 12px ${DISPLAY}`,
-              color: "#0f172a",
+              color: "var(--c-ink)",
               fontVariantNumeric: "tabular-nums",
             }}
           >
@@ -173,8 +173,8 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
   return (
     <div
       style={{
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: "22px 22px 14px",
@@ -192,10 +192,10 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "var(--c-ink)" }}>
             Monthly trend
           </span>
-          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
+          <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>
             Earned, spent and invested over time
           </span>
         </div>
@@ -212,7 +212,7 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
               alignItems: "center",
               gap: 6,
               font: `500 12px ${BODY}`,
-              color: "#475569",
+              color: "var(--c-body)",
             }}
           >
             <span style={{ width: 9, height: 9, borderRadius: 999, background: s.color }} />
@@ -237,22 +237,22 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid vertical={false} stroke="var(--c-field)" />
               <XAxis
                 dataKey="label"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 11, fontFamily: "Geist" }}
+                tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
                 dy={6}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
                 width={52}
-                tick={{ fill: "#94a3b8", fontSize: 11, fontFamily: "Geist" }}
+                tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
                 tickFormatter={(v: number) => `₹${fmtCompact(v)}`}
               />
-              <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#cbd5e1", strokeDasharray: "3 3" }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ stroke: "var(--c-line-strong)", strokeDasharray: "3 3" }} />
               {SERIES.map((s) => (
                 <Area
                   key={s.key}
@@ -262,7 +262,7 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
                   strokeWidth={2}
                   fill={`url(#grad-${s.key})`}
                   dot={false}
-                  activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }}
+                  activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--c-onaccent)" }}
                 />
               ))}
             </AreaChart>
@@ -283,7 +283,7 @@ function Centered({ text }: { text: string }) {
         alignItems: "center",
         justifyContent: "center",
         font: `500 13px ${BODY}`,
-        color: "#94a3b8",
+        color: "var(--c-muted)",
       }}
     >
       {text}

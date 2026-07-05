@@ -41,7 +41,7 @@ const SECTION_LABEL: React.CSSProperties = {
   fontSize: 11,
   letterSpacing: "0.06em",
   textTransform: "uppercase",
-  color: "#94a3b8",
+  color: "var(--c-muted)",
 };
 
 const ROW: React.CSSProperties = {
@@ -50,7 +50,7 @@ const ROW: React.CSSProperties = {
   justifyContent: "space-between",
   gap: 10,
   padding: "12px 2px",
-  borderBottom: "1px solid #f1f5f9",
+  borderBottom: "1px solid var(--c-field)",
 };
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -67,8 +67,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
         borderRadius: 9,
         padding: "9px 0",
         transition: "all .15s",
-        background: active ? "#fff" : "transparent",
-        color: active ? "#0f172a" : "#64748b",
+        background: active ? "var(--c-surface)" : "transparent",
+        color: active ? "var(--c-ink)" : "var(--c-body-2)",
         boxShadow: active ? "0 1px 2px rgba(15,23,42,0.12)" : "none",
       }}
     >
@@ -84,8 +84,8 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: 24,
@@ -97,7 +97,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
     >
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
-          <span style={{ font: `500 12.5px ${BODY}`, color: "#64748b" }}>Portfolio value</span>
+          <span style={{ font: `500 12.5px ${BODY}`, color: "var(--c-body-2)" }}>Portfolio value</span>
           {loading ? (
             <Skeleton width={150} height={30} radius={9} />
           ) : (
@@ -107,7 +107,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
                 fontWeight: 600,
                 fontSize: 30,
                 letterSpacing: "-0.025em",
-                color: "#0f172a",
+                color: "var(--c-ink)",
                 fontVariantNumeric: "tabular-nums",
               }}
             >
@@ -118,7 +118,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
         {onAdd && <AddButton variant="investment" label="Add investment" onClick={onAdd} />}
       </div>
 
-      <div style={{ display: "flex", gap: 4, background: "#f1f5f9", borderRadius: 13, padding: 4 }}>
+      <div style={{ display: "flex", gap: 4, background: "var(--c-field)", borderRadius: 13, padding: 4 }}>
         <TabButton active={tab === "holdings"} onClick={() => setTab("holdings")}>
           Holdings
         </TabButton>
@@ -153,10 +153,10 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
             {fds.map((fd) => (
               <div key={fd.name} style={ROW}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                  <span style={{ font: `600 13.5px ${BODY}`, color: "#0f172a" }}>{fd.name}</span>
-                  <span style={{ font: `500 11px ${BODY}`, color: "#94a3b8" }}>{fd.sub}</span>
+                  <span style={{ font: `600 13.5px ${BODY}`, color: "var(--c-ink)" }}>{fd.name}</span>
+                  <span style={{ font: `500 11px ${BODY}`, color: "var(--c-muted)" }}>{fd.sub}</span>
                 </div>
-                <span style={{ font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums", flex: "none" }}>
+                <span style={{ font: `600 14px ${DISPLAY}`, color: "var(--c-ink)", fontVariantNumeric: "tabular-nums", flex: "none" }}>
                   ₹{fd.amount}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
                 <span
                   style={{
                     font: `600 13.5px ${BODY}`,
-                    color: "#0f172a",
+                    color: "var(--c-ink)",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -182,7 +182,7 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
                 >
                   {fund.name}
                 </span>
-                <span style={{ font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums", flex: "none" }}>
+                <span style={{ font: `600 14px ${DISPLAY}`, color: "var(--c-ink)", fontVariantNumeric: "tabular-nums", flex: "none" }}>
                   ₹{fund.current}
                 </span>
               </div>
@@ -198,12 +198,12 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
               style={{ ...ROW, borderBottom: i === sips.length - 1 ? "none" : ROW.borderBottom }}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                <span style={{ font: `600 13.5px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <span style={{ font: `600 13.5px ${BODY}`, color: "var(--c-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {sip.name}
                 </span>
-                <span style={{ font: `500 11px ${BODY}`, color: "#94a3b8" }}>Due {sip.due}</span>
+                <span style={{ font: `500 11px ${BODY}`, color: "var(--c-muted)" }}>Due {sip.due}</span>
               </div>
-              <span style={{ font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums", flex: "none" }}>
+              <span style={{ font: `600 14px ${DISPLAY}`, color: "var(--c-ink)", fontVariantNumeric: "tabular-nums", flex: "none" }}>
                 ₹{sip.monthly}
               </span>
             </div>

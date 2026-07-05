@@ -12,9 +12,9 @@ const VARIANT: Record<
   { rgb: string; text: string; icon: string }
 > = {
   // stroke icon paths on a 20×20 viewBox
-  success: { rgb: "16,185,129", text: "#047857", icon: "M4 10.5 8.5 15 16 6" },
-  error: { rgb: "239,68,68", text: "#b91c1c", icon: "M6 6l8 8 M14 6l-8 8" },
-  info: { rgb: "79,70,229", text: "#4338ca", icon: "M10 9v5 M10 6h.01" },
+  success: { rgb: "16,185,129", text: "var(--c-credit)", icon: "M4 10.5 8.5 15 16 6" },
+  error: { rgb: "239,68,68", text: "var(--c-expense)", icon: "M6 6l8 8 M14 6l-8 8" },
+  info: { rgb: "79,70,229", text: "var(--c-accent)", icon: "M10 9v5 M10 6h.01" },
 };
 
 export default function Toaster() {
@@ -53,7 +53,7 @@ export default function Toaster() {
               gap: 11,
               padding: "12px 16px",
               borderRadius: 16,
-              background: `linear-gradient(135deg,rgba(${v.rgb},0.16),rgba(${v.rgb},0.08)),rgba(255,255,255,0.72)`,
+              background: `linear-gradient(135deg,rgba(${v.rgb},0.16),rgba(${v.rgb},0.08)),var(--c-glass)`,
               border: `1px solid rgba(${v.rgb},0.32)`,
               boxShadow: "0 10px 30px -10px rgba(15,23,42,0.35)",
               backdropFilter: "blur(14px) saturate(160%)",
@@ -89,7 +89,7 @@ export default function Toaster() {
                 fontWeight: 500,
                 fontSize: 14,
                 lineHeight: 1.3,
-                color: "#0f172a",
+                color: "var(--c-ink)",
               }}
             >
               {t.message}

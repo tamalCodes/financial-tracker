@@ -33,7 +33,7 @@ const CARD_SHADOW =
 
 function SkeletonRow() {
   return (
-    <div style={{ borderTop: "1px solid #f1f5f9" }}>
+    <div style={{ borderTop: "1px solid var(--c-field)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "13px 1px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 13, minWidth: 0, flex: 1 }}>
           <Skeleton width={20} height={20} radius={6} />
@@ -60,9 +60,9 @@ function BillRow({ bill, onEdit }: { bill: BillView; onEdit: (b: BillView) => vo
         justifyContent: "space-between",
         gap: 10,
         padding: "13px 1px",
-        borderTop: "1px solid #f1f5f9",
+        borderTop: "1px solid var(--c-field)",
         border: "none",
-        borderTopColor: "#f1f5f9",
+        borderTopColor: "var(--c-field)",
         borderTopStyle: "solid",
         borderTopWidth: 1,
         background: "transparent",
@@ -73,19 +73,19 @@ function BillRow({ bill, onEdit }: { bill: BillView; onEdit: (b: BillView) => vo
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 13, minWidth: 0 }}>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--c-muted)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
           <path d={bill.icon} />
         </svg>
         <div style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
-          <span style={{ font: `600 14px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ font: `600 14px ${BODY}`, color: "var(--c-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {bill.name}
           </span>
           {bill.due && (
-            <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{bill.due}</span>
+            <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>{bill.due}</span>
           )}
         </div>
       </div>
-      <span style={{ flex: "none", font: `600 14px ${DISPLAY}`, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>
+      <span style={{ flex: "none", font: `600 14px ${DISPLAY}`, color: "var(--c-ink)", fontVariantNumeric: "tabular-nums" }}>
         ₹{bill.amount}
       </span>
     </button>
@@ -100,9 +100,9 @@ function PagerButton({ label, disabled, onClick }: { label: string; disabled: bo
       onClick={onClick}
       style={{
         font: `600 12px ${DISPLAY}`,
-        color: disabled ? "#cbd5e1" : "#4f46e5",
-        background: disabled ? "#f8fafc" : "rgba(79,70,229,0.08)",
-        border: `1px solid ${disabled ? "#eef2f7" : "rgba(79,70,229,0.22)"}`,
+        color: disabled ? "var(--c-line-strong)" : "var(--c-accent-2)",
+        background: disabled ? "var(--c-faint)" : "rgba(79,70,229,0.08)",
+        border: `1px solid ${disabled ? "var(--c-bg1)" : "rgba(79,70,229,0.22)"}`,
         borderRadius: 999,
         padding: "6px 16px",
         cursor: disabled ? "default" : "pointer",
@@ -118,8 +118,8 @@ export default function Bills({ bills, page, pages, onPageChange, onEdit, loadin
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: "22px 22px 12px",
@@ -130,10 +130,10 @@ export default function Bills({ bills, page, pages, onPageChange, onEdit, loadin
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 8 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+          <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "var(--c-ink)" }}>
             Bills
           </span>
-          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>
+          <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>
             What you pay monthly — rent, utilities, recharge, insurance
           </span>
         </div>
@@ -153,11 +153,11 @@ export default function Bills({ bills, page, pages, onPageChange, onEdit, loadin
             gap: 10,
             paddingTop: 12,
             marginTop: 4,
-            borderTop: "1px solid #f1f5f9",
+            borderTop: "1px solid var(--c-field)",
           }}
         >
           <PagerButton label="Prev" disabled={page <= 1} onClick={() => onPageChange(page - 1)} />
-          <span style={{ font: `600 11.5px ${DISPLAY}`, color: "#94a3b8", fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ font: `600 11.5px ${DISPLAY}`, color: "var(--c-muted)", fontVariantNumeric: "tabular-nums" }}>
             {page} / {pages}
           </span>
           <PagerButton label="Next" disabled={page >= pages} onClick={() => onPageChange(page + 1)} />

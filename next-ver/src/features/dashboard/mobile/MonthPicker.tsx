@@ -59,9 +59,9 @@ export default function MonthPicker({ value, onChange }: Props) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          border: `1px solid ${open ? "#818cf8" : "#e2e8f0"}`,
+          border: `1px solid ${open ? "var(--c-accent-3)" : "var(--c-line)"}`,
           borderRadius: 16,
-          background: "#f8fafc",
+          background: "var(--c-faint)",
           height: 62,
           padding: "0 18px",
           cursor: "pointer",
@@ -73,7 +73,7 @@ export default function MonthPicker({ value, onChange }: Props) {
             fontWeight: 600,
             fontSize: 20,
             letterSpacing: "-0.01em",
-            color: "#0f172a",
+            color: "var(--c-ink)",
           }}
         >
           {MONTHS[selMonth]} {selYear}
@@ -82,7 +82,7 @@ export default function MonthPicker({ value, onChange }: Props) {
           aria-hidden
           style={{
             fontSize: 16,
-            color: "#94a3b8",
+            color: "var(--c-muted)",
             transform: open ? "rotate(180deg)" : "none",
             transition: "transform .2s ease",
           }}
@@ -99,8 +99,8 @@ export default function MonthPicker({ value, onChange }: Props) {
             left: 0,
             right: 0,
             zIndex: 10,
-            background: "#fff",
-            border: "1px solid #e2e8f0",
+            background: "var(--c-surface)",
+            border: "1px solid var(--c-line)",
             borderRadius: 18,
             boxShadow: "0 18px 50px -18px rgba(15,23,42,0.35)",
             padding: 14,
@@ -128,7 +128,7 @@ export default function MonthPicker({ value, onChange }: Props) {
                 fontFamily: DISPLAY,
                 fontWeight: 600,
                 fontSize: 16,
-                color: "#0f172a",
+                color: "var(--c-ink)",
               }}
             >
               {viewYear}
@@ -163,9 +163,9 @@ export default function MonthPicker({ value, onChange }: Props) {
                     borderRadius: 12,
                     border: isSel
                       ? "1px solid transparent"
-                      : "1px solid #e2e8f0",
-                    background: isSel ? "#4f46e5" : "#f8fafc",
-                    color: isSel ? "#fff" : "#334155",
+                      : "1px solid var(--c-line)",
+                    background: isSel ? "var(--c-accent-2)" : "var(--c-faint)",
+                    color: isSel ? "var(--c-surface)" : "var(--c-ink-2)",
                     fontFamily: BODY,
                     fontWeight: 600,
                     fontSize: 14,
@@ -189,7 +189,7 @@ const YEAR_BTN: React.CSSProperties = {
   borderRadius: 10,
   border: "1px solid rgba(79,70,229,0.18)",
   background: "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
-  color: "#4f46e5",
+  color: "var(--c-accent-2)",
   fontSize: 20,
   fontWeight: 600,
   lineHeight: 1,

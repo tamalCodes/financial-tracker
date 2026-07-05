@@ -35,7 +35,7 @@ interface Props {
 
 const FIELD_LABEL: React.CSSProperties = {
   font: `500 13px ${BODY}`,
-  color: "#475569",
+  color: "var(--c-body)",
 };
 
 const FIELD_COL: React.CSSProperties = {
@@ -105,7 +105,7 @@ export default function BillEditSheet({
         style={{
           width: twoCol ? 660 : 460,
           maxWidth: "100%",
-          background: "#fff",
+          background: "var(--c-surface)",
           borderRadius: isDesktop ? 24 : "30px 30px 0 0",
           boxShadow: isDesktop
             ? "0 24px 70px -20px rgba(15,23,42,0.45)"
@@ -122,12 +122,12 @@ export default function BillEditSheet({
         >
           {/* Grabber (mobile bottom-sheet affordance only) */}
           <div style={{ display: isDesktop ? "none" : "flex", justifyContent: "center", padding: "4px 0 16px" }}>
-            <span style={{ width: 42, height: 5, borderRadius: 999, background: "#e2e8f0" }} />
+            <span style={{ width: 42, height: 5, borderRadius: 999, background: "var(--c-line)" }} />
           </div>
 
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "#0f172a" }}>
+            <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 21, letterSpacing: "-0.01em", color: "var(--c-ink)" }}>
               {isEmi ? "Edit EMI" : "Edit bill"}
             </span>
             <button
@@ -139,9 +139,9 @@ export default function BillEditSheet({
                 width: 36,
                 height: 36,
                 borderRadius: 12,
-                border: "1px solid #e2e8f0",
-                background: "#f8fafc",
-                color: "#64748b",
+                border: "1px solid var(--c-line)",
+                background: "var(--c-faint)",
+                color: "var(--c-body-2)",
                 fontSize: 16,
                 display: "flex",
                 alignItems: "center",
@@ -173,14 +173,14 @@ export default function BillEditSheet({
                 placeholder={isEmi ? "What's this EMI for?" : "What's this bill for?"}
                 style={{
                   width: "100%",
-                  border: `1px solid ${nameFocus ? "#818cf8" : "#e2e8f0"}`,
+                  border: `1px solid ${nameFocus ? "var(--c-accent-3)" : "var(--c-line)"}`,
                   borderRadius: 14,
                   padding: "0 15px",
                   height: 50,
                   fontFamily: BODY,
                   fontSize: 16,
-                  color: "#0f172a",
-                  background: "#f8fafc",
+                  color: "var(--c-ink)",
+                  background: "var(--c-faint)",
                   outline: "none",
                 }}
               />
@@ -232,9 +232,9 @@ export default function BillEditSheet({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid var(--c-line)",
                     borderRadius: 16,
-                    background: "#f8fafc",
+                    background: "var(--c-faint)",
                     height: 62,
                     padding: "0 10px 0 16px",
                   }}
@@ -246,11 +246,11 @@ export default function BillEditSheet({
                       fontSize: 28,
                       letterSpacing: "-0.01em",
                       fontVariantNumeric: "tabular-nums",
-                      color: "#0f172a",
+                      color: "var(--c-ink)",
                     }}
                   >
                     {paidCount}
-                    <span style={{ fontSize: 15, fontWeight: 500, color: "#94a3b8" }}>
+                    <span style={{ fontSize: 15, fontWeight: 500, color: "var(--c-muted)" }}>
                       {" "}
                       / {months}
                     </span>
@@ -273,13 +273,13 @@ export default function BillEditSheet({
                           border: "1px solid rgba(79,70,229,0.18)",
                           background:
                             "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
-                          color: "#4f46e5",
+                          color: "var(--c-accent-2)",
                           fontSize: 24,
                           fontWeight: 600,
                           lineHeight: 1,
                           cursor: b.disabled ? "default" : "pointer",
                           opacity: b.disabled ? 0.4 : 1,
-                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+                          boxShadow: "inset 0 1px 0 var(--c-glass)",
                         }}
                       >
                         {b.label}
@@ -308,8 +308,8 @@ export default function BillEditSheet({
                   height: 54,
                   border: "none",
                   borderRadius: 16,
-                  background: "#4f46e5",
-                  color: "#fff",
+                  background: "var(--c-accent-2)",
+                  color: "var(--c-onaccent)",
                   fontFamily: DISPLAY,
                   fontWeight: 600,
                   fontSize: 15.5,
@@ -331,9 +331,9 @@ export default function BillEditSheet({
                   width: isDesktop ? undefined : "100%",
                   height: isDesktop ? 54 : 48,
                   borderRadius: 16,
-                  border: "1px solid #e2e8f0",
-                  background: "#fff",
-                  color: "#b91c1c",
+                  border: "1px solid var(--c-line)",
+                  background: "var(--c-surface)",
+                  color: "var(--c-expense)",
                   fontFamily: DISPLAY,
                   fontWeight: 600,
                   fontSize: 14.5,

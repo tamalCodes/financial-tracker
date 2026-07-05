@@ -130,7 +130,7 @@ export default function AddSheet({
           maxWidth: "100%",
           maxHeight: isDesktop ? "calc(100vh - 48px)" : undefined,
           overflowY: isDesktop ? "auto" : undefined,
-          background: "#fff",
+          background: "var(--c-surface)",
           borderRadius: isDesktop ? 24 : "30px 30px 0 0",
           boxShadow: isDesktop
             ? "0 24px 70px -20px rgba(15,23,42,0.45)"
@@ -156,7 +156,7 @@ export default function AddSheet({
                 width: 42,
                 height: 5,
                 borderRadius: 999,
-                background: "#e2e8f0",
+                background: "var(--c-line)",
               }}
             />
           </div>
@@ -176,7 +176,7 @@ export default function AddSheet({
                 fontWeight: 600,
                 fontSize: 21,
                 letterSpacing: "-0.01em",
-                color: "#0f172a",
+                color: "var(--c-ink)",
               }}
             >
               {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_TITLE[mode]}
@@ -189,9 +189,9 @@ export default function AddSheet({
                 width: 36,
                 height: 36,
                 borderRadius: 12,
-                border: "1px solid #e2e8f0",
-                background: "#f8fafc",
-                color: "#64748b",
+                border: "1px solid var(--c-line)",
+                background: "var(--c-faint)",
+                color: "var(--c-body-2)",
                 fontSize: 16,
                 display: "flex",
                 alignItems: "center",
@@ -210,7 +210,7 @@ export default function AddSheet({
                 gap: 4,
                 padding: 4,
                 marginBottom: 18,
-                background: "#f1f5f9",
+                background: "var(--c-field)",
                 borderRadius: 14,
               }}
             >
@@ -250,8 +250,8 @@ export default function AddSheet({
                     fontFamily: DISPLAY,
                     fontWeight: 600,
                     fontSize: 13.5,
-                    color: t.on ? "#4f46e5" : "#64748b",
-                    background: t.on ? "#fff" : "transparent",
+                    color: t.on ? "var(--c-accent-2)" : "var(--c-body-2)",
+                    background: t.on ? "var(--c-surface)" : "transparent",
                     boxShadow: t.on ? "0 1px 3px rgba(15,23,42,0.10)" : "none",
                   }}
                 >
@@ -270,7 +270,7 @@ export default function AddSheet({
                 marginBottom: 18,
               }}
             >
-              <style>{`.emi-num::placeholder{font-size:15px;font-weight:500;letter-spacing:0;color:#cbd5e1;}`}</style>
+              <style>{`.emi-num::placeholder{font-size:15px;font-weight:500;letter-spacing:0;color:var(--c-line-strong);}`}</style>
               <div
                 style={{
                   display: "flex",
@@ -279,7 +279,7 @@ export default function AddSheet({
                   flex: 1,
                 }}
               >
-                <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
                   Total amount
                 </span>
                 <input
@@ -293,7 +293,7 @@ export default function AddSheet({
                   autoFocus={true}
                   style={{
                     width: "100%",
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid var(--c-line)",
                     borderRadius: 14,
                     padding: "0 15px",
                     height: 62,
@@ -302,8 +302,8 @@ export default function AddSheet({
                     fontSize: 28,
                     letterSpacing: "-0.01em",
                     fontVariantNumeric: "tabular-nums",
-                    color: "#0f172a",
-                    background: "#f8fafc",
+                    color: "var(--c-ink)",
+                    background: "var(--c-faint)",
                     outline: "none",
                   }}
                 />
@@ -316,7 +316,7 @@ export default function AddSheet({
                   width: 120,
                 }}
               >
-                <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+                <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
                   Months
                 </span>
                 <input
@@ -330,7 +330,7 @@ export default function AddSheet({
                   placeholder="e.g. 8"
                   style={{
                     width: "100%",
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid var(--c-line)",
                     borderRadius: 14,
                     padding: "0 15px",
                     height: 62,
@@ -339,8 +339,8 @@ export default function AddSheet({
                     fontSize: 28,
                     letterSpacing: "-0.01em",
                     fontVariantNumeric: "tabular-nums",
-                    color: "#0f172a",
-                    background: "#f8fafc",
+                    color: "var(--c-ink)",
+                    background: "var(--c-faint)",
                     outline: "none",
                   }}
                 />
@@ -357,7 +357,7 @@ export default function AddSheet({
               marginBottom: 18,
             }}
           >
-            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+            <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
               {asEmi ? "Monthly amount" : "Amount"}
             </span>
             <AmountField
@@ -380,7 +380,7 @@ export default function AddSheet({
                 marginBottom: 18,
               }}
             >
-              <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+              <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
                 Category
               </span>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -405,7 +405,7 @@ export default function AddSheet({
               marginBottom: 22,
             }}
           >
-            <span style={{ font: `500 13px ${BODY}`, color: "#475569" }}>
+            <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
               {asBill ? "Name" : NOTE_LABEL[mode]}
             </span>
             <input
@@ -418,14 +418,14 @@ export default function AddSheet({
               }
               style={{
                 width: "100%",
-                border: `1px solid ${noteFocus ? "#818cf8" : "#e2e8f0"}`,
+                border: `1px solid ${noteFocus ? "var(--c-accent-3)" : "var(--c-line)"}`,
                 borderRadius: 14,
                 padding: "0 15px",
                 height: 50,
                 fontFamily: BODY,
                 fontSize: 16,
-                color: "#0f172a",
-                background: "#f8fafc",
+                color: "var(--c-ink)",
+                background: "var(--c-faint)",
                 outline: "none",
               }}
             />
@@ -445,8 +445,8 @@ export default function AddSheet({
                 height: 54,
                 border: "none",
                 borderRadius: 16,
-                background: "#4f46e5",
-                color: "#fff",
+                background: "var(--c-accent-2)",
+                color: "var(--c-onaccent)",
                 fontFamily: DISPLAY,
                 fontWeight: 600,
                 fontSize: 15.5,

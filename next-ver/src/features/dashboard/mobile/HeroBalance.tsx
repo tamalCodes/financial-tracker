@@ -17,7 +17,7 @@ interface Props {
 
 const CARD_SHADOW =
   "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
-const TILE_INSET = "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(15,23,42,0.04)";
+const TILE_INSET = "inset 0 1px 0 var(--c-glass), 0 1px 2px rgba(15,23,42,0.04)";
 
 interface TileProps {
   label: string;
@@ -120,7 +120,7 @@ function StepBtn({ onClick, label, d }: { onClick: () => void; label: string; d:
         padding: 0,
       }}
     >
-      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--c-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d={d} />
       </svg>
     </button>
@@ -132,8 +132,8 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 26,
         boxShadow: CARD_SHADOW,
         padding: "18px 18px",
@@ -143,7 +143,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span style={{ font: `500 13px ${BODY}`, letterSpacing: "0.01em", color: "#64748b" }}>
+        <span style={{ font: `500 13px ${BODY}`, letterSpacing: "0.01em", color: "var(--c-body-2)" }}>
           Left in bank
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -151,7 +151,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           <span
             style={{
               font: `600 13px ${DISPLAY}`,
-              color: "#334155",
+              color: "var(--c-ink-2)",
               minWidth: 54,
               textAlign: "center",
               whiteSpace: "nowrap",
@@ -173,7 +173,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
             fontSize: 36,
             lineHeight: 1,
             letterSpacing: "-0.03em",
-            color: "#0f172a",
+            color: "var(--c-ink)",
             fontVariantNumeric: "tabular-nums",
           }}
         >
@@ -187,9 +187,9 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           value={earned}
           gradient="linear-gradient(135deg,rgba(16,185,129,0.30),rgba(16,185,129,0.15))"
           border="rgba(16,185,129,0.45)"
-          labelColor="#047857"
-          valueColor="#065f46"
-          icon={<ArrowUp color="#047857" />}
+          labelColor="var(--c-credit)"
+          valueColor="var(--c-credit-2)"
+          icon={<ArrowUp color="var(--c-credit)" />}
           loading={loading}
         />
         <StatTile
@@ -197,9 +197,9 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           value={spent}
           gradient="linear-gradient(135deg,rgba(239,68,68,0.26),rgba(239,68,68,0.13))"
           border="rgba(239,68,68,0.42)"
-          labelColor="#b91c1c"
-          valueColor="#991b1b"
-          icon={<ArrowDown color="#b91c1c" />}
+          labelColor="var(--c-expense)"
+          valueColor="var(--c-expense-2)"
+          icon={<ArrowDown color="var(--c-expense)" />}
           loading={loading}
         />
         <StatTile
@@ -207,9 +207,9 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
           value={invested}
           gradient="linear-gradient(135deg,rgba(139,92,246,0.26),rgba(139,92,246,0.13))"
           border="rgba(139,92,246,0.42)"
-          labelColor="#6d28d9"
-          valueColor="#5b21b6"
-          icon={<TrendUp color="#6d28d9" />}
+          labelColor="var(--c-violet)"
+          valueColor="var(--c-violet-2)"
+          icon={<TrendUp color="var(--c-violet)" />}
           loading={loading}
         />
       </div>

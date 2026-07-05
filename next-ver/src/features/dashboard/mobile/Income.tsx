@@ -30,7 +30,7 @@ const INCOME_ICON =
 
 function SkeletonRow() {
   return (
-    <div style={{ borderTop: "1px solid #f1f5f9" }}>
+    <div style={{ borderTop: "1px solid var(--c-field)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "13px 1px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 13, minWidth: 0, flex: 1 }}>
           <Skeleton width={20} height={20} radius={6} />
@@ -49,17 +49,17 @@ function IncomeRow({ item }: { item: IncomeView }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "13px 1px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 13, minWidth: 0 }}>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#047857" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--c-credit)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
           <path d={INCOME_ICON} />
         </svg>
         <div style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
-          <span style={{ font: `600 14px ${BODY}`, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ font: `600 14px ${BODY}`, color: "var(--c-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {item.name}
           </span>
-          <span style={{ font: `500 11.5px ${BODY}`, color: "#94a3b8" }}>{item.date}</span>
+          <span style={{ font: `500 11.5px ${BODY}`, color: "var(--c-muted)" }}>{item.date}</span>
         </div>
       </div>
-      <span style={{ font: `600 14px ${DISPLAY}`, color: "#047857", fontVariantNumeric: "tabular-nums", flex: "none" }}>
+      <span style={{ font: `600 14px ${DISPLAY}`, color: "var(--c-credit)", fontVariantNumeric: "tabular-nums", flex: "none" }}>
         +₹{item.amount}
       </span>
     </div>
@@ -71,8 +71,8 @@ export default function Income({ income, incomeCompact, loading, onAdd }: Props)
     <div
       style={{
         fontFamily: BODY,
-        background: "#fff",
-        border: "1px solid #e2e8f0",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-line)",
         borderRadius: 28,
         boxShadow: CARD_SHADOW,
         padding: "22px 22px 12px",
@@ -82,7 +82,7 @@ export default function Income({ income, incomeCompact, loading, onAdd }: Props)
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 14 }}>
-        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "#0f172a" }}>
+        <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 16, color: "var(--c-ink)" }}>
           Income
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
@@ -94,7 +94,7 @@ export default function Income({ income, incomeCompact, loading, onAdd }: Props)
                 display: "inline-flex",
                 alignItems: "center",
                 font: `600 11.5px ${DISPLAY}`,
-                color: "#047857",
+                color: "var(--c-credit)",
                 background:
                   "linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.09))",
                 border: "1px solid rgba(16,185,129,0.34)",
@@ -115,12 +115,12 @@ export default function Income({ income, incomeCompact, loading, onAdd }: Props)
       {loading ? (
         Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={`skel-${i}`} />)
       ) : income.length === 0 ? (
-        <div style={{ borderTop: "1px solid #f1f5f9", padding: "18px 1px", textAlign: "center" }}>
-          <span style={{ font: `500 13px ${BODY}`, color: "#94a3b8" }}>No income logged this month</span>
+        <div style={{ borderTop: "1px solid var(--c-field)", padding: "18px 1px", textAlign: "center" }}>
+          <span style={{ font: `500 13px ${BODY}`, color: "var(--c-muted)" }}>No income logged this month</span>
         </div>
       ) : (
         income.map((item) => (
-          <div key={item.id} style={{ borderTop: "1px solid #f1f5f9" }}>
+          <div key={item.id} style={{ borderTop: "1px solid var(--c-field)" }}>
             <IncomeRow item={item} />
           </div>
         ))

@@ -69,7 +69,7 @@ const AI_CSS = `
 @keyframes aiPulse { 0%, 100% { opacity: .45; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.12); } }
 @keyframes aiPop { 0% { transform: scale(.94); } 45% { transform: scale(1.05); } 100% { transform: scale(1); } }
 @keyframes aiDot { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
-.amt-input::placeholder { font-size: 15px; font-weight: 500; letter-spacing: 0; color: #cbd5e1; }
+.amt-input::placeholder { font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--c-line-strong); }
 `;
 
 type CalcPhase = "idle" | "think" | "reveal";
@@ -230,12 +230,12 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
         display: "flex",
         alignItems: "center",
         gap: 8,
-        border: `1px solid ${calcActive ? "rgba(79,70,229,0.55)" : "#e2e8f0"}`,
+        border: `1px solid ${calcActive ? "rgba(79,70,229,0.55)" : "var(--c-line)"}`,
         borderRadius: 16,
         padding: "0 16px",
         height: 62,
         overflow: "hidden",
-        background: calcActive ? "#fbfbff" : "#f8fafc",
+        background: calcActive ? "var(--c-surface)" : "var(--c-faint)",
         boxShadow: "none",
         transition: "border-color .35s ease, background .35s ease",
       }}
@@ -268,7 +268,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
             fontFamily: DISPLAY,
             fontWeight: 600,
             fontSize: 26,
-            color: calcActive ? "#a5b4fc" : "#94a3b8",
+            color: calcActive ? "var(--c-accent-4)" : "var(--c-muted)",
             flexShrink: 0,
             transition: "color .4s ease",
           }}
@@ -304,10 +304,10 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
           letterSpacing: "-0.01em",
           color:
             phase === "think"
-              ? "#a5b4fc"
+              ? "var(--c-accent-4)"
               : phase === "reveal"
-                ? "#4f46e5"
-                : "#0f172a",
+                ? "var(--c-accent-2)"
+                : "var(--c-ink)",
           width: "100%",
           fontVariantNumeric: "tabular-nums",
           textShadow:
@@ -329,7 +329,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
             borderRadius: 999,
             background: "rgba(79,70,229,0.08)",
             border: "1px solid rgba(79,70,229,0.18)",
-            color: "#4f46e5",
+            color: "var(--c-accent-2)",
             flexShrink: 0,
             zIndex: 1,
           }}
@@ -351,7 +351,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
                   width: 4,
                   height: 4,
                   borderRadius: 999,
-                  background: "#4f46e5",
+                  background: "var(--c-accent-2)",
                   animation: `aiDot 1s ease-in-out ${i * 0.15}s infinite`,
                 }}
               />
@@ -402,13 +402,13 @@ export function OperatorBar({ onOp }: { onOp: (op: string) => void }) {
               "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
-            color: "#4f46e5",
+            color: "var(--c-accent-2)",
             fontSize: 24,
             fontWeight: 600,
             lineHeight: 1,
             cursor: "pointer",
             padding: 0,
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+            boxShadow: "inset 0 1px 0 var(--c-glass)",
           }}
         >
           {label}
