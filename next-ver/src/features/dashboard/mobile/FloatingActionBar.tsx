@@ -64,7 +64,7 @@ export default function FloatingActionBar({ onOpen }: Props) {
           background: "var(--c-glass-strong)",
           backdropFilter: "blur(18px) saturate(1.8)",
           WebkitBackdropFilter: "blur(18px) saturate(1.8)",
-          border: "1px solid rgba(226,232,240,0.95)",
+          border: "1px solid var(--c-line)",
           borderRadius: 999,
           padding: 7,
           boxShadow: "0 22px 48px -14px rgba(15,23,42,0.45), 0 2px 8px rgba(15,23,42,0.06)",
