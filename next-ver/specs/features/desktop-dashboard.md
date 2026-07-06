@@ -103,8 +103,12 @@ All `"use client"`. Mobile path is **untouched**.
   - `Investments` — per-tab via `EmptyPortfolio`: Holdings "No holdings yet — add an FD or fund…" when
     `fds` and `funds` are both empty; Active SIPs "No active SIPs yet — set one up…" when `sips` is empty.
     Portfolio value still reads `₹0`.
-  - `TrendChart` — when every point is zero (`hasData === false`) the chart is replaced by a centered
-    line ("Nothing to chart yet — log some income, spends or investments…") rather than a flat zero line.
+  - `TrendChart` — when every point is zero (`hasData === false`) the chart shows a **locked preview**:
+    a blurred, non-interactive sample area chart (deterministic `samplePlaceholder(window)` — never real
+    numbers, tooltip + animation disabled) teasing what the real chart becomes, behind a centered glass
+    "Your trend is locked" card with a lock icon prompting the user to log income/spends/investments.
+    The 6M/12M `WindowToggle` **and the Earned/Spent/Invested legend** are both **hidden** while locked
+    (nothing to window over / label). This replaces the old flat-zero line / bare "Nothing to chart yet" text.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
   glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,

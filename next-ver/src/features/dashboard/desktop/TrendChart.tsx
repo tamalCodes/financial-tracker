@@ -36,6 +36,36 @@ interface ChartRow extends TrendPoint {
   label: string;
 }
 
+// Deterministic, organic-looking sample series for the locked (no-data) state.
+// Blurred behind the "unlock" overlay so the card teases what the real chart
+// becomes once the user logs something — never real numbers, always the same shape.
+const SAMPLE_SHAPE = [
+  { earned: 62, spent: 38, invested: 14 },
+  { earned: 71, spent: 44, invested: 18 },
+  { earned: 58, spent: 49, invested: 12 },
+  { earned: 84, spent: 41, invested: 26 },
+  { earned: 77, spent: 55, invested: 21 },
+  { earned: 96, spent: 47, invested: 33 },
+  { earned: 68, spent: 52, invested: 19 },
+  { earned: 89, spent: 40, invested: 28 },
+  { earned: 103, spent: 58, invested: 36 },
+  { earned: 74, spent: 46, invested: 22 },
+  { earned: 91, spent: 53, invested: 30 },
+  { earned: 110, spent: 61, invested: 41 },
+];
+
+const samplePlaceholder = (n: number): ChartRow[] =>
+  Array.from({ length: n }, (_, i) => {
+    const s = SAMPLE_SHAPE[i % SAMPLE_SHAPE.length];
+    return {
+      month: `2000-${String((i % 12) + 1).padStart(2, "0")}-01`,
+      label: monthShort(`2000-${String((i % 12) + 1).padStart(2, "0")}-01`),
+      earned: s.earned * 1000,
+      spent: s.spent * 1000,
+      invested: s.invested * 1000,
+    };
+  });
+
 function WindowToggle({
   value,
   onChange,
@@ -204,10 +234,14 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
             Earned, spent and invested over time
           </span>
         </div>
-        <WindowToggle value={window} onChange={onWindow} />
+        {/* Window toggle only makes sense once there's data to window over. */}
+        {hasData && !loading && !error && (
+          <WindowToggle value={window} onChange={onWindow} />
+        )}
       </div>
 
-      {/* Legend */}
+      {/* Legend — only meaningful once the chart is unlocked. */}
+      {hasData && !loading && !error && (
       <div style={{ display: "flex", gap: 16 }}>
         {SERIES.map((s) => (
           <span
@@ -225,6 +259,7 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
           </span>
         ))}
       </div>
+      )}
 
       <div style={{ height: 240, position: "relative" }}>
         {error ? (
@@ -232,51 +267,140 @@ export default function TrendChart({ series, loading, error, window, onWindow }:
         ) : loading ? (
           <Centered text="Loading trend…" />
         ) : !hasData ? (
-          <Centered text="Nothing to chart yet — log some income, spends or investments and your trend will grow here." />
+          <LockedPreview window={window} />
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
-              <defs>
-                {SERIES.map((s) => (
-                  <linearGradient key={s.key} id={`grad-${s.key}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={s.color} stopOpacity={0.22} />
-                    <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
-                  </linearGradient>
-                ))}
-              </defs>
-              <CartesianGrid vertical={false} stroke="var(--c-field)" />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
-                dy={6}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                width={52}
-                tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
-                tickFormatter={(v: number) => `₹${fmtCompact(v)}`}
-              />
-              <Tooltip content={<ChartTooltip />} cursor={{ stroke: "var(--c-line-strong)", strokeDasharray: "3 3" }} />
-              {SERIES.map((s) => (
-                <Area
-                  key={s.key}
-                  type="monotone"
-                  dataKey={s.key}
-                  stroke={s.color}
-                  strokeWidth={2}
-                  fill={`url(#grad-${s.key})`}
-                  dot={false}
-                  activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--c-onaccent)" }}
-                />
-              ))}
-            </AreaChart>
-          </ResponsiveContainer>
+          <TrendArea rows={data} interactive />
         )}
       </div>
     </div>
+  );
+}
+
+// The stacked-area chart itself. `interactive={false}` (locked preview) drops the
+// tooltip so the blurred teaser can't be probed for its fake numbers.
+function TrendArea({ rows, interactive }: { rows: ChartRow[]; interactive?: boolean }) {
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={rows} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
+        <defs>
+          {SERIES.map((s) => (
+            <linearGradient key={s.key} id={`grad-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={s.color} stopOpacity={0.22} />
+              <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
+            </linearGradient>
+          ))}
+        </defs>
+        <CartesianGrid vertical={false} stroke="var(--c-field)" />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
+          dy={6}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          width={52}
+          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
+          tickFormatter={(v: number) => `₹${fmtCompact(v)}`}
+        />
+        {interactive && (
+          <Tooltip
+            content={<ChartTooltip />}
+            cursor={{ stroke: "var(--c-line-strong)", strokeDasharray: "3 3" }}
+          />
+        )}
+        {SERIES.map((s) => (
+          <Area
+            key={s.key}
+            type="monotone"
+            dataKey={s.key}
+            stroke={s.color}
+            strokeWidth={2}
+            fill={`url(#grad-${s.key})`}
+            dot={false}
+            isAnimationActive={interactive}
+            activeDot={interactive ? { r: 4, strokeWidth: 2, stroke: "var(--c-onaccent)" } : false}
+          />
+        ))}
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+// No-data state: a blurred sample chart teasing what the real one becomes, behind a
+// glass "unlock" prompt. Beats a flat zero line or a bare text placeholder.
+function LockedPreview({ window }: { window: TrendWindow }) {
+  const sample = useMemo(() => samplePlaceholder(window), [window]);
+  return (
+    <>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          filter: "blur(5px)",
+          opacity: 0.55,
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      >
+        <TrendArea rows={sample} />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 20px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 10,
+            maxWidth: 320,
+            textAlign: "center",
+            background: "var(--c-glass-strong)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            border: "1px solid var(--c-line)",
+            borderRadius: 18,
+            padding: "18px 22px",
+            boxShadow: "0 12px 34px -18px rgba(15,23,42,0.4)",
+          }}
+        >
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 34,
+              height: 34,
+              borderRadius: 999,
+              background: "var(--c-field)",
+              color: "var(--c-accent)",
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </span>
+          <span style={{ font: `600 14px ${DISPLAY}`, color: "var(--c-ink)" }}>
+            Your trend is locked
+          </span>
+          <span style={{ font: `500 12.5px ${BODY}`, color: "var(--c-muted)", lineHeight: 1.5 }}>
+            Log some income, spends or investments and this chart unlocks with your real numbers.
+          </span>
+        </div>
+      </div>
+    </>
   );
 }
 
