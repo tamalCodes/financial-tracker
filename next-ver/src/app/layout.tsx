@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/features/auth/AuthContext";
 import { THEME_SCRIPT, ThemeProvider } from "@/features/theme/ThemeContext";
 import ServiceWorkerRegister from "@/features/pwa/ServiceWorkerRegister";
+import AppControl from "@/features/pwa/AppControl";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
@@ -64,6 +65,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <ServiceWorkerRegister />
+            <AppControl />
           </AuthProvider>
         </ThemeProvider>
       </body>

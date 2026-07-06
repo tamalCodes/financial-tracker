@@ -37,12 +37,17 @@ Safari does NOT — it needs a manual instructions banner.
       `metadata.icons` (icon + `apple-touch-icon`) in `layout.tsx` so Next emits the links.
 - [x] 🔴 2.3 `layout.tsx` metadata: add `appleWebApp: { capable, statusBarStyle, title }`
       and confirm `themeColor`. (Done: `appleWebApp` + `viewport.themeColor` present.)
-- [x] 🟠 2.4 Auto-reload on SW update: in `ServiceWorkerRegister`, listen for
-      `controllerchange` and `location.reload()` once (guard flag) so a deploy shows
-      instantly — no manual refresh. Done: `refreshing` guard + `hadController` check so
-      the first-ever registration doesn't self-reload.
-- [~] 🟠 2.5 Offline fallback: cache the app shell; serve an `/offline` page when the
-      network is down and no cache hit. PARTIAL: `sw.js` navigate falls back to cached `/`; no dedicated `/offline` page.
+- [x] 🔴 2.4 Register a controlling SW for installability: `ServiceWorkerRegister`
+      registers `public/sw.js` on every load (secure context only). The SW is a
+      **minimal no-cache installable** worker — `install`/`activate`/`fetch` handlers,
+      `skipWaiting` + `clients.claim`, wipes any legacy caches on activate, and a
+      no-op `fetch` listener (present only because Chrome requires a fetch handler to
+      fire `beforeinstallprompt`; it caches nothing so deploys are always live).
+      Regression fixed 2026-07-07: the SW had been gutted into a self-unregistering
+      kill switch, so no SW controlled fresh devices → Android never offered install.
+- [ ] 🟡 2.5 Offline fallback: NONE by design. The SW caches nothing (pure network
+      passthrough) to guarantee no stale bundles. Add an `/offline` page only if we
+      later adopt content-hashed caching for the app shell.
 - [ ] 🟡 2.6 iOS splash screens (`apple-touch-startup-image`) — cosmetic.
 - [ ] 🔴 2.7 Verify with Lighthouse PWA audit (installable, offline, HTTPS) — target
       all green. Test real install on Android Chrome + iOS Safari.
@@ -81,10 +86,9 @@ Safari does NOT — it needs a manual instructions banner.
 - [ ] 🟠 4.1 Financial data is personal — add a short privacy note (what's stored, where,
       that it's per-user isolated). Even a `PRIVACY.md`.
 - [ ] 🟠 4.2 Account deletion / data export path (user can wipe their data).
-- [x] 🟡 4.3 SW must never cache authenticated API responses to disk cache — enforced in
-      `sw.js` v4: cross-origin (all Supabase `*.supabase.co`) AND same-origin `/api/*` are
-      passthrough (SW stores nothing); navigations are network-first with no cache write.
-      Only `/_next/static/*` (immutable) + non-sensitive public assets are cached.
+- [x] 🟡 4.3 SW must never cache authenticated API responses — trivially satisfied: the
+      SW caches NOTHING at all (no-op `fetch` handler, no `respondWith`). Nothing,
+      sensitive or otherwise, is ever written to a cache.
 - [ ] 🟡 4.4 Log hygiene: no tokens / PII in server logs or client `console`.
 
 ## 5. Agent-development readiness (gaps in current tree)

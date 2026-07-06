@@ -13,6 +13,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
+    "ops:logout-all": "bash supabase/ops/run.sh logout",
+    "ops:purge-caches": "bash supabase/ops/run.sh purge",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
