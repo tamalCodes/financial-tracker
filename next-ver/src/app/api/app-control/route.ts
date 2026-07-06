@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { rateLimit } from "@/lib/api/rateLimit";
 import { getAppControl } from "@/lib/api/appControl";
-import { getAccessTokenClaims } from "@/lib/supabase/auth";
+import { getAuthContext, isSessionKilled } from "@/lib/supabase/auth";
 
 // Poll target for the client boot service (AppControl.tsx). Reports:
 //   killed       — this caller's session was invalidated by the kill switch,
@@ -25,9 +26,9 @@ export async function GET(request: Request) {
   }
 
   const { sessionEpoch, purgeVersion } = await getAppControl();
-  const claims = await getAccessTokenClaims();
-  const killed =
-    !!claims && sessionEpoch > 0 && claims.issuedAt < sessionEpoch;
+  const supabase = await createSupabaseServerClient();
+  const ctx = await getAuthContext(supabase);
+  const killed = !!ctx && isSessionKilled(ctx.issuedAt, sessionEpoch);
 
   return NextResponse.json(
     { purgeVersion, killed },

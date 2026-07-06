@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/cookies";
 import { rateLimit } from "@/lib/api/rateLimit";
-import { getUserFromCookies } from "@/lib/supabase/auth";
+import { getLiveUser } from "@/lib/supabase/auth";
 
 export async function GET(request: Request) {
   const limit = rateLimit(request, "auth:me", {
@@ -18,30 +18,20 @@ export async function GET(request: Request) {
     );
   }
 
-  const localUser = await getUserFromCookies();
-  if (localUser?.id) {
-    return NextResponse.json({
-      user: {
-        id: localUser.id,
-        email: localUser.email ?? null,
-        fullName: localUser.fullName ?? null,
-      },
-    });
-  }
-
+  // getLiveUser applies the kill switch: a force-logged-out session resolves to
+  // null here, so the client's AuthContext drops the user and shows login.
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
+  const user = await getLiveUser(supabase);
 
-  if (error || !data.user) {
+  if (!user) {
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
-  const fullName = data.user.user_metadata?.full_name;
   return NextResponse.json({
     user: {
-      id: data.user.id,
-      email: data.user.email ?? null,
-      fullName: typeof fullName === "string" ? fullName : null,
+      id: user.userId,
+      email: user.email,
+      fullName: user.fullName,
     },
   });
 }

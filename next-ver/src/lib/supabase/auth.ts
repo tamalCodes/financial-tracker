@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
+import { decodeJwt, jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSessionEpoch } from "@/lib/api/appControl";
@@ -35,9 +35,10 @@ export interface AccessTokenClaims {
 }
 
 /**
- * Verify the Supabase auth cookie and return its claims — WITHOUT applying the
- * kill switch. Used where the token's issue time itself is the question (the
- * /api/app-control endpoint deciding whether THIS session was killed).
+ * Verify the Supabase auth cookie LOCALLY and return its claims — requires
+ * SUPABASE_JWT_SECRET. Returns null when the secret is unset (the common case
+ * here), so callers must have a secret-free fallback. Kept for the fast path and
+ * because it needs no network round-trip.
  */
 export const getAccessTokenClaims =
   async (): Promise<AccessTokenClaims | null> => {
@@ -69,8 +70,6 @@ export const getAccessTokenClaims =
       const { payload } = await jwtVerify(accessToken, secret);
       const userId = payload.sub;
       if (!userId) return null;
-      // full_name rides along in the JWT user_metadata (set at signup), so /me
-      // can read the display name without an extra profiles query.
       const meta = (payload.user_metadata ?? {}) as { full_name?: unknown };
       return {
         id: userId,
@@ -84,32 +83,87 @@ export const getAccessTokenClaims =
     }
   };
 
+/** Read a JWT's `iat` (unix seconds) WITHOUT verifying its signature. Safe only
+ * for a token whose authenticity was already established elsewhere. Returns 0
+ * when absent/unparseable (0 disables the kill check → fail-open). */
+const decodeIssuedAt = (token?: string | null): number => {
+  if (!token) return 0;
+  try {
+    const iat = decodeJwt(token).iat;
+    return typeof iat === "number" ? iat : 0;
+  } catch {
+    return 0;
+  }
+};
+
+export interface AuthContext {
+  userId: string;
+  email: string | null;
+  fullName: string | null;
+  /** Token issued-at, unix seconds; 0 if unknown (kill switch then no-ops). */
+  issuedAt: number;
+}
+
 /**
- * Kill switch: true when a valid token was issued before the current
- * session_epoch. Bumping session_epoch in the DB thus invalidates every session
- * minted earlier. Epoch 0 (default) never kills anything.
+ * Resolve the authenticated user + token issue time, WITH or WITHOUT
+ * SUPABASE_JWT_SECRET:
+ *  - secret set  → locally-verified claims (no network).
+ *  - secret unset → supabase.auth.getUser() does the crypto verification, then
+ *    we decode the (already-authenticated) access token just to read `iat`.
+ * Does NOT apply the kill switch — see {@link isSessionKilled} / {@link requireUser}.
  */
-const isKilled = (claims: AccessTokenClaims, epoch: number) =>
-  epoch > 0 && claims.issuedAt < epoch;
-
-export const getUserFromCookies = async () => {
+export const getAuthContext = async (
+  supabase: SupabaseClient
+): Promise<AuthContext | null> => {
   const claims = await getAccessTokenClaims();
-  if (!claims) return null;
+  if (claims) {
+    return {
+      userId: claims.id,
+      email: claims.email,
+      fullName: claims.fullName,
+      issuedAt: claims.issuedAt,
+    };
+  }
 
-  if (isKilled(claims, await getSessionEpoch())) return null;
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
 
+  // getSession() reads the token from cookies (no network); getUser() above
+  // already authenticated it, so decoding it for `iat` is safe.
+  const { data: sessionData } = await supabase.auth.getSession();
+  const meta = data.user.user_metadata as { full_name?: unknown } | undefined;
   return {
-    id: claims.id,
-    email: claims.email,
-    fullName: claims.fullName,
-    accessToken: claims.accessToken,
+    userId: data.user.id,
+    email: data.user.email ?? null,
+    fullName: typeof meta?.full_name === "string" ? meta.full_name : null,
+    issuedAt: decodeIssuedAt(sessionData.session?.access_token),
   };
 };
 
 /**
- * Resolve the authenticated user for an API route.
- * Tries the local JWT cookie first (getUserFromCookies), then falls back to
- * supabase.auth.getUser(). Throws a 401 NextResponse if neither yields a user.
+ * Kill switch: true when a session was issued before the current session_epoch.
+ * Bumping session_epoch in the DB thus invalidates every session minted earlier.
+ * issuedAt 0 (unknown) or epoch 0 (default) never kills — fail-open.
+ */
+export const isSessionKilled = (issuedAt: number, epoch: number) =>
+  epoch > 0 && issuedAt > 0 && issuedAt < epoch;
+
+/**
+ * Authenticated user with the kill switch applied: null if unauthenticated OR
+ * killed. This is the value routes should trust for "who is logged in".
+ */
+export const getLiveUser = async (
+  supabase: SupabaseClient
+): Promise<AuthContext | null> => {
+  const ctx = await getAuthContext(supabase);
+  if (!ctx) return null;
+  if (isSessionKilled(ctx.issuedAt, await getSessionEpoch())) return null;
+  return ctx;
+};
+
+/**
+ * Resolve the authenticated user for an API route, enforcing the kill switch.
+ * Throws a 401 NextResponse when unauthenticated or killed.
  *
  * Usage (wrap the handler body in try/catch — see specs/CONVENTIONS.md §1):
  *   try {
@@ -124,24 +178,9 @@ export const getUserFromCookies = async () => {
 export const requireUser = async (
   supabase: SupabaseClient
 ): Promise<{ userId: string }> => {
-  const claims = await getAccessTokenClaims();
-  if (claims) {
-    // A valid local token exists — the kill switch is authoritative here. If it
-    // was killed we throw 401 and DO NOT fall through, so the Supabase fallback
-    // (whose own session cookie is still valid until token expiry) can't
-    // resurrect a session we just invalidated.
-    if (isKilled(claims, await getSessionEpoch())) {
-      throw NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return { userId: claims.id };
-  }
-
-  // No verifiable local token (e.g. SUPABASE_JWT_SECRET unset) — fall back.
-  const { data: auth, error: authError } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-  if (authError || !userId) {
+  const user = await getLiveUser(supabase);
+  if (!user) {
     throw NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  return { userId };
+  return { userId: user.userId };
 };

@@ -39,10 +39,12 @@ update public.app_control set purge_version = purge_version + 1,
 
 ### Server-side enforcement (the real kill switch)
 - `lib/api/appControl.ts` — `getAppControl()` reads the singleton via the service-role client, cached in-memory `TTL_MS = 30_000` (fail-**open** on DB error so a transient failure never locks everyone out). `getSessionEpoch()` is the hot-path accessor.
-- `lib/supabase/auth.ts`:
-  - `getAccessTokenClaims()` — verify the cookie JWT, return `{ id, email, fullName, accessToken, issuedAt }`; **no** kill check (used by the endpoint to compute `killed`).
-  - `getUserFromCookies()` — claims **plus** kill check → `null` when killed.
-  - `requireUser()` — uses claims + epoch directly; if a valid local token is killed it throws 401 and **does not** fall through to `supabase.auth.getUser()`, so the still-valid Supabase session cookie can't resurrect a killed session.
+- `lib/supabase/auth.ts` — enforcement works **with or without `SUPABASE_JWT_SECRET`** (the secret is unset in this project, so the secret-free path is the live one):
+  - `getAccessTokenClaims()` — fast path: locally **verify** the cookie JWT. Returns `null` when the secret is unset.
+  - `getAuthContext(supabase)` — resolves `{ userId, email, fullName, issuedAt }`. Secret set → verified claims. Secret unset → `supabase.auth.getUser()` does the crypto verification, then `decodeJwt()` reads `iat` from the already-authenticated token (decode-only, no signature check). No kill check — used by the endpoint to compute `killed`.
+  - `isSessionKilled(issuedAt, epoch)` — `epoch > 0 && issuedAt > 0 && issuedAt < epoch` (fail-open on unknown `iat`).
+  - `getLiveUser(supabase)` — `getAuthContext` + kill check → `null` when unauthenticated **or** killed. Used by `requireUser()` (all routes) and `/api/auth/me` (so the client's AuthContext drops the user on kill).
+- **Why not the JWT secret**: the earlier design keyed enforcement on `getAccessTokenClaims()`, which needs `SUPABASE_JWT_SECRET`. That var is commented out in `.env` (and absent on Vercel), so claims were always `null`, `requireUser` fell straight through, and the kill switch was a no-op. The decode-`iat` path removes that dependency.
 
 ## UI / components
 - `features/pwa/AppControl.tsx` (`"use client"`) — mounted **globally** in `src/app/layout.tsx` (inside `AuthProvider`, beside `ServiceWorkerRegister`). Polls `/api/app-control` on mount and on `visibilitychange` → visible (PWA foreground), so a flag flip converges within seconds.
@@ -60,8 +62,9 @@ update public.app_control set purge_version = purge_version + 1,
 ## Files to touch
 `supabase/migrations/009_app_control.sql` — table + RLS.
 `src/lib/api/appControl.ts` — cached epoch/purge reader.
-`src/lib/supabase/auth.ts` — `getAccessTokenClaims`, kill check in `getUserFromCookies` + `requireUser`.
-`src/app/api/app-control/route.ts` — poll endpoint.
+`src/lib/supabase/auth.ts` — `getAuthContext` / `getLiveUser` / `isSessionKilled`; secret-free kill check in `requireUser`.
+`src/app/api/app-control/route.ts` — poll endpoint (`killed` via `getAuthContext`).
+`src/app/api/auth/me/route.ts` — uses `getLiveUser` so `/me` reflects the kill switch.
 `src/features/pwa/AppControl.tsx` — client boot service.
 `src/app/layout.tsx` — global mount.
 `supabase/ops/{logout-all-users,force-cache-purge}.sql`, `supabase/ops/run.sh`, `supabase/ops/README.md`, `package.json` (`ops:*` scripts) — operator commands.
