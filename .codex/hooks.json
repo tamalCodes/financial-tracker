@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tamalcodes/Gh/financial-tracker/.codex/hooks/inject-spec-index.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

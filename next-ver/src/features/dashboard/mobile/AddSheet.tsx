@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import AmountField, {
   OperatorBar,
   type AmountFieldHandle,
 } from "./AmountField";
-import { useMediaQuery } from "../hooks/useMediaQuery";
 import CatPill from "./CatPill";
 import {
   BODY,
@@ -280,7 +280,9 @@ export default function AddSheet({
                   flex: 1,
                 }}
               >
-                <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
+                <span
+                  style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}
+                >
                   Total amount
                 </span>
                 <input
@@ -317,7 +319,9 @@ export default function AddSheet({
                   width: 120,
                 }}
               >
-                <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
+                <span
+                  style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}
+                >
                   Months
                 </span>
                 <input
@@ -381,7 +385,9 @@ export default function AddSheet({
                 marginBottom: 18,
               }}
             >
-              <span style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}>
+              <span
+                style={{ font: `500 13px ${BODY}`, color: "var(--c-body)" }}
+              >
                 Category
               </span>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

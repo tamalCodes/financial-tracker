@@ -27,6 +27,8 @@ function mockSupabase(data: Record<string, Row[]>, rpcValue?: number) {
             if (col === "user_id") return true;
             if (op === "eq") return r[col] === val;
             if (op === "lte") return String(r[col]) <= String(val);
+            // `.is(col, null)` → keep rows where col is null/undefined (one-off bills).
+            if (op === "is-null") return r[col] == null;
             // `.not(col, "is", null)` → keep rows where col is present (not null/undefined).
             if (op === "not-is-null") return r[col] != null;
             return true;
@@ -42,6 +44,10 @@ function mockSupabase(data: Record<string, Row[]>, rpcValue?: number) {
         },
         lte: (col: string, val: unknown) => {
           filters.push(["lte", col, val]);
+          return builder;
+        },
+        is: (col: string, val: unknown) => {
+          filters.push(["is-null", col, val]);
           return builder;
         },
         not: (col: string, _op: string, val: unknown) => {
