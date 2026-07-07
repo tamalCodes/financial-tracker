@@ -23,6 +23,7 @@ let mockClient: ReturnType<typeof makeClient>["client"];
 let eqs: EqCall[];
 let writes: Write[];
 let signUpSpy: ReturnType<typeof vi.fn>;
+let signInSpy: ReturnType<typeof vi.fn>;
 
 function makeClient(authUserId: string | null = "user-1") {
   const _eqs: EqCall[] = [];
@@ -70,16 +71,29 @@ function makeClient(authUserId: string | null = "user-1") {
       error: null,
     })
   );
+  const signInWithPassword = vi.fn(() =>
+    Promise.resolve({
+      data: { user: authUserId ? { id: authUserId } : null },
+      error: null,
+    })
+  );
   return {
-    client: { from, auth: { signUp } },
+    client: { from, auth: { signUp, signInWithPassword } },
     eqs: _eqs,
     writes: _writes,
     signUp,
+    signInWithPassword,
   };
 }
 
 vi.mock("@/lib/supabase/cookies", () => ({
   createSupabaseServerClient: () => Promise.resolve(mockClient),
+}));
+
+vi.mock("@/lib/supabase/server", () => ({
+  get supabaseServer() {
+    return mockClient;
+  },
 }));
 
 const requireUserMock = vi.fn();
@@ -93,6 +107,7 @@ import * as credits from "@/app/api/credits/route";
 import * as investments from "@/app/api/investments/route";
 import * as bills from "@/app/api/bills/route";
 import * as signup from "@/app/api/auth/signup/route";
+import * as login from "@/app/api/auth/login/route";
 
 const USER = "user-1";
 
@@ -119,6 +134,7 @@ beforeEach(() => {
   eqs = c.eqs;
   writes = c.writes;
   signUpSpy = c.signUp;
+  signInSpy = c.signInWithPassword;
   requireUserMock.mockReset();
   requireUserMock.mockResolvedValue({ userId: USER });
 });
@@ -219,6 +235,19 @@ describe("signup — opening balance (D-A, via metadata → trigger)", () => {
     );
     expect(res.status).toBe(400);
     expect(signUpSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("login — last login audit", () => {
+  it("records profiles.last_login_at after successful password login", async () => {
+    const res = await login.POST(post({ email: "a@b.com", password: "secret123" }));
+    expect(res.status).toBe(200);
+    expect(signInSpy).toHaveBeenCalledWith({ email: "a@b.com", password: "secret123" });
+
+    const w = writes.find((x) => x.table === "profiles" && x.op === "upsert");
+    expect(w?.row).toMatchObject({ user_id: USER });
+    expect(typeof w?.row?.last_login_at).toBe("string");
+    expect(Number.isNaN(Date.parse(w?.row?.last_login_at as string))).toBe(false);
   });
 });
 

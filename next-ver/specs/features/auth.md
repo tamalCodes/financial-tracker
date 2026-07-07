@@ -3,18 +3,22 @@
 Reverse-engineered from `src/app/api/auth/*`, `lib/supabase/{auth,cookies}.ts`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
 `src/app/(auth)/layout.tsx`, `src/middleware.ts`,
-`supabase/migrations/{003_rls,008_profiles_full_name}.sql`.
+`supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
 
 ## Problem
 Email/password auth via Supabase. Server routes authenticate from cookies; the client holds
 session state in `AuthContext`.
 
 ## Data model touched
-Supabase `auth.users` (managed by Supabase). No app tables.
+Supabase `auth.users` (managed by Supabase).
+`public.profiles` stores signup profile data and login audit data:
+- `opening_balance` and `full_name` are seeded by the signup trigger.
+- `last_login_at` is updated after every successful password login.
 
 ## API contract — `/api/auth/*`
-- **POST `/login`** — `{ email, password }` → `signInWithPassword`. → `{ ok: true }`.
+- **POST `/login`** — `{ email, password }` → `signInWithPassword`, then service-role upsert of `profiles.last_login_at`. → `{ ok: true }`.
   Errors: 401 bad creds, 429. Rate limit `auth:login` `{10, 60_000}`.
+  If Supabase accepts the password but the audit timestamp cannot be written, the route returns 500 instead of silently losing the login event.
 - **POST `/signup`** — `{ email, password, fullName, openingBalance? }` → `signUp` with
   `options.data = { full_name, opening_balance }`. → `{ ok: true }`. 400 / 429.
   Rate limit `auth:signup` `{6, 60_000}`. `fullName` required (`signupSchema`, 1–80 chars);
@@ -41,6 +45,9 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 - `full_name` is stored two ways: (1) in the JWT `user_metadata` (set via `signUp`
   metadata) so `/me` reads it back with no query, and (2) durably on `public.profiles`
   via the `handle_new_user` trigger (migration 008).
+- `last_login_at` lives only on `public.profiles`.
+  It is written by the login route after successful authentication using the service-role client, so it does not depend on user RLS state.
+  Existing missing `profiles` rows are repaired through an upsert keyed by `user_id`.
 - `features/auth/identity.ts` `identityFrom(fullName, email)` → `{ name, initials }`:
   greeting shows the **first name** only; avatar shows up to two initials. Falls back to
   the email local-part for pre-008 accounts with no `full_name`. Used by both
@@ -62,6 +69,7 @@ choice, and the themed app is restored after auth navigation.
 
 ## Acceptance criteria
 - [ ] Login/signup/logout set/clear the Supabase session cookie.
+- [ ] Successful login writes `profiles.last_login_at` with the server timestamp.
 - [ ] `/me` returns the user with no extra network call when the JWT cookie is valid.
 - [ ] Protected routes 401 without a valid session.
 - [ ] All auth routes rate-limited.
@@ -71,7 +79,7 @@ choice, and the themed app is restored after auth navigation.
 `lib/supabase/cookies.ts`, `features/auth/{AuthContext.tsx,identity.ts}`,
 `features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`,
 `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
-`supabase/migrations/008_profiles_full_name.sql`, `src/middleware.ts`.
+`supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `src/middleware.ts`.
 
 ## Out of scope
 OAuth/social, password reset, email verification flows, MFA.

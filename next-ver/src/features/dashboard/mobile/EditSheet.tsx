@@ -193,10 +193,11 @@ export default function EditSheet({
   // Amount focused on touch → CTA slot becomes the glassy operator bar (see AddSheet).
   const amountRef = useRef<AmountFieldHandle>(null);
   const [amountFocus, setAmountFocus] = useState(false);
-  const [touch, setTouch] = useState(false);
-  useEffect(() => {
-    setTouch(window.matchMedia?.("(pointer: coarse)").matches ?? false);
-  }, []);
+  const [touch] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(pointer: coarse)").matches ?? false)
+  );
   const showOps = touch && amountFocus;
 
   return (

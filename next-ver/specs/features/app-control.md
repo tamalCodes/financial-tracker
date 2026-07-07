@@ -29,6 +29,11 @@ update public.app_control set purge_version = purge_version + 1,
   updated_at = now() where id = 1;
 ```
 
+`profiles.last_login_at` records when each user last completed password login.
+It is not the enforcement mechanism; it is an audit/control signal operators can compare against `app_control.session_epoch`.
+To force every current session to re-login after a release, set `session_epoch` to `now()`.
+Any session minted before that epoch is rejected, and later successful logins update `last_login_at`.
+
 ## API contract
 **`GET /api/app-control`**
 - **Request**: none (reads the caller's auth cookie if present).

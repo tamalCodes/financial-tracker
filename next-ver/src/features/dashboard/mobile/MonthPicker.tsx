@@ -27,11 +27,6 @@ export default function MonthPicker({ value, onChange }: Props) {
   const [viewYear, setViewYear] = useState(selYear);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
-  // Re-sync the paged year whenever the popover opens on a new value.
-  useEffect(() => {
-    if (open) setViewYear(selYear);
-  }, [open, selYear]);
-
   // Close on outside click.
   useEffect(() => {
     if (!open) return;
@@ -53,7 +48,10 @@ export default function MonthPicker({ value, onChange }: Props) {
     <div ref={wrapRef} style={{ position: "relative" }}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          setViewYear(selYear);
+          setOpen((o) => !o);
+        }}
         style={{
           width: "100%",
           display: "flex",

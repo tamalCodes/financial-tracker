@@ -71,10 +71,11 @@ export default function AddSheet({
   // bar splice operators into the field; focus swaps the slot back to Save.
   const amountRef = useRef<AmountFieldHandle>(null);
   const [amountFocus, setAmountFocus] = useState(false);
-  const [touch, setTouch] = useState(false);
-  useEffect(() => {
-    setTouch(window.matchMedia?.("(pointer: coarse)").matches ?? false);
-  }, []);
+  const [touch] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(pointer: coarse)").matches ?? false)
+  );
   const showOps = touch && amountFocus;
 
   // Desktop (≥1024px): render as a centered dialog card — full radius, no

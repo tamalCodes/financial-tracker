@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 interface AuthContextType {
   user: { id: string; email?: string | null; fullName?: string | null } | null;
@@ -21,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthContextType["user"]>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me");
       const data = (await res.json()) as { user: AuthContextType["user"] };
@@ -29,13 +36,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [refreshUser]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -46,9 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.error || "Unable to sign in");
     }
     await refreshUser();
-  };
+  }, [refreshUser]);
 
-  const signUp = async (
+  const signUp = useCallback(async (
     email: string,
     password: string,
     fullName: string,
@@ -64,20 +71,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.error || "Unable to sign up");
     }
     await refreshUser();
-  };
+  }, [refreshUser]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     const res = await fetch("/api/auth/logout", { method: "POST" });
     if (!res.ok) {
       const data = await res.json();
       throw new Error(data.error || "Unable to sign out");
     }
     setUser(null);
-  };
+  }, []);
 
   const value = useMemo(
     () => ({ user, loading, signIn, signUp, signOut }),
-    [user, loading]
+    [user, loading, signIn, signUp, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
