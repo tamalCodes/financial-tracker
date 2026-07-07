@@ -117,7 +117,7 @@ F3–F6 UI complete (demo). `verify` green. Next: wire backend to replace demo d
 
 # PART C — Frontend (only after PART B green)
 
-High-fidelity per handoff §5 + tokens §8. Reuse `shared/ui/*`. 412px; QA vs `screenshots/01..06`.
+High-fidelity per handoff §5 + tokens §8. Reuse the live sheet/card patterns. 412px; QA vs `screenshots/01..06`.
 
 ## F0 — Tokens & fonts ✅
 - [x] load **Geist** (`next/font`) in `layout.tsx`; `--font-body` + `font-body` utility

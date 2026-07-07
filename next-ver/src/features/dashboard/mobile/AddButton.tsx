@@ -5,7 +5,7 @@
 // (Recent payments → expense, Bills → bill, EMIs → EMI, Portfolio → investment,
 // Income → income). Colour matches the card's transaction semantic. Replaces the
 // global FloatingActionBar on desktop — no more content occlusion.
-export type AddVariant = "expense" | "income" | "investment" | "bill";
+type AddVariant = "expense" | "income" | "investment" | "bill";
 
 const VARIANTS: Record<AddVariant, { gradient: string; border: string; stroke: string }> = {
   expense: {

@@ -1,12 +1,10 @@
-export type ExpenseCategory =
+type ExpenseCategory =
   | "food"
   | "shopping"
   | "transport"
   | "health"
   | "groceries"
   | "other";
-
-export type HoldingKind = "fd" | "mutual_fund";
 
 export interface Expense {
   id: string;
@@ -63,26 +61,6 @@ export interface EmiProgress {
   paidAmount: number; // Σ paid installments
   remainingCount: number; // installments still due
   remainingAmount: number; // Σ unpaid installments
-}
-
-// Portfolio panel (manual, display-only — no money-model effect).
-export interface Holding {
-  id: string;
-  kind: HoldingKind;
-  name: string;
-  current_value: number;
-  rate: number | null;
-  maturity_date: string | null;
-  created_at: string;
-}
-
-export interface Sip {
-  id: string;
-  name: string;
-  monthly: number;
-  due_date: string | null;
-  paid_total: number;
-  created_at: string;
 }
 
 // Per-month figures + cumulative balance returned by GET /api/dashboard.

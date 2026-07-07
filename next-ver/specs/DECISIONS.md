@@ -43,12 +43,11 @@ No migrations existed; both files are best-effort from the queries and marked as
 `supabase gen types` output as the source of truth once available, and replace the hand-written
 `Database` type. Until then, column assumptions carry some risk — see DATA_MODEL "_(inferred)_".
 
-## D8 — Shared UI primitives over per-modal Tailwind (`features/shared/ui/`)
-The four transaction modals had each grown their own styling (different heading sizes,
-`gap-10` vs `gap-5`, raw checkbox vs toggle, some missing `max-w`/safe-area, `z-50` losing to
-app chrome). Unified onto `Modal` / `Field` / `TextField` / `Button` / `ToggleCard`. New dialogs
-reuse these — see DESIGN_SYSTEM.md. Trade-off: one more indirection layer, but the visual
-language now lives in one place instead of being copy-pasted (and re-drifting) per form.
+## D8 — Retire unused shared UI primitive layer
+An earlier pass introduced `features/shared/ui/*` wrappers for modal/form styling, but the live dashboard moved to bespoke high-fidelity sheets (`AddSheet`, `EditSheet`, and related mobile components).
+The wrapper layer became dead code and a misleading spec target.
+Decision: delete unused wrappers and keep visual consistency through `DESIGN_SYSTEM.md` plus existing live sheet patterns.
+Add a shared primitive only after repeated live usage proves the abstraction is worth it.
 
 ## D9 — AmountInput totals instantly, no artificial delay
 The amount field previously played a ~1.75s fake "thinking" shimmer + "Adding it up…" beat

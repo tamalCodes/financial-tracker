@@ -27,7 +27,7 @@ const shiftMonthKey = (key: string, delta: number): string => {
  * Build an ascending list of `months` month-keys ending at (and including) `anchor`.
  * e.g. anchor='2026-07-01', months=6 → ['2026-02-01', …, '2026-07-01'].
  */
-export const buildMonthWindow = (anchor: string, months: number): string[] => {
+const buildMonthWindow = (anchor: string, months: number): string[] => {
   const keys: string[] = [];
   for (let i = months - 1; i >= 0; i--) {
     keys.push(shiftMonthKey(anchor, -i));

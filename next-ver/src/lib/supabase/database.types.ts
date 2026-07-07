@@ -7,7 +7,7 @@
 // Shape matches @supabase/supabase-js's expected `Database` generic.
 // Post mobile redesign (migration 001): cumulative money model — see DATA_MODEL.md.
 
-export type ExpenseCategory =
+type ExpenseCategory =
   | "food"
   | "shopping"
   | "transport"
@@ -15,7 +15,7 @@ export type ExpenseCategory =
   | "groceries"
   | "other";
 
-export type HoldingKind = "fd" | "mutual_fund";
+type HoldingKind = "fd" | "mutual_fund";
 
 // credits: per-month income. Legacy carry-forward columns retained but unused.
 type CreditRow = {

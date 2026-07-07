@@ -48,7 +48,7 @@ export const catOf = (key: CategoryKey): Category =>
 // ── Bill icons (D-C) ─────────────────────────────────────────────────────────
 // The bills table has no icon column. Derive an icon from the bill name keyword;
 // fall back to a generic (miscellaneous) icon. 20×20 viewBox stroke paths.
-export const BILL_ICON = {
+const BILL_ICON = {
   card: "M3 6h14v8H3z M3 9h14", // misc / fallback
   bolt: "M11 2 5 11h4l-1 5 6-8h-4l1-6z", // electricity
   wifi: "M3 8c4-3 10-3 14 0 M6 11c2.5-2 5.5-2 8 0 M10 14h.01", // wifi / broadband
@@ -102,7 +102,6 @@ export const SHEET_TITLE: Record<SheetMode, string> = {
   income: "Add income",
   investment: "Add investment",
 };
-export const SHEET_SAVE = SHEET_TITLE;
 export const NOTE_LABEL: Record<SheetMode, string> = {
   expense: "Note",
   income: "Source",

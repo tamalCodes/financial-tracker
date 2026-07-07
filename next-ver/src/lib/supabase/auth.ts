@@ -25,7 +25,7 @@ const extractAccessToken = (rawValue: string) => {
   return rawValue;
 };
 
-export interface AccessTokenClaims {
+interface AccessTokenClaims {
   id: string;
   email: string | null;
   fullName: string | null;
@@ -40,7 +40,7 @@ export interface AccessTokenClaims {
  * here), so callers must have a secret-free fallback. Kept for the fast path and
  * because it needs no network round-trip.
  */
-export const getAccessTokenClaims =
+const getAccessTokenClaims =
   async (): Promise<AccessTokenClaims | null> => {
     const jwtSecret = process.env.SUPABASE_JWT_SECRET;
     if (!jwtSecret) {

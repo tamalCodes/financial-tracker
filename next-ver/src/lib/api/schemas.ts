@@ -16,7 +16,7 @@ const tags = z.array(z.string().trim().min(1).max(32)).max(20).optional();
 const tag = z.string().trim().max(32).nullish();
 
 /** Expense category enum (mobile redesign). Optional on the wire; defaults to 'other'. */
-export const expenseCategory = z.enum([
+const expenseCategory = z.enum([
   "food",
   "shopping",
   "transport",
@@ -100,7 +100,7 @@ export const emiPatchSchema = z
   );
 
 // Portfolio panel — manual reference data (no money-model effect; DECISIONS D15).
-export const holdingKind = z.enum(["fd", "mutual_fund"]);
+const holdingKind = z.enum(["fd", "mutual_fund"]);
 
 export const holdingCreateSchema = z.object({
   kind: holdingKind,

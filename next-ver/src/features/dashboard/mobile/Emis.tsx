@@ -20,7 +20,7 @@ function PaidTotal({ paid, total }: { paid: string; total: string }) {
 // "EMIs" card — one strip per EMI, rolled up across every month. Tap a strip to edit
 // the EMI (name / monthly / total). If this month's instalment is still due, the strip
 // carries a Pay button. Header shows Σ paid / Σ total loan (compact, e.g. 4.6K / 32K).
-export interface EmiCard {
+interface EmiCard {
   emi: EmiProgress;
   thisMonth: BillView | null;
 }

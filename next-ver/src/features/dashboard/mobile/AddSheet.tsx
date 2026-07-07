@@ -12,7 +12,6 @@ import {
   DISPLAY,
   NOTE_LABEL,
   NOTE_PLACEHOLDER,
-  SHEET_SAVE,
   SHEET_TITLE,
   type Category,
   type CategoryKey,
@@ -463,7 +462,7 @@ export default function AddSheet({
                 transition: "opacity .25s ease",
               }}
             >
-              {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_SAVE[mode]}
+              {asEmi ? "Add EMI" : asBill ? "Add Bill" : SHEET_TITLE[mode]}
             </button>
           )}
         </div>

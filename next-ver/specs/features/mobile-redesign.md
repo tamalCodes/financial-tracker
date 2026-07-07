@@ -22,10 +22,10 @@ The cloth design already matches house style — minimal token work:
 | Geist body font | not loaded | add (`next/font` or Google Fonts) |
 | Indigo-only accent | `--color-accent` indigo-500/600 | reuse |
 | credit=green / expense=red / investment=purple | `--color-credit/expense/investment` tokens | reuse; **split investment to violet `139,92,246`** (currently aliases indigo) |
-| `Intl.NumberFormat('en-IN')` | `utils/format.ts` `formatCurrency` (maxFractionDigits 0) | reuse |
+| `Intl.NumberFormat('en-IN')` | feature-local formatting helpers | reuse |
 | Glass/translucent tints | DESIGN_SYSTEM "color through glass" (D11) | exact match |
 | rounded-3xl surfaces / rounded-full pills | radius tokens exist | reuse |
-| Bottom-sheet / modal primitive | `shared/ui/Modal.tsx`, `useLockBodyScroll` | reuse as AddSheet base |
+| Bottom-sheet / modal pattern | `AddSheet.tsx`, `EditSheet.tsx` | reuse as sheet references |
 | Route/auth/validation patterns | CONVENTIONS §1–§7 (`requireUser`, `rateLimit`, zod `validate`, `handleError`, user_id scoping) | **all new routes follow these verbatim** |
 
 ## A1. Gap decisions (owner-confirmed) ✅
@@ -135,7 +135,7 @@ Each phase: implement → `tsc --noEmit` + lint + vitest → commit on `main`. C
 
 # PART C — Frontend phases (only after PART B green)
 
-High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse `shared/ui/*`. 412px design viewport; QA vs `screenshots/01..06`. **As built the shell is fluid** (`MobileHome`): `width:100%, maxWidth:640` — it fills the device edge-to-edge (only the 16px content padding as side gutter) instead of capping at 412px, which left large empty side rails on phones whose viewport is wider than 412 (PWA fix).
+High-fidelity per handoff §5 + tokens §8 (exact radii/shadows/alphas). Reuse the live sheet/card patterns. 412px design viewport; QA vs `screenshots/01..06`. **As built the shell is fluid** (`MobileHome`): `width:100%, maxWidth:640` — it fills the device edge-to-edge (only the 16px content padding as side gutter) instead of capping at 412px, which left large empty side rails on phones whose viewport is wider than 412 (PWA fix).
 
 ## Phase F0 — Tokens & fonts
 - Load **Geist** (`next/font`), add `--font-body`. Split `--color-investment` → violet. Add category color tokens (Food `245,158,11`/`#b45309`, Shopping `139,92,246`/`#6d28d9`, Transport `14,165,233`/`#0369a1`, Health `16,185,129`/`#047857`, Groceries `20,184,166`/`#0f766e`, Other `100,116,139`/`#475569`). Add glass-tile recipe util. Document in DESIGN_SYSTEM.md (currently omits credit/expense/investment + glass — WHATS_LEFT).

@@ -98,9 +98,10 @@ Query params (DELETE `?id=`, dashboard `?month=`) are still checked inline →
 - **Client components**: top-line `"use client"` (hooks, context, forms). RSC by default.
 - **Month key format**: `YYYY-MM-01` (string, day always `01`). Helpers in
   `features/dashboard/utils/dates.ts` (`formatMonthKey`, `parseMonthKey`, `shiftMonthKey`).
-- **Locale**: dates/currency formatted `en-IN` (₹). See `utils/format.ts`.
+- **Locale**: dates/currency formatted `en-IN` (₹). Use the existing feature-local formatting helpers.
 
-## 8. UI — shared primitives (`src/features/shared/ui/`)
-Don't hand-roll modal/input/button Tailwind. Compose `Modal`, `Field` + `TextField`, `Button` +
-`ButtonRow`, `ToggleCard`. Tokens and the canonical form recipe live in **DESIGN_SYSTEM.md** —
-read it before adding a dialog. All four transaction modals follow that recipe; keep them aligned.
+## 8. UI — existing dashboard patterns
+Do not add new shared UI abstractions unless two or more live components actually use them.
+For dialogs and sheets, copy the current `AddSheet` / `EditSheet` structure and token usage rather than reviving unused wrapper components.
+Tokens and the canonical visual language live in **DESIGN_SYSTEM.md**.
+Read it before adding a dialog.

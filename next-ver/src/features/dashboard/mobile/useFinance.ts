@@ -662,5 +662,3 @@ export function useFinance() {
     editDeleting,
   };
 }
-
-export type Finance = ReturnType<typeof useFinance>;

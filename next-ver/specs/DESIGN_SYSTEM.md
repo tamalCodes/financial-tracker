@@ -1,8 +1,9 @@
 # DESIGN_SYSTEM — next-ver
 
 The shared visual language for the app's UI and the **source of truth** for color, type, and
-components. Before styling a new screen or dialog, **reuse the primitives in
-`src/features/shared/ui/`** rather than hand-rolling Tailwind, and pull color/type from here.
+components.
+Before styling a new screen or dialog, follow the existing live dashboard patterns and pull color/type from here.
+Do not add wrapper components until repeated live usage justifies them.
 
 > Reverse-engineered from `src/app/globals.css` (theme tokens), `src/features/theme/ThemeContext.tsx`,
 > `src/features/dashboard/mobile/AvatarMenu.tsx`.
@@ -29,9 +30,8 @@ whole app.
   hex inline. `rgba(99,102,241,…)` indigo tints and `rgba(15,23,42,…)` shadows are left literal
   (they read acceptably on both themes).
 
-> Context: the four transaction modals (expense/credit/investment/starting-balance) had each
-> drifted into its own look (different heading sizes, `gap-10` vs `gap-5`, raw checkbox vs
-> toggle, missing max-width). They were unified onto the primitives below. Keep them unified.
+> Context: an earlier shared primitive layer was retired after the live app moved to high-fidelity mobile sheets.
+> Keep new UI aligned with the current sheets and tokens, not with deleted wrappers.
 
 ## 0. Principles (read first)
 
@@ -106,73 +106,32 @@ Rules: text is always the **deep family shade** (700/800), never white-on-tint. 
   distinct, slightly characterful voice on both display and controls.
 - **Body / system text** — `font-sans` (Geist) where Bricolage isn't forced.
 - Numerals in amounts/totals use `tabular-nums` for stable width.
-- **Locale**: `en-IN`, currency `₹`. Formatting helpers in `utils/format.ts`.
+- **Locale**: `en-IN`, currency `₹`. Use feature-local formatting helpers and keep rounding consistent with existing dashboard code.
 
-## 4. Primitives (`src/features/shared/ui/`)
+## 4. Live patterns
 
-### `Modal` — `Modal.tsx`
-The one dialog shell. **Every modal uses it; do not re-implement a backdrop.**
-- Mobile: full-bleed bottom sheet, `rounded-t-3xl`, `pb-[max(1.5rem,env(safe-area-inset-bottom))]`
-  so actions clear the iOS home bar.
-- Desktop (`sm+`): centered card, `max-w-md`, `rounded-3xl`.
-- `z-[100]` (above app chrome — fixes the avatar/header bleeding over older `z-50` modals).
-- Closes on **backdrop click** and **Escape**. Body scrolls (`max-h-[92dvh]`).
-- Props: `title`, `subtitle?`, `onClose`, `closeLabel?`, `children`.
-- Scroll-lock stays the caller's job (`useLockBodyScroll` in `Dashboard.tsx`).
+### Sheets
+`AddSheet` and `EditSheet` are the current dialog references.
+They use inline tokenized styles, bottom-sheet behavior on mobile, centered card behavior where applicable, and safe-area-aware padding.
+When adding a new sheet, start from those files and keep spacing, type scale, backdrop, and operator-bar behavior aligned.
 
-### `Field` + `TextField` — `Field.tsx`
-- `Field` = label (+ optional grey `hint`, e.g. `(optional)`) wrapping a control.
-- `TextField` = the standard text input (forwardRef). Use for all plain text inputs.
+### Amount field
+`AmountField` is the shared amount input for add/edit flows.
+It accepts arithmetic and owns the calculator/operator-bar integration.
+Do not create another amount input unless the interaction is materially different.
 
-### `Button` + `ButtonRow` — `Button.tsx`
-- `variant="primary"` (`bg-slate-900`, confirm) | `variant="secondary"` (outline, cancel).
-- `ButtonRow` lays out the Cancel/Confirm pair (`flex gap-3`, each `flex-1`).
-
-### `ToggleCard` — `ToggleCard.tsx`
-Tappable card (icon + title + description + switch) for boolean options like carry-forward.
-Replaces the bare `<input type=checkbox>`. Props: `icon` (Lucide), `title`, `description`,
-`checked`, `onChange`.
-
-### `AmountInput` — `features/dashboard/components/AmountInput.tsx`
-₹-prefixed amount field that accepts arithmetic (`900+300`) and totals to its result.
-- **Focus-independent auto-resolve** (D10): while focused, a `RESOLVE_DELAY` (600ms) debounce
-  fires on each keystroke; once the value is a valid, complete calculation (no trailing operator,
-  result ≠ current) it resolves *without needing a blur* — a ~350ms indigo shimmer sweep +
-  `aria-live` "Calculating…" microcopy, then a `requestAnimationFrame` count-up tween to the
-  result (~250ms ease-out, `tabular-nums`), then caret returns to end. **No settle glow / box-shadow**
-  (D12). Calc + reveal ≈ 600ms — snappy; **not** the old ~1.75s beat (D9).
-- **Blur still resolves instantly** (the original path). **Caret**: `caret-indigo-500`, autofocus
-  places the caret *after* any prefilled value (no full selection).
-- **Status slot**: the single-line slot under the field is the `aria-live="polite"` region
-  (empty when idle; "Calculating…" during Phase A). No static tip — and no layout shift.
-- **`prefers-reduced-motion: reduce`** → skips all animation, sets the value directly.
-- Focus styling matches all inputs: single `border-indigo-400`, **no ring** (see token table).
-
-### `TagInput` — `features/dashboard/components/TagInput.tsx`
-Chip-style tag entry (type + Enter/comma to commit, Backspace to remove last). Category tags use
-the **Glass treatment** (§2): committed chips and the quick-pick suggestion row both render glass,
-colored by tag. Default suggestions: **Food / Bills / Shopping** (glass orange/blue/pink). Unknown
-or custom tags get the slate glass fallback. `glassTagStyle(tag)` is the single source of the look.
+### Portfolio and transaction cards
+Dashboard cards live under `src/features/dashboard/mobile/` and `src/features/dashboard/desktop/`.
+Prefer extracting a shared component only after duplicated live markup creates real maintenance cost.
 
 ## 5. Form recipe
 
-```tsx
-<Modal title="Add expense" subtitle="Record what you spent this month." onClose={onClose}>
-  <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-    <Field id="amount" label="Amount"><AmountInput .../></Field>
-    <Field id="description" label="Title"><TextField .../></Field>
-    <ToggleCard icon={Repeat} title="Repeat every month" .../>
-    {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
-    <ButtonRow>
-      <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-      <Button type="submit" disabled={loading}>Add expense</Button>
-    </ButtonRow>
-  </form>
-</Modal>
-```
-
-All four modals (`ExpenseForm`, `CreditForm`, `InvestmentForm`, `StartingBalanceModal`) follow
-this exact shape. Adding a new modal? Copy it.
+New forms should mirror the existing sheet structure:
+- Fixed backdrop with click-outside close.
+- Tokenized surface, line, text, and accent colors via `var(--c-*)`.
+- Stable CTA/operator slot heights to avoid layout shift.
+- Inputs with at least 16px text for iOS.
+- Safe-area bottom padding for mobile sheets.
 
 ## 6. Mobile standards
 
