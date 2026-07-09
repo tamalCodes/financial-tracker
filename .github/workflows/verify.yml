@@ -19,6 +19,7 @@ jobs:
           cache: npm
           cache-dependency-path: next-ver/package-lock.json
       - run: npm ci
+      - run: npm audit --omit=dev
       - run: npm run verify
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'http://localhost:54321' }}

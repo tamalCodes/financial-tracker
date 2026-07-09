@@ -65,21 +65,31 @@ Safari does NOT — it needs a manual instructions banner.
 - [ ] 🔴 3.2 Rate limiting is in-memory (`lib/api/rateLimit.ts` uses a module `Map`) —
       this does NOT hold on Vercel serverless (per-instance, resets on cold start).
       Move to a shared store (Upstash Redis / Vercel KV) before relying on it in prod.
-- [ ] 🔴 3.3 Confirm every API route: `rateLimit()` → zod-validate body → `requireUser()`
-      → query always scoped `.eq("user_id", userId)`. Audit all 12 routes for the guard.
-- [ ] 🔴 3.4 Supabase Row Level Security (RLS) enabled on every table, policy = owner-only.
+- [x] 🔴 3.3 Confirm every API route: `rateLimit()` → validate request input where applicable → `requireUser()`
+      → query always scoped `.eq("user_id", userId)`.
+      Re-audited 2026-07-10: protected money/portfolio routes follow the guard/scoping pattern; auth routes and `GET /api/app-control` are intentional public/session-aware exceptions.
+- [x] 🔴 3.4 Repo migration state: Supabase Row Level Security (RLS) enabled on every per-user table, policy = owner-only.
+      `app_control` has RLS enabled with no client policies.
       Do not depend on app-layer `user_id` filtering alone.
+- [ ] 🔴 3.4b Live DB verification: query production Supabase catalogs and confirm every deployed table still has expected RLS/policies.
 - [x] 🔴 3.5 Secrets: service-role key server-only (never `NEXT_PUBLIC_*`). Confirm
       `lib/supabase/server.ts` stays `import "server-only"`. `.env` is gitignored ✅;
       never commit real keys. (Verified: `server.ts` line 1 = `import "server-only"`.)
 - [ ] 🟠 3.6 Cookies: auth cookies `HttpOnly`, `Secure`, `SameSite=Lax`. Verify SSR
       client sets these in prod.
-- [ ] 🟠 3.7 Dependency + secret scanning: `npm audit` in CI; enable GitHub Dependabot
-      + secret scanning / push protection on the repo.
+- [ ] 🟠 3.7 Dependency + secret scanning: CI exists and runs `npm audit --omit=dev` plus `npm run verify`, but does not yet run `gitleaks`.
+      Add Gitleaks to CI, enable GitHub Dependabot, and enable GitHub secret scanning / push protection on the repo.
 - [ ] 🟠 3.8 Input limits: cap request body size, string lengths, numeric ranges in zod
       schemas to blunt abuse.
 - [ ] 🟡 3.9 Auth hardening: enforce email confirmation before prod (currently parked),
       password strength, and lockout/backoff on repeated failed logins.
+- [ ] 🔴 3.10 Rotate Supabase service-role key before public launch.
+      Git history now scans clean, but previously exposed secrets must be treated as burned.
+- [x] 🔴 3.11 Public Git history hygiene: stale remote branch `origin/plan/mobile-redesign` deleted 2026-07-10.
+      Keep Claude/Codex project files intentionally because they are workflow docs, not secrets.
+      Keep Graphify output ignored/local by default; historical Graphify artifacts had no secret hit, so no history purge is required unless the repo owner later wants a cleaner public history.
+- [ ] 🟠 3.12 Local generated-secret hygiene: `.env`, `.next/`, and `graphify-out/` are ignored, but `gitleaks dir` still finds local secrets in ignored files.
+      Add pre-commit or documented release check so ignored local artifacts never get force-added or zipped.
 
 ## 4. Safety / privacy
 
@@ -101,10 +111,10 @@ no `.env.example`.
       scope, validation) + core component/hook tests.
 - [ ] 🔴 5.2 E2E smoke: no Playwright. Wire login → dashboard → add txn → assert, so the
       agent write→verify loop can prove flows end-to-end. Add a screenshot recipe.
-- [ ] 🔴 5.3 CI: no `.github/workflows`. Add one running `npm run verify` (typecheck +
-      lint + test + build) + `npm audit` on push/PR. `verify` script already exists ✅.
-- [ ] 🟠 5.4 `.env.example`: committed template of required vars (no secrets) so a fresh
-      clone / agent knows what to set. Missing today.
+- [ ] 🔴 5.3 CI: `.github/workflows/verify.yml` exists and runs `npm audit --omit=dev` plus `npm run verify` (typecheck +
+      lint + test + build), but still needs `gitleaks detect` on push/PR.
+- [x] 🟠 5.4 `.env.example`: committed template of required vars (no secrets) so a fresh
+      clone / agent knows what to set.
 - [ ] 🟠 5.5 Dual-app ambiguity: legacy Vite root app vs `next-ver`. Archive/delete or
       hard-document "next-ver only" so agents don't edit the dead tree. (WHATS_LEFT #5)
 - [ ] 🟠 5.6 Supabase local: `db:start`/`db:reset` scripts exist ✅ — add seed data so

@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Financial Tracker
 
-## Getting Started
+Next.js PWA for personal finance tracking.
+The active app lives in this `next-ver/` directory.
+Legacy root app files are not the deployment target.
 
-First, run the development server:
+## Quick Setup
+
+Clone, install, and create local env:
+
+```bash
+cd next-ver
+npm ci
+cp .env.example .env
+```
+
+Fill `.env` from Supabase:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Run local app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run local Supabase when needed:
 
-## Learn More
+```bash
+npm run db:start
+npm run db:reset
+```
 
-To learn more about Next.js, take a look at the following resources:
+Apply migrations to linked remote project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+supabase db push --linked
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Operator controls:
 
-## Deploy on Vercel
+```bash
+npm run ops:logout-all
+npm run ops:purge-caches
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`ops:logout-all` bumps `app_control.session_epoch`, so all sessions issued before that time must re-login.
+`ops:purge-caches` bumps `app_control.purge_version`, so clients wipe service workers/caches and reload.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Verify
+
+Run full local verification:
+
+```bash
+npm run verify
+npm audit --omit=dev
+gitleaks detect --source . --redact --no-banner
+```
+
+`npm run verify` runs typecheck, lint, tests, and build.
+
+## Vercel
+
+This directory is linked to Vercel through `next-ver/.vercel/project.json`.
+
+Deploy production from this directory:
+
+```bash
+vercel --prod
+```
+
+Required Vercel production env vars:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Never commit real env values.
+
+## Agent Files
+
+This repo intentionally keeps Claude/Codex project instructions and hooks:
+
+- Root `AGENTS.md`
+- Root `CLAUDE.md`
+- `.codex/`
+- `.claude/`
+- `next-ver/AGENTS.md`
+- `next-ver/.claude/`
+
+They are not secrets.
+They document the workflow and help a new machine behave like the current one.
+
+Graphify generated outputs are local navigation artifacts.
+`graphify-out/` is ignored and should stay untracked unless deliberately publishing a sanitized graph.
+
+## Public Repo Hygiene
+
+Before making the repo public or cutting a release:
+
+```bash
+git branch -r
+gitleaks detect --source . --redact --no-banner
+npm audit --omit=dev
+git status --ignored --short .env .next graphify-out
+```
+
+Expected:
+
+- No stale remote branches.
+- No Gitleaks findings in Git history.
+- No production secrets tracked.
+- `.env`, `.next/`, and `graphify-out/` ignored.
+
+## Specs
+
+Start with `specs/INDEX.md`.
+Specs document the app as built.
+Keep affected specs current with code changes.
+
+## Notes
+
+The service worker exists only for PWA installability and legacy cache cleanup.
+It does not cache authenticated API responses or app bundles.
+
+Security-sensitive work left lives in `specs/features/pwa-ship-checklist.md`.
