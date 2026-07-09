@@ -1,6 +1,6 @@
 {
-  "name": "Financial Tracker",
-  "short_name": "FinTracker",
+  "name": "Kharcha",
+  "short_name": "Kharcha",
   "description": "Track your expenses and investments",
   "start_url": "/",
   "display": "standalone",

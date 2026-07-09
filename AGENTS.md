@@ -9,6 +9,9 @@
 
 ## Git workflow
 - **Never create a new branch. Work on `main` only.** Commit directly to `main`. Do not branch, even for plans, features, or fixes.
+- **Do not commit or push without explicit user approval in the current turn.**
+- Show the exact changed files and intended commit message first.
+- Wait for the user to say to commit and push before running `git commit` or `git push`.
 
 ## Source of truth
 - This codebase is the single source of truth.

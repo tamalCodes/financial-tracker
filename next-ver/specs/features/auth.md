@@ -1,6 +1,6 @@
 # Auth
 
-Reverse-engineered from `src/app/api/auth/*`, `lib/supabase/{auth,cookies}.ts`,
+Reverse-engineered from `src/app/api/auth/*`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json}`, `lib/supabase/{auth,cookies}.ts`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
 `src/app/(auth)/layout.tsx`, `src/middleware.ts`,
 `supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
@@ -61,11 +61,26 @@ calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
 avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) headers. It calls
 `signOut()` then `router.replace("/login")`. The avatar was previously inert (no logout path).
 
-**Auth pages are always light mode.** `src/app/(auth)/layout.tsx` (client) strips the `.dark`
-class from `<html>` on mount and restores it on unmount. `AuthForm` uses hardcoded light
-(slate/white) classes; a `.dark` root also flips `color-scheme: dark`, which darkens native
-form controls (password/inputs) — so login/signup force light regardless of the user's theme
-choice, and the themed app is restored after auth navigation.
+**Auth pages support light and dark mode.** The root `ThemeProvider` owns the `<html>.dark`
+class before paint, and `src/app/(auth)/layout.tsx` no longer strips theme state.
+`AuthForm` renders a restrained, full-width responsive desktop split: a quiet, low-contrast brand
+canvas on large screens and an unboxed form surface. The `Kharcha` name and a single squircle
+rupee mark appear only in the active mobile or desktop brand location. Its warm canvas uses a
+minimal money-flow scene rather than a data-looking chart: three quiet text milestones make the
+loop `Income → Spending → Growth` tangible, linked by one soft dotted path. The path animates
+continuously with one moving marker; motion stops for reduced-motion preference. The header keeps
+its money label and signal together. Login also includes a separate, thin animated product-principle
+rail below the form, leaving the hero unboxed and uncluttered. Verified customer feedback can later
+replace that rail, but it must not invent customer names or quotes. It makes the app's financial
+purpose legible
+without inventing a user balance or score. Motion stops for reduced-motion preference. The root
+metadata, Apple app title, and web manifest are all named
+`Kharcha`; the browser favicon is the same rounded rupee mark as auth branding. Login has one
+heading, one supporting line, and no segmented sign-in/sign-up toggle; the single link below the
+form switches modes. Fields and primary action use soft rectangular corners; fields also have a
+quiet focus halo. Signup keeps its necessary guidance and opening-balance explanation. The form
+preserves the same auth contract, password reveal, and light/dark support. Signup must fit inside
+the desktop viewport without making the page scroll.
 
 ## Acceptance criteria
 - [ ] Login/signup/logout set/clear the Supabase session cookie.
@@ -77,7 +92,8 @@ choice, and the themed app is restored after auth navigation.
 ## Files to touch
 `src/app/api/auth/*/route.ts`, `lib/api/schemas.ts` (`signupSchema`), `lib/supabase/auth.ts`,
 `lib/supabase/cookies.ts`, `features/auth/{AuthContext.tsx,identity.ts}`,
-`features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`,
+`features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `src/app/{globals,layout}.tsx`,
+`public/{icon.svg,manifest.json}`,
 `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
 `supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `src/middleware.ts`.
 

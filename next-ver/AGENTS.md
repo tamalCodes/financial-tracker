@@ -41,6 +41,15 @@ New feature with no spec yet → start from `specs/SPEC_TEMPLATE.md` (or run `/n
 7. **`@/` imports only** - no deep relative paths across features.
 8. **Never touch the legacy Vite app** in the repo-root `src/`.
 
+## Git and deploy workflow
+- Work on `main` only.
+- Do not create branches.
+- Do not commit or push without explicit user approval in the current turn.
+- Before committing, show the exact changed files and intended commit message.
+- Wait for the user to say to commit and push before running `git commit` or `git push`.
+- To deploy production, first work from the `next-ver/` directory, then run `vercel --prod`.
+- Do not run production deploy from the repo root.
+
 ## How to add a feature
 1. Write `specs/features/<name>.md` from `specs/SPEC_TEMPLATE.md` (or run `/new-feature <name>`).
 2. Add/extend types in `src/features/<feature>/types/types.ts`.

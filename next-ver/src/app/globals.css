@@ -105,6 +105,195 @@ h2 {
   font-family: "Bricolage Grotesque", sans-serif;
 }
 
+/* Auth canvas: one calm money-flow scene. Accent only, no data-looking chart or UI clutter. */
+.auth-showcase {
+  background: #181610;
+}
+
+html:not(.dark) .auth-showcase {
+  background: #ece6d7;
+}
+
+.auth-showcase::before {
+  position: absolute;
+  top: 12%;
+  left: 6%;
+  width: 70%;
+  height: 40%;
+  content: "";
+  background: radial-gradient(ellipse, rgb(202 158 68 / 0.09), transparent 70%);
+  filter: blur(18px);
+}
+
+.auth-form-panel {
+  background: #17150f;
+}
+
+.auth-ritual {
+  position: absolute;
+  z-index: 0;
+  top: 17%;
+  left: 8%;
+  width: min(80%, 560px);
+  color: #f4ead5;
+}
+
+.auth-ritual__topline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.95rem;
+  color: rgb(244 234 213 / 0.56);
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-ritual__topline span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #e4bd65;
+}
+
+.auth-ritual__stage {
+  position: relative;
+  height: 13.5rem;
+}
+
+.auth-ritual__halo {
+  position: absolute;
+  top: 3.3rem;
+  left: 31%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: rgb(210 171 84 / 0.11);
+  filter: blur(38px);
+}
+
+.auth-ritual__path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-ritual__path path {
+  stroke: rgb(228 189 101 / 0.31);
+  stroke-width: 1;
+  stroke-dasharray: 1 10;
+  stroke-linecap: round;
+  animation: auth-money-flow 7s linear infinite;
+}
+
+.auth-ritual__marker {
+  fill: #e4bd65;
+  stroke: #181610;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 7px rgb(228 189 101 / 0.55));
+}
+
+.auth-ritual__flow {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-ritual__step {
+  position: absolute;
+  width: 8.7rem;
+}
+
+.auth-ritual__step p {
+  margin: 0;
+  color: #e4bd65;
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-ritual__step strong {
+  display: block;
+  margin-top: 0.28rem;
+  color: rgb(248 241 226 / 0.9);
+  font-size: 0.88rem;
+  letter-spacing: -0.025em;
+}
+
+.auth-ritual__step small {
+  display: block;
+  margin-top: 0.16rem;
+  color: rgb(244 234 213 / 0.43);
+  font-size: 0.65rem;
+}
+
+.auth-ritual__step--01 { top: 57%; left: 0; }
+.auth-ritual__step--02 { top: 4%; left: 35%; }
+.auth-ritual__step--03 { top: 50%; right: 0; }
+
+.auth-trust-rail {
+  width: 100%;
+  margin-top: 2.8rem;
+  overflow: hidden;
+  color: rgb(244 234 213 / 0.5);
+  mask-image: linear-gradient(90deg, transparent, black 7%, black 93%, transparent);
+}
+
+.auth-trust-rail__track {
+  display: flex;
+  width: max-content;
+  animation: auth-proof-scroll 20s linear infinite;
+}
+
+.auth-trust-rail span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  padding-right: 1.7rem;
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.auth-trust-rail i {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: #e4bd65;
+  box-shadow: 0 0 9px rgb(228 189 101 / 0.36);
+}
+
+@keyframes auth-money-flow {
+  to { stroke-dashoffset: -77; }
+}
+
+@keyframes auth-proof-scroll {
+  to { transform: translateX(-50%); }
+}
+
+html:not(.dark) .auth-ritual { color: #382b16; }
+html:not(.dark) .auth-ritual__topline { color: rgb(56 43 22 / 0.6); }
+html:not(.dark) .auth-ritual__step p,
+html:not(.dark) .auth-ritual__step small { color: rgb(56 43 22 / 0.58); }
+html:not(.dark) .auth-ritual__step strong { color: #382b16; }
+html:not(.dark) .auth-trust-rail { color: rgb(56 43 22 / 0.56); }
+html:not(.dark) .auth-ritual__marker { stroke: #ece6d7; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-ritual__path path,
+  .auth-ritual__motion,
+  .auth-trust-rail__track { animation: none; }
+
+  .auth-ritual__motion { display: none; }
+}
+
 /* AmountInput auto-resolve "calculating" shimmer sweep (Phase A). */
 @keyframes amount-sweep {
   from {

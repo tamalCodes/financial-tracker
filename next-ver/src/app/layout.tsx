@@ -18,21 +18,18 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Financial Tracker",
-  description: "Track your expenses and investments",
+  title: "Kharcha",
+  description: "A clearer view of your everyday money",
   manifest: "/manifest.json",
   icons: {
-    icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-      { url: "/icon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "FinTracker",
+    title: "Kharcha",
   },
 };
 
