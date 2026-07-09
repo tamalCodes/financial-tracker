@@ -89,6 +89,7 @@ Safari does NOT — it needs a manual instructions banner.
       Keep Claude/Codex project files intentionally because they are workflow docs, not secrets.
       Keep Graphify output ignored/local by default; historical Graphify artifacts had no secret hit, so no history purge is required unless the repo owner later wants a cleaner public history.
 - [ ] 🟠 3.12 Local generated-secret hygiene: `.env`, `.next/`, and `graphify-out/` are ignored, but `gitleaks dir` still finds local secrets in ignored files.
+      `.vercelignore` excludes `.env`, `.next/`, `node_modules`, `graphify-out/`, and DB snapshots from deploy uploads.
       Add pre-commit or documented release check so ignored local artifacts never get force-added or zipped.
 
 ## 4. Safety / privacy

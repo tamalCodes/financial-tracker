@@ -121,6 +121,7 @@ Expected:
 - No Gitleaks findings in Git history.
 - No production secrets tracked.
 - `.env`, `.next/`, and `graphify-out/` ignored.
+- `.env` excluded from Vercel uploads by `.vercelignore`.
 
 ## Specs
 
