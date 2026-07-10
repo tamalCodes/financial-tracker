@@ -1,33 +1,47 @@
 "use client";
 
-import { Eye, EyeOff, IndianRupee, Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
+import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useId, useState } from "react";
 
 interface AuthFormProps {
   initialMode?: "login" | "signup";
 }
 
+type AuthMode = "login" | "signup";
+type OAuthProvider = "google" | "apple";
+
 export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(initialMode === "login");
+  const searchParams = useSearchParams();
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [openingBalance, setOpeningBalance] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    searchParams.get("error") === "oauth"
+      ? "Unable to continue with that provider."
+      : "",
+  );
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const { signIn, signUp, user } = useAuth();
-  const actionLabel = isLogin ? "Sign in" : "Create account";
+  const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const { signIn, signInWithOAuth, signUp, user } = useAuth();
+  const isLogin = mode === "login";
 
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [router, user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const switchMode = () => {
+    setMode((current) => (current === "login" ? "signup" : "login"));
+    setError("");
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setError("");
     setLoading(true);
 
@@ -35,52 +49,94 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
       if (isLogin) {
         await signIn(email, password);
       } else {
-        await signUp(email, password, fullName.trim(), Number(openingBalance) || 0);
+        await signUp(
+          email,
+          password,
+          fullName.trim(),
+          Number(openingBalance.replace(/,/g, "")) || 0,
+        );
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to continue. Try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleOAuth = async (provider: OAuthProvider) => {
+    setError("");
+    setOauthLoading(provider);
+    try {
+      await signInWithOAuth(provider);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to continue with that provider.",
+      );
+      setOauthLoading(null);
+    }
+  };
+
+  const heading = isLogin ? "Welcome back." : "Create account";
+  const subheading = isLogin
+    ? "Your everyday money, in one clear place."
+    : "Your financial overview starts here.";
+
   return (
-    <main className="min-h-screen bg-[#f6f6f2] text-[#181917] dark:bg-[#15130f] dark:text-[#f4f4ef]">
-      <section className="grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
-        <aside className="auth-showcase relative hidden overflow-hidden border-r border-[#dcdcd4] p-10 dark:border-white/10 lg:flex lg:flex-col xl:p-14">
-          <Brand prominent />
-          <MoneyRitual />
-          <div className="relative mt-auto max-w-sm pb-3">
-            <div className="mb-7 h-px w-10 bg-[#181917]/35 dark:bg-white/35" />
-            <h1 className="text-[clamp(2.75rem,5vw,5.75rem)] font-medium leading-[0.95] tracking-[-0.065em]">
-              Money,
-              <br />
-              clearly.
-            </h1>
-            <p className="mt-7 text-sm leading-6 text-[#62635e] dark:text-white/52">
-              Track what comes in, what goes out, and what keeps growing.
-            </p>
+    <main className="kh-auth-page">
+      <section className="kh-auth" aria-label="Kharcha authentication">
+        <aside className="kh-auth__story">
+          <Brand variant="desktop" />
+          <div className="kh-auth__story-content">
+            <MoneyLoop variant="desktop" />
+            <div className="kh-auth__story-heading">
+              <span aria-hidden="true" />
+              <h1>Money, clearly.</h1>
+              <p>Track what comes in, what goes out, and what keeps growing.</p>
+            </div>
           </div>
+          <div className="kh-auth__glow" aria-hidden="true" />
         </aside>
 
-        <div className="auth-form-panel flex min-h-screen items-center px-5 py-10 sm:px-10 lg:px-[clamp(3.5rem,9vw,10rem)]">
-          <div className="w-full max-w-[390px]">
-            <div className="mb-14 lg:hidden">
-              <Brand />
+        <section className="kh-auth__form-panel">
+          <div className="kh-auth__form-wrap">
+            <div className="kh-auth__mobile-intro">
+              <Brand variant="mobile" />
+              <FormHeading heading={heading} subheading={subheading} />
+              <MoneyLoop variant="mobile" />
             </div>
 
-            <header className="mb-9">
-              <h2 className="text-[2rem] font-medium leading-none tracking-[-0.045em] sm:text-[2.35rem]">
-                {isLogin ? "Welcome back" : "Create account"}
-              </h2>
-              <p className="mt-3 text-sm text-[#62635e] dark:text-white/52">
-                {isLogin
-                  ? "Your everyday money, in one clear place."
-                  : "Your financial overview starts here."}
-              </p>
-            </header>
+            <div className="kh-auth__desktop-heading">
+              <FormHeading heading={heading} subheading={subheading} />
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form className="kh-auth__form" onSubmit={handleSubmit}>
+              <div className="kh-auth__social-row">
+                <SocialButton
+                  provider="google"
+                  loading={oauthLoading === "google"}
+                  disabled={loading || oauthLoading !== null}
+                  onClick={handleOAuth}
+                />
+                <SocialButton
+                  provider="apple"
+                  loading={oauthLoading === "apple"}
+                  disabled={loading || oauthLoading !== null}
+                  onClick={handleOAuth}
+                />
+              </div>
+
+              <div className="kh-auth__divider" aria-hidden="true">
+                <span />
+                <small>or continue with email</small>
+                <span />
+              </div>
+
               {!isLogin && (
                 <AuthField
                   id="fullName"
@@ -104,152 +160,143 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 required
               />
 
-              <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-medium">
-                  Password
-                </label>
-                <div className="relative">
+              <div className="kh-auth__field">
+                <div className="kh-auth__password-label">
+                  <label htmlFor="password">Password</label>
+                  {isLogin && <button type="button">Forgot password?</button>}
+                </div>
+                <div className="kh-auth__password-input">
                   <input
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    type={passwordVisible ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(event) => setPassword(event.target.value)}
                     required
                     minLength={6}
                     autoComplete={isLogin ? "current-password" : "new-password"}
-                    className={fieldClassName}
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-0 grid w-12 place-items-center text-[#74756f] transition-colors hover:text-[#181917] dark:text-white/45 dark:hover:text-white"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="kh-auth__eye"
+                    onClick={() => setPasswordVisible((visible) => !visible)}
+                    aria-label={
+                      passwordVisible ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                    {passwordVisible ? (
+                      <EyeOff aria-hidden="true" />
+                    ) : (
+                      <Eye aria-hidden="true" />
+                    )}
                   </button>
                 </div>
               </div>
 
               {!isLogin && (
-                <div>
+                <div className="kh-auth__balance">
                   <AuthField
                     id="openingBalance"
                     label="Current bank balance"
                     value={openingBalance}
-                    onChange={(value) => setOpeningBalance(value.replace(/[^0-9]/g, ""))}
+                    onChange={(value) =>
+                      setOpeningBalance(value.replace(/[^0-9,]/g, ""))
+                    }
                     placeholder="e.g. 70,000"
                     inputMode="numeric"
-                    pattern="[0-9]*"
+                    pattern="[0-9,]*"
                   />
-                  <p className="mt-2 text-xs leading-5 text-[#777871] dark:text-white/43">
-                    Used once to set your opening balance.
-                  </p>
+                  <p>Used once to set your opening balance.</p>
                 </div>
               )}
 
               {error && (
-                <div className="border-l-2 border-red-600 bg-red-50 px-3 py-2.5 dark:border-red-400 dark:bg-red-500/10">
-                  <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
-                </div>
+                <p className="kh-auth__error" role="alert">
+                  {error}
+                </p>
               )}
 
               <button
+                className="kh-auth__primary"
                 type="submit"
-                disabled={loading}
-                className="mt-2 w-full rounded-xl bg-[#181917] px-5 py-3.5 text-sm font-semibold text-white transition-[background-color,transform] hover:-translate-y-px hover:bg-[#353630] disabled:cursor-not-allowed disabled:opacity-55 dark:bg-[#f4f4ef] dark:text-[#181917] dark:hover:bg-white"
+                disabled={loading || oauthLoading !== null}
               >
-                {loading ? "Please wait..." : actionLabel}
+                {loading
+                  ? "Please wait..."
+                  : isLogin
+                    ? "Sign in"
+                    : "Create account"}
               </button>
             </form>
 
-            <p className="mt-7 text-sm text-[#62635e] dark:text-white/52">
+            <p className="kh-auth__security">
+              <LockKeyhole aria-hidden="true" />
+              Protected with bank-level 256-bit encryption
+            </p>
+
+            <p className="kh-auth__switch">
               {isLogin ? "New to Kharcha?" : "Already have an account?"}{" "}
-              <button
-                type="button"
-                onClick={() => setIsLogin((current) => !current)}
-                className="font-medium text-[#181917] underline decoration-[#9fa096] underline-offset-4 transition-colors hover:decoration-[#181917] dark:text-white dark:decoration-white/40 dark:hover:decoration-white"
-              >
+              <button type="button" onClick={switchMode}>
                 {isLogin ? "Create account" : "Sign in"}
               </button>
             </p>
-
-            {isLogin && <TrustRail />}
           </div>
-        </div>
+        </section>
       </section>
     </main>
   );
 }
 
-function Brand({ prominent = false }: { prominent?: boolean }) {
+function FormHeading({
+  heading,
+  subheading,
+}: {
+  heading: string;
+  subheading: string;
+}) {
   return (
-    <div className={`relative z-10 flex items-center ${prominent ? "gap-4" : "gap-3"}`}>
-      <div className={`grid place-items-center border border-[#181917]/15 bg-[#f6f6f2] text-[#181917] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] dark:border-white/15 dark:bg-[#f4f4ef] ${prominent ? "h-14 w-14 rounded-[20px]" : "h-10 w-10 rounded-[14px]"}`}>
-        <IndianRupee className={prominent ? "h-6 w-6" : "h-[18px] w-[18px]"} strokeWidth={1.8} />
-      </div>
-      <p className={prominent ? "text-[1.35rem] font-semibold tracking-[-0.045em]" : "text-base font-semibold tracking-[-0.03em]"}>Kharcha</p>
+    <header className="kh-auth__heading">
+      <h2>{heading}</h2>
+      <p>{subheading}</p>
+    </header>
+  );
+}
+
+function Brand({ variant }: { variant: "desktop" | "mobile" }) {
+  return (
+    <div className={`kh-auth__brand kh-auth__brand--${variant}`}>
+      <span className="kh-auth__mark" aria-hidden="true">
+        ₹
+      </span>
+      <span>Kharcha</span>
     </div>
   );
 }
 
-function MoneyRitual() {
+function SocialButton({
+  provider,
+  loading,
+  disabled,
+  onClick,
+}: {
+  provider: OAuthProvider;
+  loading: boolean;
+  disabled: boolean;
+  onClick: (provider: OAuthProvider) => void;
+}) {
+  const label = provider === "google" ? "Google" : "Apple";
   return (
-    <div className="auth-ritual pointer-events-none" aria-label="Money tracking routine visualisation">
-      <div className="auth-ritual__topline">
-        <p>Money, in motion</p>
-        <span><Sparkles className="h-3 w-3" /> Signal on</span>
-      </div>
-      <div className="auth-ritual__stage" aria-hidden="true">
-        <div className="auth-ritual__halo" />
-        <svg className="auth-ritual__path" viewBox="0 0 440 230" fill="none">
-          <path id="auth-money-flow" d="M38 167C88 181 106 155 144 121C182 87 204 57 249 72C292 86 307 154 390 110" />
-          <circle className="auth-ritual__marker" r="3.5">
-            <animateMotion className="auth-ritual__motion" dur="7s" repeatCount="indefinite">
-              <mpath href="#auth-money-flow" />
-            </animateMotion>
-          </circle>
-        </svg>
-        <ol className="auth-ritual__flow">
-          <RitualStep number="01" label="Income" detail="Track every credit." />
-          <RitualStep number="02" label="Spending" detail="Give every spend context." />
-          <RitualStep number="03" label="Growth" detail="Make room for next." />
-        </ol>
-      </div>
-    </div>
+    <button
+      className="kh-auth__social"
+      type="button"
+      disabled={disabled}
+      onClick={() => onClick(provider)}
+    >
+      {provider === "google" ? <GoogleIcon /> : <AppleIcon />}
+      {loading ? "Opening..." : label}
+    </button>
   );
 }
-
-function TrustRail() {
-  const messages = [
-    "Track the habit.",
-    "Understand the pattern.",
-    "Grow the next move.",
-  ];
-
-  return (
-    <aside className="auth-trust-rail" aria-label="Kharcha principles">
-      <div className="auth-trust-rail__track">
-        {[...messages, ...messages].map((message, index) => (
-          <span key={`${message}-${index}`}><i />{message}</span>
-        ))}
-      </div>
-    </aside>
-  );
-}
-
-function RitualStep({ number, label, detail }: { number: string; label: string; detail: string }) {
-  return (
-    <li className={`auth-ritual__step auth-ritual__step--${number}`}>
-      <p>{number}</p>
-      <strong>{label}</strong>
-      <small>{detail}</small>
-    </li>
-  );
-}
-
-const fieldClassName =
-  "w-full rounded-xl border border-[#cfcfc7] bg-white/20 px-3.5 py-3 text-base text-[#181917] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-[#979790] focus:border-[#181917] focus:bg-white/60 focus:shadow-[0_0_0_3px_rgba(141,154,100,0.18)] dark:border-white/18 dark:bg-white/[0.02] dark:text-white dark:placeholder:text-white/32 dark:focus:border-white dark:focus:bg-white/[0.04] dark:focus:shadow-[0_0_0_3px_rgba(141,154,100,0.16)]";
 
 function AuthField({
   id,
@@ -275,22 +322,233 @@ function AuthField({
   pattern?: string;
 }) {
   return (
-    <div>
-      <label htmlFor={id} className="mb-2 block text-sm font-medium">
-        {label}
-      </label>
+    <div className="kh-auth__field">
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
         type={type}
         autoComplete={autoComplete}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         required={required}
         inputMode={inputMode}
         pattern={pattern}
-        className={fieldClassName}
         placeholder={placeholder}
       />
     </div>
+  );
+}
+
+function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
+  const rawId = useId().replace(/:/g, "");
+  const desktop = variant === "desktop";
+  const pathId = `kh-path-${rawId}`;
+  const gradientId = `kh-gradient-${rawId}`;
+  const path = desktop
+    ? "M20 158 C110 186 200 78 280 78 C360 78 430 158 540 110"
+    : "M20 82 C120 104 200 30 280 32 C360 34 440 88 540 58";
+
+  return (
+    <section
+      className={`kh-loop kh-loop--${variant}`}
+      aria-label="The money loop: Income, Spending, Growth"
+    >
+      <div className="kh-loop__eyebrow">
+        <span />
+        THE MONEY LOOP
+      </div>
+      <div className="kh-loop__stage">
+        <svg
+          viewBox={desktop ? "0 0 560 240" : "0 0 560 120"}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="0">
+              <stop
+                offset="0"
+                stopColor="var(--kh-accent)"
+                stopOpacity="0.08"
+              />
+              <stop
+                offset="0.45"
+                stopColor="var(--kh-accent)"
+                stopOpacity="0.95"
+              />
+              <stop
+                offset="1"
+                stopColor="var(--kh-accent)"
+                stopOpacity="0.22"
+              />
+            </linearGradient>
+          </defs>
+          <path
+            id={pathId}
+            className="kh-loop__base"
+            d={path}
+            stroke={`url(#${gradientId})`}
+          />
+          <path className="kh-loop__dash" d={path} />
+          <g className="kh-loop__motion">
+            {[0, 1.7, 3.4].map((begin, index) => (
+              <circle
+                key={begin}
+                className={index ? "kh-loop__trail" : "kh-loop__marker"}
+                r={index ? 1.8 : 3.4}
+              >
+                <animateMotion
+                  dur="7s"
+                  begin={`${begin}s`}
+                  repeatCount="indefinite"
+                >
+                  <mpath href={`#${pathId}`} />
+                </animateMotion>
+              </circle>
+            ))}
+          </g>
+          {desktop ? <DesktopNodes /> : <MobileNodes />}
+        </svg>
+        {desktop && <DesktopCallouts />}
+      </div>
+      {!desktop && <MobileLabels />}
+    </section>
+  );
+}
+
+function DesktopNodes() {
+  return (
+    <g className="kh-loop__nodes">
+      {[
+        [20, 158],
+        [280, 78],
+        [540, 110],
+      ].map(([cx, cy], index) => (
+        <g key={`${cx}-${cy}`}>
+          <circle
+            className="kh-loop__pulse"
+            cx={cx}
+            cy={cy}
+            r="12"
+            style={{ animationDelay: `${index * 1.3}s` }}
+          />
+          <circle className="kh-loop__ring" cx={cx} cy={cy} r="7" />
+          <circle className="kh-loop__dot" cx={cx} cy={cy} r="2.5" />
+        </g>
+      ))}
+    </g>
+  );
+}
+
+function MobileNodes() {
+  return (
+    <g className="kh-loop__nodes kh-loop__nodes--mobile">
+      {[
+        [20, 82],
+        [280, 32],
+        [540, 58],
+      ].map(([cx, cy]) => (
+        <circle
+          key={`${cx}-${cy}`}
+          className="kh-loop__dot"
+          cx={cx}
+          cy={cy}
+          r="3"
+        />
+      ))}
+    </g>
+  );
+}
+
+function DesktopCallouts() {
+  const steps = [
+    {
+      number: "01",
+      label: "Income",
+      detail: "Track every credit.",
+      className: "kh-loop__callout--income",
+    },
+    {
+      number: "02",
+      label: "Spending",
+      detail: "Give every spend context.",
+      className: "kh-loop__callout--spending",
+    },
+    {
+      number: "03",
+      label: "Growth",
+      detail: "Make room for next.",
+      className: "kh-loop__callout--growth",
+    },
+  ];
+  return (
+    <ol className="kh-loop__callouts">
+      {steps.map((step) => (
+        <li key={step.number} className={step.className}>
+          <p>
+            <span>{step.number}</span>
+            {step.label}
+          </p>
+          <small>{step.detail}</small>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function MobileLabels() {
+  return (
+    <ol className="kh-loop__mobile-labels">
+      <li>
+        <span>01</span>Income
+      </li>
+      <li>
+        <span>02</span>Spending
+      </li>
+      <li>
+        <span>03</span>Growth
+      </li>
+    </ol>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg
+      className="kh-auth__social-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        fill="#4285F4"
+        d="M21.35 12.27c0-.75-.07-1.47-.2-2.16H12v4.09h5.23a4.47 4.47 0 0 1-1.94 2.93v2.65h3.14c1.84-1.7 2.92-4.2 2.92-7.51Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 21.75c2.62 0 4.82-.87 6.43-2.36l-3.14-2.65c-.87.58-1.98.93-3.29.93-2.53 0-4.67-1.71-5.44-4.01H3.32v2.73A9.75 9.75 0 0 0 12 21.75Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M6.56 13.66a5.86 5.86 0 0 1 0-3.72V7.21H3.32a9.75 9.75 0 0 0 0 9.18l3.24-2.73Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.93c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.82 3 14.62 2.25 12 2.25a9.75 9.75 0 0 0-8.68 4.96l3.24 2.73c.77-2.3 2.91-4.01 5.44-4.01Z"
+      />
+    </svg>
+  );
+}
+
+function AppleIcon() {
+  return (
+    <svg
+      className="kh-auth__social-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        fill="currentColor"
+        d="M16.76 12.5c0-2.24 1.83-3.32 1.91-3.37a4.1 4.1 0 0 0-3.22-1.75c-1.35-.14-2.66.81-3.35.81-.7 0-1.75-.8-2.89-.78A4.28 4.28 0 0 0 5.6 9.6c-1.57 2.72-.4 6.72 1.1 8.91.75 1.07 1.62 2.27 2.77 2.23 1.12-.05 1.54-.71 2.89-.71 1.34 0 1.72.71 2.9.69 1.2-.02 1.95-1.07 2.67-2.15a8.85 8.85 0 0 0 1.22-2.5 3.86 3.86 0 0 1-2.39-3.57Zm-2.2-6.53A3.91 3.91 0 0 0 15.46 3a4.03 4.03 0 0 0-2.6 1.35 3.72 3.72 0 0 0-.93 2.87 3.32 3.32 0 0 0 2.63-1.25Z"
+      />
+    </svg>
   );
 }

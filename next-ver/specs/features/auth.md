@@ -1,13 +1,13 @@
 # Auth
 
-Reverse-engineered from `src/app/api/auth/*`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json}`, `lib/supabase/{auth,cookies}.ts`,
+Reverse-engineered from `src/app/api/auth/*`, `src/app/auth/callback/route.ts`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json}`, `lib/supabase/{auth,cookies}.ts`, `supabase/config.toml`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
 `src/app/(auth)/layout.tsx`, `src/middleware.ts`,
 `supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
 
 ## Problem
-Email/password auth via Supabase. Server routes authenticate from cookies; the client holds
-session state in `AuthContext`.
+Email/password plus Google/Apple OAuth through Supabase. Server routes authenticate from cookies;
+the client holds session state in `AuthContext`.
 
 ## Data model touched
 Supabase `auth.users` (managed by Supabase).
@@ -24,10 +24,15 @@ Supabase `auth.users` (managed by Supabase).
   Rate limit `auth:signup` `{6, 60_000}`. `fullName` required (`signupSchema`, 1–80 chars);
   `openingBalance` optional, clamped ≥ 0.
 - **POST `/logout`** — `signOut`. → `{ ok: true }`. 400 / 429. `auth:logout` `{30, 60_000}`.
+- **POST `/oauth`** — `{ provider: "google" | "apple" }` → starts Supabase OAuth PKCE with a
+  same-origin `/auth/callback` redirect. → `{ url }`. 400 unsupported/provider error, 429.
+  Rate limit `auth:oauth` `{10, 60_000}`.
 - **GET `/me`** — `getUserFromCookies` first (fast, JWT verify), else `supabase.auth.getUser()`.
   → `{ user: { id, email, fullName }|null }` (200 even when null). `auth:me` `{60, 60_000}`.
   `fullName` comes from JWT `user_metadata.full_name` (cookie path) or `user_metadata` on
   the `getUser()` fallback — no profiles query.
+- **GET `/auth/callback`** — exchanges Supabase OAuth `code` for the cookie session then redirects
+  to `/dashboard`; missing/exchange error redirects to `/login?error=oauth`.
 
 All auth routes already follow CONVENTIONS (rate limit + error shape) — these are the
 **reference** for §3.
@@ -54,33 +59,32 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
   `MobileHome` (`GreetingHeader`) and `DesktopHome`.
 
 ## UI / components
-`AuthContext` (`"use client"`) — `{ user, loading, signIn, signUp, signOut }`; `user` now
-carries `fullName`; `signUp(email, password, fullName, openingBalance?)`; `refreshUser`
-calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
+`AuthContext` (`"use client"`) — `{ user, loading, signIn, signUp, signInWithOAuth, signOut }`;
+`user` carries `fullName`; `signUp(email, password, fullName, openingBalance?)`;
+`signInWithOAuth(provider)` obtains the server-generated Supabase authorize URL then navigates;
+`refreshUser` calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
 **Log out** is triggered from `AvatarMenu` (`features/dashboard/mobile/AvatarMenu.tsx`) — the
 avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) headers. It calls
 `signOut()` then `router.replace("/login")`. The avatar was previously inert (no logout path).
 
-**Auth pages support light and dark mode.** The root `ThemeProvider` owns the `<html>.dark`
-class before paint, and `src/app/(auth)/layout.tsx` no longer strips theme state.
-`AuthForm` renders a restrained, full-width responsive desktop split: a quiet, low-contrast brand
-canvas on large screens and an unboxed form surface. The `Kharcha` name and a single squircle
-rupee mark appear only in the active mobile or desktop brand location. Its warm canvas uses a
-minimal money-flow scene rather than a data-looking chart: three quiet text milestones make the
-loop `Income → Spending → Growth` tangible, linked by one soft dotted path. The path animates
-continuously with one moving marker; motion stops for reduced-motion preference. The header keeps
-its money label and signal together. Login also includes a separate, thin animated product-principle
-rail below the form, leaving the hero unboxed and uncluttered. Verified customer feedback can later
-replace that rail, but it must not invent customer names or quotes. It makes the app's financial
-purpose legible
-without inventing a user balance or score. Motion stops for reduced-motion preference. The root
-metadata, Apple app title, and web manifest are all named
-`Kharcha`; the browser favicon is the same rounded rupee mark as auth branding. Login has one
-heading, one supporting line, and no segmented sign-in/sign-up toggle; the single link below the
-form switches modes. Fields and primary action use soft rectangular corners; fields also have a
-quiet focus halo. Signup keeps its necessary guidance and opening-balance explanation. The form
-preserves the same auth contract, password reveal, and light/dark support. Signup must fit inside
-the desktop viewport without making the page scroll.
+**Auth pages support light and dark mode.** Root `ThemeProvider` owns `<html>.dark` before paint.
+`AuthForm` scopes the Kharcha gold design tokens to auth only: `#191613` / `#F3EFE5` / `#D8B36A`
+for dark and `#F4F1E8` / `#201B13` / `#9C7B33` for light. Bricolage Grotesque remains display/UI;
+Geist is used for field and supporting copy.
+
+Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 56px rupee brand, a 250px through-line,
+and the `Money, clearly.` story. Right has a vertically centred 390px form with Google and Apple
+buttons always side-by-side and equal-width. Mobile at ≤600px becomes a 390×844 single column with
+the 44px mark, device notch, condensed 44px through-line, and three-up step labels.
+
+The through-line is one gradient Bézier path with a 9s dashed flow, 7s glow marker with desktop
+trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
+pauses `kh-*` animation while preserving the static path and labels. Login/signup switch in place;
+signup adds full name/current balance, login alone shows forgot-password. Password eye toggles
+text/password. Hover, focus halo, placeholder, and autofill rules match the handoff.
+
+Supabase project configuration must enable Google and Apple providers and allow each deployed
+`https://<origin>/auth/callback` redirect URL; local source alone cannot supply provider credentials.
 
 ## Acceptance criteria
 - [ ] Login/signup/logout set/clear the Supabase session cookie.
@@ -88,14 +92,17 @@ the desktop viewport without making the page scroll.
 - [ ] `/me` returns the user with no extra network call when the JWT cookie is valid.
 - [ ] Protected routes 401 without a valid session.
 - [ ] All auth routes rate-limited.
+- [ ] Google and Apple start Supabase OAuth and callback exchanges the PKCE code into a cookie session.
+- [ ] Desktop/mobile dark/light through-line, side-by-side social controls, focus/hover, password eye,
+  in-place mode switch, and reduced-motion behaviour match the Kharcha handoff.
 
 ## Files to touch
-`src/app/api/auth/*/route.ts`, `lib/api/schemas.ts` (`signupSchema`), `lib/supabase/auth.ts`,
+`src/app/api/auth/*/route.ts`, `src/app/auth/callback/route.ts`, `lib/api/schemas.ts` (`signupSchema`), `lib/supabase/auth.ts`,
 `lib/supabase/cookies.ts`, `features/auth/{AuthContext.tsx,identity.ts}`,
 `features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `src/app/{globals,layout}.tsx`,
 `public/{icon.svg,manifest.json}`,
 `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
-`supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `src/middleware.ts`.
+`supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `supabase/config.toml`, `src/middleware.ts`.
 
 ## Out of scope
-OAuth/social, password reset, email verification flows, MFA.
+Password reset, email verification flows, MFA.

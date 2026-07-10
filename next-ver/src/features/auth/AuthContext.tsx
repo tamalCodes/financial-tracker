@@ -17,8 +17,9 @@ interface AuthContextType {
     email: string,
     password: string,
     fullName: string,
-    openingBalance?: number
+    openingBalance?: number,
   ) => Promise<void>;
+  signInWithOAuth: (provider: "google" | "apple") => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -42,36 +43,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || "Unable to sign in");
-    }
-    await refreshUser();
-  }, [refreshUser]);
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Unable to sign in");
+      }
+      await refreshUser();
+    },
+    [refreshUser],
+  );
 
-  const signUp = useCallback(async (
-    email: string,
-    password: string,
-    fullName: string,
-    openingBalance = 0
-  ) => {
-    const res = await fetch("/api/auth/signup", {
+  const signUp = useCallback(
+    async (
+      email: string,
+      password: string,
+      fullName: string,
+      openingBalance = 0,
+    ) => {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullName, openingBalance }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Unable to sign up");
+      }
+      await refreshUser();
+    },
+    [refreshUser],
+  );
+
+  const signInWithOAuth = useCallback(async (provider: "google" | "apple") => {
+    const res = await fetch("/api/auth/oauth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, fullName, openingBalance }),
+      body: JSON.stringify({ provider }),
     });
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || "Unable to sign up");
+    const data = (await res.json()) as { error?: string; url?: string };
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || "Unable to start social sign in.");
     }
-    await refreshUser();
-  }, [refreshUser]);
+    window.location.assign(data.url);
+  }, []);
 
   const signOut = useCallback(async () => {
     const res = await fetch("/api/auth/logout", { method: "POST" });
@@ -83,8 +103,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, signIn, signUp, signOut }),
-    [user, loading, signIn, signUp, signOut]
+    () => ({ user, loading, signIn, signUp, signInWithOAuth, signOut }),
+    [user, loading, signIn, signUp, signInWithOAuth, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

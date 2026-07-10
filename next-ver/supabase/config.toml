@@ -25,6 +25,7 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
 
 [auth.email]
 # Disable email confirmation locally so signup yields a usable session in tests.

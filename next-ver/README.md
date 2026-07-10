@@ -87,6 +87,13 @@ Required Vercel production env vars:
 
 Never commit real env values.
 
+## OAuth
+
+The auth screen starts Google and Apple OAuth through Supabase and returns through
+`/auth/callback`. Enable both providers in Supabase Auth, store their provider credentials there,
+and allow `http://localhost:3000/auth/callback` plus each production
+`https://<origin>/auth/callback` URL. Provider credentials never belong in this repository.
+
 ## Agent Files
 
 This repo intentionally keeps Claude/Codex project instructions and hooks:
