@@ -77,7 +77,7 @@ and the `Money, clearly.` story. Right has a vertically centred 390px form with 
 buttons always side-by-side and equal-width. Mobile at ≤600px becomes a 390×844 single column with
 the 44px mark, device notch, condensed 44px through-line, and three-up step labels.
 
-The through-line is one gradient Bézier path with a 9s dashed flow, 7s glow marker with desktop
+The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
 pauses `kh-*` animation while preserving the static path and labels. Login/signup switch in place;
 signup adds full name/current balance, login alone shows forgot-password. Password eye toggles

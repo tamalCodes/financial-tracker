@@ -373,12 +373,12 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
               <stop
                 offset="0.45"
                 stopColor="var(--kh-accent)"
-                stopOpacity="0.95"
+                stopOpacity="0.62"
               />
               <stop
                 offset="1"
                 stopColor="var(--kh-accent)"
-                stopOpacity="0.22"
+                stopOpacity="0.18"
               />
             </linearGradient>
           </defs>
@@ -394,11 +394,12 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
               <circle
                 key={begin}
                 className={index ? "kh-loop__trail" : "kh-loop__marker"}
-                r={index ? 1.8 : 3.4}
+                r={index ? 1.7 : 3.5}
               >
                 <animateMotion
-                  dur="7s"
+                  dur="11s"
                   begin={`${begin}s`}
+                  calcMode="paced"
                   repeatCount="indefinite"
                 >
                   <mpath href={`#${pathId}`} />
@@ -428,7 +429,7 @@ function DesktopNodes() {
             className="kh-loop__pulse"
             cx={cx}
             cy={cy}
-            r="12"
+            r="9"
             style={{ animationDelay: `${index * 1.3}s` }}
           />
           <circle className="kh-loop__ring" cx={cx} cy={cy} r="7" />

@@ -193,13 +193,13 @@ html.dark .kh-auth {
 .kh-auth__glow {
   position: absolute;
   z-index: 0;
-  left: 5%;
-  bottom: 15%;
-  width: 72%;
+  left: 22%;
+  bottom: 23%;
+  width: 48%;
   aspect-ratio: 1;
   border-radius: 999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--kh-accent) 15%, transparent), transparent 68%);
-  filter: blur(16px);
+  background: radial-gradient(circle, color-mix(in srgb, var(--kh-accent) 7%, transparent), transparent 66%);
+  filter: blur(26px);
   animation: kh-glow 12s ease-in-out infinite alternate;
 }
 
@@ -610,22 +610,23 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 .kh-loop__dash {
-  stroke: color-mix(in srgb, var(--kh-accent) 50%, transparent);
+  stroke: var(--kh-accent);
+  stroke-opacity: 0.26;
   stroke-width: 1.6px;
   stroke-dasharray: 2 14;
-  animation: kh-dash 9s linear infinite;
+  animation: kh-dash 12s linear infinite;
 }
 
 .kh-loop__marker {
   fill: var(--kh-accent-bright);
   stroke: var(--kh-bg);
   stroke-width: 2px;
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--kh-accent-bright) 70%, transparent));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--kh-accent-bright) 55%, transparent));
 }
 
 .kh-loop__trail {
   fill: var(--kh-accent-bright);
-  opacity: 0.32;
+  opacity: 0.2;
 }
 
 .kh-loop__pulse {
@@ -640,12 +641,12 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 
 .kh-loop__ring {
   fill: var(--kh-bg);
-  stroke: color-mix(in srgb, var(--kh-accent) 55%, transparent);
+  stroke: color-mix(in srgb, var(--kh-accent) 64%, transparent);
   stroke-width: 1.2px;
 }
 
 .kh-loop__dot {
-  fill: var(--kh-accent-bright);
+  fill: var(--kh-accent);
 }
 
 .kh-loop__callouts,
@@ -666,6 +667,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   gap: 7px;
   margin: 0;
   color: var(--kh-fg);
+  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -688,10 +690,30 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   font-size: 12px;
 }
 
-.kh-loop__callout--income { top: 64%; left: 3.6%; }
-.kh-loop__callout--spending { top: 30%; left: 50%; transform: translateX(-6%); }
-.kh-loop__callout--growth { top: 59%; right: 0; text-align: right; }
+.kh-loop__callout--income { top: 82%; left: 2%; }
+.kh-loop__callout--spending { top: 0; left: 48%; width: 180px; }
+.kh-loop__callout--growth { top: 64%; right: 3.5%; text-align: right; }
 .kh-loop__callout--growth p { justify-content: flex-end; }
+
+.kh-loop__callout--income::after,
+.kh-loop__callout--spending::after {
+  position: absolute;
+  width: 1px;
+  background: color-mix(in srgb, var(--kh-accent) 42%, transparent);
+  content: "";
+}
+
+.kh-loop__callout--income::after {
+  top: -32px;
+  left: 9px;
+  height: 17px;
+}
+
+.kh-loop__callout--spending::after {
+  top: 48px;
+  left: 9px;
+  height: 17px;
+}
 
 .kh-loop--mobile {
   margin: 26px 0 22px;
@@ -738,8 +760,8 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 @keyframes kh-node-pulse {
-  0% { opacity: 0.6; transform: scale(0.65); }
-  70%, 100% { opacity: 0; transform: scale(2.2); }
+  0% { opacity: 0.32; transform: scale(0.72); }
+  70%, 100% { opacity: 0; transform: scale(1.45); }
 }
 
 @media (prefers-reduced-motion: reduce) {
