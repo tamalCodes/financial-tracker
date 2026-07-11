@@ -17,7 +17,7 @@ interface AuthContextType {
     email: string,
     password: string,
     fullName: string,
-    openingBalance?: number,
+    openingBalance: number,
   ) => Promise<void>;
   signInWithOAuth: (provider: "google" | "apple") => Promise<void>;
   signOut: () => Promise<void>;
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: string,
       password: string,
       fullName: string,
-      openingBalance = 0,
+      openingBalance: number,
     ) => {
       const res = await fetch("/api/auth/signup", {
         method: "POST",

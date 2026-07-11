@@ -216,22 +216,30 @@ describe("money-model writes — POST inserts user-scoped per-month row", () => 
 describe("signup — opening balance (D-A, via metadata → trigger)", () => {
   it("passes opening_balance to signUp metadata (trigger seeds profiles under RLS)", async () => {
     const res = await signup.POST(
-      post({ email: "a@b.com", password: "secret123", fullName: "Ada Lovelace", openingBalance: 70000 })
+      post({ email: "a@b.com", password: "StrongPass123", fullName: "Ada Lovelace", openingBalance: 70000 })
     );
     expect(res.status).toBe(200);
     expect(signUpSpy).toHaveBeenCalledWith(
       expect.objectContaining({ options: { data: { full_name: "Ada Lovelace", opening_balance: 70000 } } })
     );
   });
-  it("defaults opening_balance to 0 when omitted", async () => {
-    await signup.POST(post({ email: "a@b.com", password: "secret123", fullName: "Ada Lovelace" }));
-    expect(signUpSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ options: { data: { full_name: "Ada Lovelace", opening_balance: 0 } } })
+  it("requires an opening balance", async () => {
+    const res = await signup.POST(
+      post({ email: "a@b.com", password: "StrongPass123", fullName: "Ada Lovelace" })
     );
+    expect(res.status).toBe(400);
+    expect(signUpSpy).not.toHaveBeenCalled();
   });
   it("rejects a negative opening balance", async () => {
     const res = await signup.POST(
-      post({ email: "a@b.com", password: "secret123", fullName: "Ada Lovelace", openingBalance: -1 })
+      post({ email: "a@b.com", password: "StrongPass123", fullName: "Ada Lovelace", openingBalance: -1 })
+    );
+    expect(res.status).toBe(400);
+    expect(signUpSpy).not.toHaveBeenCalled();
+  });
+  it("rejects a weak password", async () => {
+    const res = await signup.POST(
+      post({ email: "a@b.com", password: "password", fullName: "Ada Lovelace", openingBalance: 0 })
     );
     expect(res.status).toBe(400);
     expect(signUpSpy).not.toHaveBeenCalled();

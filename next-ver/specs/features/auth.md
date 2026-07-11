@@ -19,10 +19,11 @@ Supabase `auth.users` (managed by Supabase).
 - **POST `/login`** — `{ email, password }` → `signInWithPassword`, then service-role upsert of `profiles.last_login_at`. → `{ ok: true }`.
   Errors: 401 bad creds, 429. Rate limit `auth:login` `{10, 60_000}`.
   If Supabase accepts the password but the audit timestamp cannot be written, the route returns 500 instead of silently losing the login event.
-- **POST `/signup`** — `{ email, password, fullName, openingBalance? }` → `signUp` with
+- **POST `/signup`** — `{ email, password, fullName, openingBalance }` → `signUp` with
   `options.data = { full_name, opening_balance }`. → `{ ok: true }`. 400 / 429.
   Rate limit `auth:signup` `{6, 60_000}`. `fullName` required (`signupSchema`, 1–80 chars);
-  `openingBalance` optional, clamped ≥ 0.
+  `openingBalance` required and clamped ≥ 0. Password must be 8–128 characters and include
+  uppercase, lowercase, and numeric characters.
 - **POST `/logout`** — `signOut`. → `{ ok: true }`. 400 / 429. `auth:logout` `{30, 60_000}`.
 - **POST `/oauth`** — `{ provider: "google" | "apple" }` → starts Supabase OAuth PKCE with a
   same-origin `/auth/callback` redirect. → `{ url }`. 400 unsupported/provider error, 429.
@@ -45,8 +46,9 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 
 ## Full name & greeting identity (D-A)
 - Signup captures **email + password + full name + current bank balance**; login is
-  unchanged (email + password only). `AuthForm` renders the Full name + bank-balance
-  fields only in signup mode.
+  unchanged (email + password only). On mobile it is a three-step flow: name, email +
+  password, then required current bank balance. Password requirements are visible before
+  progressing. Desktop keeps its compact single-form layout.
 - `full_name` is stored two ways: (1) in the JWT `user_metadata` (set via `signUp`
   metadata) so `/me` reads it back with no query, and (2) durably on `public.profiles`
   via the `handle_new_user` trigger (migration 008).
@@ -60,7 +62,7 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 
 ## UI / components
 `AuthContext` (`"use client"`) — `{ user, loading, signIn, signUp, signInWithOAuth, signOut }`;
-`user` carries `fullName`; `signUp(email, password, fullName, openingBalance?)`;
+`user` carries `fullName`; `signUp(email, password, fullName, openingBalance)`;
 `signInWithOAuth(provider)` obtains the server-generated Supabase authorize URL then navigates;
 `refreshUser` calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
 **Log out** is triggered from `AvatarMenu` (`features/dashboard/mobile/AvatarMenu.tsx`) — the
@@ -81,7 +83,10 @@ three vertical zones: brand/story at top, sign-in controls through middle, and a
 near bottom. Its money loop gets a responsive 148–172px stage and larger moving/step markers so the
 visual reads at phone scale; it now uses the desktop curve geometry with Income/Spending/Growth
 positioned around the path. Each mobile callout and connector is percentage-pinned to its SVG node,
-instead of a compressed one-line label row. Signup remains naturally compact for its extra fields.
+instead of a compressed one-line label row. Mobile signup uses lower viewport space for its
+current step: its field, CTA, and sign-in link form a spacious action group below the story.
+The initial mobile signup field (full name) receives focus after hydration. Auth inputs use an
+accent border on focus without a focus-ring shadow.
 
 The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and

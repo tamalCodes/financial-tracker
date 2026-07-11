@@ -130,17 +130,21 @@ export const portfolioTotalSchema = z.object({ value: amount });
 
 /**
  * POST body for signup. `openingBalance` is the one-time bank balance the user sets
- * at signup (D-A); optional + clamped ≥ 0, defaults to 0 if absent.
+ * at signup (D-A). It is required and cannot be negative.
  */
 export const signupSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1),
+  password: z
+    .string()
+    .min(8, "password must be at least 8 characters")
+    .max(128, "password must be at most 128 characters")
+    .regex(/[a-z]/, "password must include a lowercase letter")
+    .regex(/[A-Z]/, "password must include an uppercase letter")
+    .regex(/\d/, "password must include a number"),
   // Full name (D-A) — shown as the greeting/first name + avatar initials. Required at signup.
   fullName: z.string().trim().min(1).max(80),
   openingBalance: amount
-    .refine((n) => n >= 0, { message: "openingBalance must be ≥ 0" })
-    .optional()
-    .default(0),
+    .refine((n) => n >= 0, { message: "openingBalance must be ≥ 0" }),
 });
 
 /**

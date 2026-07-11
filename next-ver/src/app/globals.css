@@ -403,7 +403,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   padding: 13px 14px;
   font-size: 16px;
   line-height: 1.4;
-  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  transition: border-color 0.18s, background 0.18s;
 }
 
 .kh-auth__field input::placeholder {
@@ -412,15 +412,16 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 .kh-auth__field input:focus {
-  border-color: color-mix(in srgb, var(--kh-accent) 55%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kh-accent) 12%, transparent);
+  border-color: var(--kh-accent);
+  box-shadow: none;
 }
 
 .kh-auth__field input:-webkit-autofill,
 .kh-auth__field input:-webkit-autofill:hover,
 .kh-auth__field input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--kh-fg);
-  box-shadow: 0 0 0 1000px var(--kh-input-bg) inset;
+  box-shadow: none;
+  background: var(--kh-input-bg);
   transition: background-color 9999s ease-out 0s;
 }
 
@@ -480,6 +481,68 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   color: var(--kh-muted);
   font-size: 12px;
   line-height: 1.35;
+}
+
+.kh-auth__desktop-signup,
+.kh-auth__mobile-signup {
+  display: grid;
+  gap: 20px;
+}
+
+.kh-auth__mobile-signup {
+  display: none;
+}
+
+.kh-auth__signup-step {
+  display: grid;
+  gap: 16px;
+}
+
+.kh-auth__password-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin: -9px 0 0;
+  padding: 0;
+  color: var(--kh-muted);
+  font-size: 11px;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.kh-auth__password-rules li::before {
+  content: "○";
+  margin-right: 5px;
+  color: var(--kh-muted);
+}
+
+.kh-auth__password-rules li.is-met {
+  color: var(--kh-accent);
+}
+
+.kh-auth__password-rules li.is-met::before {
+  content: "✓";
+  color: currentColor;
+}
+
+.kh-auth__back {
+  width: max-content;
+  margin: 0 0 -4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kh-muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.kh-auth__back::before {
+  content: "←";
+  margin-right: 6px;
+}
+
+.kh-auth__progress {
+  display: none;
 }
 
 .kh-auth__error {
@@ -972,6 +1035,52 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   .kh-auth__form {
     gap: 16px;
     margin-top: 10px;
+  }
+
+  .kh-auth__form--signup .kh-auth__social-row,
+  .kh-auth__form--signup .kh-auth__divider {
+    display: none;
+  }
+
+  .kh-auth__form--signup {
+    /* Step controls use lower viewport space, keeping intro/story uncluttered. */
+    margin-top: clamp(76px, 14svh, 132px);
+  }
+
+  .kh-auth__desktop-signup {
+    display: none;
+  }
+
+  .kh-auth__mobile-signup {
+    display: grid;
+  }
+
+  .kh-auth__form--signup .kh-auth__signup-step {
+    gap: 22px;
+  }
+
+  .kh-auth__form--signup .kh-auth__switch {
+    margin-top: 28px;
+  }
+
+  .kh-auth__form--signup > .kh-auth__primary {
+    display: none;
+  }
+
+  .kh-auth__form--signup-step-3 > .kh-auth__primary {
+    display: block;
+  }
+
+  .kh-auth__progress {
+    display: block;
+    margin: 14px 0 -7px;
+    color: var(--kh-muted);
+    font-size: 12px;
+  }
+
+  .kh-auth__progress span {
+    color: var(--kh-accent);
+    font-weight: 700;
   }
 
   .kh-auth__social {

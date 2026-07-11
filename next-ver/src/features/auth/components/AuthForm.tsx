@@ -13,6 +13,35 @@ interface AuthFormProps {
 type AuthMode = "login" | "signup";
 type OAuthProvider = "google" | "apple";
 type LoginStep = "email" | "password";
+type SignupStep = 1 | 2 | 3;
+
+const SIGNUP_STEPS = {
+  1: {
+    heading: "What’s your full name?",
+    subheading: "We’ll use it to personalize your dashboard.",
+  },
+  2: {
+    heading: "Set up your account",
+    subheading: "Use your email and a strong password to keep it secure.",
+  },
+  3: {
+    heading: "What’s your current balance?",
+    subheading: "This gives your tracker its starting point.",
+  },
+} as const;
+
+function passwordIssues(value: string) {
+  return {
+    length: value.length >= 8,
+    lowercase: /[a-z]/.test(value),
+    uppercase: /[A-Z]/.test(value),
+    number: /\d/.test(value),
+  };
+}
+
+function isStrongPassword(value: string) {
+  return Object.values(passwordIssues(value)).every(Boolean);
+}
 
 const TESTIMONIALS = [
   {
@@ -64,6 +93,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginStep, setLoginStep] = useState<LoginStep>("email");
+  const [signupStep, setSignupStep] = useState<SignupStep>(1);
   const { signIn, signInWithOAuth, signUp, user } = useAuth();
   const isLogin = mode === "login";
 
@@ -77,10 +107,24 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     }
   }, []);
 
+  useEffect(() => {
+    if (isLogin) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const fieldId = window.matchMedia("(max-width: 600px)").matches
+        ? "mobile-fullName"
+        : "desktop-fullName";
+      document.getElementById(fieldId)?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isLogin]);
+
   const switchMode = () => {
     setMode((current) => (current === "login" ? "signup" : "login"));
     setError("");
     setLoginStep("email");
+    setSignupStep(1);
     setPassword("");
     setPasswordVisible(false);
   };
@@ -91,6 +135,11 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
     if (isLogin && loginStep === "email") {
       setLoginStep("password");
+      return;
+    }
+
+    if (!isLogin && !openingBalance.trim()) {
+      setError("Enter your current bank balance to continue.");
       return;
     }
 
@@ -133,10 +182,32 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     }
   };
 
+  const advanceSignup = () => {
+    setError("");
+    if (signupStep === 1) {
+      if (!fullName.trim()) {
+        setError("Enter your full name to continue.");
+        return;
+      }
+    }
+    if (signupStep === 2) {
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        setError("Enter a valid email address.");
+        return;
+      }
+      if (!isStrongPassword(password)) {
+        setError("Use a stronger password before continuing.");
+        return;
+      }
+    }
+    setSignupStep((step) => Math.min(step + 1, 3) as SignupStep);
+  };
+
   const heading = isLogin ? "Welcome back" : "Create account";
   const subheading = isLogin
     ? "Your everyday money, in one clear place."
     : "Your financial overview starts here.";
+  const mobileSignupCopy = SIGNUP_STEPS[signupStep];
 
   return (
     <main className={`kh-auth-page${isLogin ? " kh-auth-page--login" : ""}`}>
@@ -158,7 +229,11 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
           <div className="kh-auth__form-wrap">
             <div className="kh-auth__mobile-intro">
               <Brand variant="mobile" />
-              <FormHeading heading={heading} subheading={subheading} />
+              <FormHeading
+                heading={isLogin ? heading : mobileSignupCopy.heading}
+                subheading={isLogin ? subheading : mobileSignupCopy.subheading}
+              />
+              {!isLogin && <SignupProgress step={signupStep} />}
               <MoneyLoop variant="mobile" />
             </div>
 
@@ -166,7 +241,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
               <FormHeading heading={heading} subheading={subheading} />
             </div>
 
-            <form className="kh-auth__form" onSubmit={handleSubmit}>
+            <form className={`kh-auth__form${!isLogin ? ` kh-auth__form--signup kh-auth__form--signup-step-${signupStep}` : ""}`} onSubmit={handleSubmit}>
               <div className="kh-auth__social-row">
                 <SocialButton
                   provider="google"
@@ -188,66 +263,75 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 <span />
               </div>
 
-              {!isLogin && (
-                <AuthField
-                  id="fullName"
-                  label="Full name"
-                  value={fullName}
-                  onChange={setFullName}
-                  placeholder="Aarav Sharma"
-                  autoComplete="name"
-                  required
-                />
-              )}
-
-              <AuthField
-                id="email"
-                label="Email address"
-                type="email"
-                value={email}
-                onChange={(value) => {
-                  setEmail(value);
-                  if (isLogin && loginStep === "password") {
-                    setLoginStep("email");
-                    setPassword("");
-                  }
-                }}
-                placeholder="you@example.com"
-                autoComplete="email"
-                required
-              />
-
-              {(!isLogin || loginStep === "password") && (
+              {isLogin ? (
+                <>
+                  <AuthField
+                    id="email"
+                    label="Email address"
+                    type="email"
+                    value={email}
+                    onChange={(value) => {
+                      setEmail(value);
+                      if (loginStep === "password") {
+                        setLoginStep("email");
+                        setPassword("");
+                      }
+                    }}
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    required
+                  />
+                  {loginStep === "password" && (
                 <div
-                  className={isLogin ? "kh-auth__password-reveal" : undefined}
+                  className="kh-auth__password-reveal"
                 >
                   <PasswordField
                     password={password}
                     passwordVisible={passwordVisible}
-                    isLogin={isLogin}
+                    isLogin
                     onPasswordChange={setPassword}
                     onVisibilityChange={() =>
                       setPasswordVisible((visible) => !visible)
                     }
                   />
                 </div>
-              )}
-
-              {!isLogin && (
-                <div className="kh-auth__balance">
-                  <AuthField
-                    id="openingBalance"
-                    label="Current bank balance"
-                    value={openingBalance}
-                    onChange={(value) =>
-                      setOpeningBalance(value.replace(/[^0-9,]/g, ""))
-                    }
-                    placeholder="e.g. 70,000"
-                    inputMode="numeric"
-                    pattern="[0-9,]*"
-                  />
-                  <p>Used once to set your opening balance.</p>
-                </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="kh-auth__desktop-signup">
+                    <SignupFields
+                      idPrefix="desktop-"
+                      fullName={fullName}
+                      email={email}
+                      password={password}
+                      openingBalance={openingBalance}
+                      passwordVisible={passwordVisible}
+                      onFullNameChange={setFullName}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onBalanceChange={setOpeningBalance}
+                      onVisibilityChange={() => setPasswordVisible((visible) => !visible)}
+                    />
+                  </div>
+                  <div className="kh-auth__mobile-signup">
+                    <MobileSignupStep
+                      step={signupStep}
+                      fullName={fullName}
+                      email={email}
+                      password={password}
+                      openingBalance={openingBalance}
+                      passwordVisible={passwordVisible}
+                      onFullNameChange={setFullName}
+                      onEmailChange={setEmail}
+                      onPasswordChange={setPassword}
+                      onBalanceChange={setOpeningBalance}
+                      onVisibilityChange={() => setPasswordVisible((visible) => !visible)}
+                      onBack={() => setSignupStep((step) => Math.max(step - 1, 1) as SignupStep)}
+                      onNext={advanceSignup}
+                    />
+                  </div>
+                </>
               )}
 
               {error && (
@@ -284,33 +368,125 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   );
 }
 
+type SignupFieldsProps = {
+  idPrefix: string;
+  fullName: string;
+  email: string;
+  password: string;
+  openingBalance: string;
+  passwordVisible: boolean;
+  onFullNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onBalanceChange: (value: string) => void;
+  onVisibilityChange: () => void;
+};
+
+function SignupFields({
+  idPrefix,
+  fullName,
+  email,
+  password,
+  openingBalance,
+  passwordVisible,
+  onFullNameChange,
+  onEmailChange,
+  onPasswordChange,
+  onBalanceChange,
+  onVisibilityChange,
+}: SignupFieldsProps) {
+  return (
+    <>
+      <AuthField id={`${idPrefix}fullName`} label="Full name" value={fullName} onChange={onFullNameChange} placeholder="Aarav Sharma" autoComplete="name" required />
+      <AuthField id={`${idPrefix}email`} label="Email address" type="email" value={email} onChange={onEmailChange} placeholder="you@example.com" autoComplete="email" required />
+      <PasswordField password={password} passwordVisible={passwordVisible} isLogin={false} onPasswordChange={onPasswordChange} onVisibilityChange={onVisibilityChange} id={`${idPrefix}password`} />
+      <PasswordRequirements password={password} />
+      <BalanceField id={`${idPrefix}openingBalance`} value={openingBalance} onChange={onBalanceChange} required />
+    </>
+  );
+}
+
+function MobileSignupStep({
+  step,
+  fullName,
+  email,
+  password,
+  openingBalance,
+  passwordVisible,
+  onFullNameChange,
+  onEmailChange,
+  onPasswordChange,
+  onBalanceChange,
+  onVisibilityChange,
+  onBack,
+  onNext,
+}: Omit<SignupFieldsProps, "idPrefix"> & { step: SignupStep; onBack: () => void; onNext: () => void }) {
+  return (
+    <div className="kh-auth__signup-step">
+      {step > 1 && <button className="kh-auth__back" type="button" onClick={onBack}>Back</button>}
+      {step === 1 && <AuthField id="mobile-fullName" label="Full name" value={fullName} onChange={onFullNameChange} placeholder="Aarav Sharma" autoComplete="name" required />}
+      {step === 2 && <>
+        <AuthField id="mobile-email" label="Email address" type="email" value={email} onChange={onEmailChange} placeholder="you@example.com" autoComplete="email" required />
+        <PasswordField password={password} passwordVisible={passwordVisible} isLogin={false} onPasswordChange={onPasswordChange} onVisibilityChange={onVisibilityChange} id="mobile-password" />
+        <PasswordRequirements password={password} />
+      </>}
+      {step === 3 && <BalanceField id="mobile-openingBalance" value={openingBalance} onChange={onBalanceChange} required />}
+      {step < 3 && <button className="kh-auth__primary" type="button" onClick={onNext}>Continue</button>}
+    </div>
+  );
+}
+
+function BalanceField({ id, value, onChange, required }: { id: string; value: string; onChange: (value: string) => void; required?: boolean }) {
+  return (
+    <div className="kh-auth__balance">
+      <AuthField id={id} label="Current bank balance" value={value} onChange={(nextValue) => onChange(nextValue.replace(/[^0-9,]/g, ""))} placeholder="e.g. 70,000" inputMode="numeric" pattern="[0-9,]*" required={required} />
+      <p>Used once to set your opening balance.</p>
+    </div>
+  );
+}
+
+function PasswordRequirements({ password }: { password: string }) {
+  const issues = passwordIssues(password);
+  return <ul className="kh-auth__password-rules" aria-label="Password requirements">
+    <li className={issues.length ? "is-met" : undefined}>8+ characters</li>
+    <li className={issues.uppercase && issues.lowercase ? "is-met" : undefined}>Uppercase and lowercase</li>
+    <li className={issues.number ? "is-met" : undefined}>At least one number</li>
+  </ul>;
+}
+
+function SignupProgress({ step }: { step: SignupStep }) {
+  return <p className="kh-auth__progress" aria-label={`Step ${step} of 3`}><span>{step}</span> / 3</p>;
+}
+
 function PasswordField({
   password,
   passwordVisible,
   isLogin,
   onPasswordChange,
   onVisibilityChange,
+  id = "password",
 }: {
   password: string;
   passwordVisible: boolean;
   isLogin: boolean;
   onPasswordChange: (value: string) => void;
   onVisibilityChange: () => void;
+  id?: string;
 }) {
   return (
     <div className="kh-auth__field">
       <div className="kh-auth__password-label">
-        <label htmlFor="password">Password</label>
+        <label htmlFor={id}>Password</label>
         {isLogin && <button type="button">Forgot password?</button>}
       </div>
       <div className="kh-auth__password-input">
         <input
-          id="password"
+          id={id}
           type={passwordVisible ? "text" : "password"}
           value={password}
           onChange={(event) => onPasswordChange(event.target.value)}
           required
-          minLength={6}
+          minLength={isLogin ? 1 : 8}
           autoComplete={isLogin ? "current-password" : "new-password"}
           placeholder="Enter your password"
         />
