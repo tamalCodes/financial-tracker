@@ -1,7 +1,8 @@
 "use client";
 
 import { useAuth } from "@/features/auth/AuthContext";
-import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 
@@ -11,6 +12,45 @@ interface AuthFormProps {
 
 type AuthMode = "login" | "signup";
 type OAuthProvider = "google" | "apple";
+type LoginStep = "email" | "password";
+
+const TESTIMONIALS = [
+  {
+    quote:
+      "Finally I can see where my salary goes every month — Kharcha replaced my three spreadsheets in a week.",
+    name: "Aarav Sharma",
+    location: "Bengaluru",
+    image: "/auth-testimonials/aarav-sharma.png",
+  },
+  {
+    quote:
+      "The monthly view makes it much easier to plan what I can spend without second-guessing every purchase.",
+    name: "Meera Iyer",
+    location: "Chennai",
+    image: "/auth-testimonials/meera-iyer.png",
+  },
+  {
+    quote:
+      "I used to put off tracking expenses. Now it takes a minute, and I know exactly where I stand.",
+    name: "Neha Kapoor",
+    location: "Mumbai",
+    image: "/auth-testimonials/neha-kapoor.png",
+  },
+  {
+    quote:
+      "Kharcha gave me a routine I can keep. I check in once a day instead of avoiding my finances for weeks.",
+    name: "Kabir Menon",
+    location: "Kochi",
+    image: "/auth-testimonials/kabir-menon.png",
+  },
+  {
+    quote:
+      "Seeing money in one place has made my monthly goals feel much more achievable.",
+    name: "Riya Desai",
+    location: "Pune",
+    image: "/auth-testimonials/riya-desai.png",
+  },
+] as const;
 
 export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const router = useRouter();
@@ -28,6 +68,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loginStep, setLoginStep] = useState<LoginStep>("email");
   const { signIn, signInWithOAuth, signUp, user } = useAuth();
   const isLogin = mode === "login";
 
@@ -38,11 +79,20 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const switchMode = () => {
     setMode((current) => (current === "login" ? "signup" : "login"));
     setError("");
+    setLoginStep("email");
+    setPassword("");
+    setPasswordVisible(false);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+
+    if (isLogin && loginStep === "email") {
+      setLoginStep("password");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -82,7 +132,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     }
   };
 
-  const heading = isLogin ? "Welcome back." : "Create account";
+  const heading = isLogin ? "Welcome back" : "Create account";
   const subheading = isLogin
     ? "Your everyday money, in one clear place."
     : "Your financial overview starts here.";
@@ -154,44 +204,33 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 label="Email address"
                 type="email"
                 value={email}
-                onChange={setEmail}
+                onChange={(value) => {
+                  setEmail(value);
+                  if (isLogin && loginStep === "password") {
+                    setLoginStep("email");
+                    setPassword("");
+                  }
+                }}
                 placeholder="you@example.com"
                 autoComplete="email"
                 required
               />
 
-              <div className="kh-auth__field">
-                <div className="kh-auth__password-label">
-                  <label htmlFor="password">Password</label>
-                  {isLogin && <button type="button">Forgot password?</button>}
-                </div>
-                <div className="kh-auth__password-input">
-                  <input
-                    id="password"
-                    type={passwordVisible ? "text" : "password"}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    required
-                    minLength={6}
-                    autoComplete={isLogin ? "current-password" : "new-password"}
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="kh-auth__eye"
-                    onClick={() => setPasswordVisible((visible) => !visible)}
-                    aria-label={
-                      passwordVisible ? "Hide password" : "Show password"
+              {(!isLogin || loginStep === "password") && (
+                <div
+                  className={isLogin ? "kh-auth__password-reveal" : undefined}
+                >
+                  <PasswordField
+                    password={password}
+                    passwordVisible={passwordVisible}
+                    isLogin={isLogin}
+                    onPasswordChange={setPassword}
+                    onVisibilityChange={() =>
+                      setPasswordVisible((visible) => !visible)
                     }
-                  >
-                    {passwordVisible ? (
-                      <EyeOff aria-hidden="true" />
-                    ) : (
-                      <Eye aria-hidden="true" />
-                    )}
-                  </button>
+                  />
                 </div>
-              </div>
+              )}
 
               {!isLogin && (
                 <div className="kh-auth__balance">
@@ -224,15 +263,10 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 {loading
                   ? "Please wait..."
                   : isLogin
-                    ? "Sign in"
+                    ? "Continue"
                     : "Create account"}
               </button>
             </form>
-
-            <p className="kh-auth__security">
-              <LockKeyhole aria-hidden="true" />
-              Protected with bank-level 256-bit encryption
-            </p>
 
             <p className="kh-auth__switch">
               {isLogin ? "New to Kharcha?" : "Already have an account?"}{" "}
@@ -240,10 +274,110 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 {isLogin ? "Create account" : "Sign in"}
               </button>
             </p>
+
+            {isLogin && <Testimonial />}
           </div>
         </section>
       </section>
     </main>
+  );
+}
+
+function PasswordField({
+  password,
+  passwordVisible,
+  isLogin,
+  onPasswordChange,
+  onVisibilityChange,
+}: {
+  password: string;
+  passwordVisible: boolean;
+  isLogin: boolean;
+  onPasswordChange: (value: string) => void;
+  onVisibilityChange: () => void;
+}) {
+  return (
+    <div className="kh-auth__field">
+      <div className="kh-auth__password-label">
+        <label htmlFor="password">Password</label>
+        {isLogin && <button type="button">Forgot password?</button>}
+      </div>
+      <div className="kh-auth__password-input">
+        <input
+          id="password"
+          type={passwordVisible ? "text" : "password"}
+          value={password}
+          onChange={(event) => onPasswordChange(event.target.value)}
+          required
+          minLength={6}
+          autoComplete={isLogin ? "current-password" : "new-password"}
+          placeholder="Enter your password"
+        />
+        <button
+          type="button"
+          className="kh-auth__eye"
+          onClick={onVisibilityChange}
+          aria-label={passwordVisible ? "Hide password" : "Show password"}
+        >
+          {passwordVisible ? (
+            <EyeOff aria-hidden="true" />
+          ) : (
+            <Eye aria-hidden="true" />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Testimonial() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const testimonial = TESTIMONIALS[activeIndex];
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const rotation = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % TESTIMONIALS.length);
+    }, 8000);
+
+    return () => window.clearInterval(rotation);
+  }, [activeIndex]);
+
+  return (
+    <aside className="kh-auth__testimonial" aria-label="Customer stories">
+      <div className="kh-auth__testimonial-card" key={testimonial.name}>
+        <p>“{testimonial.quote}”</p>
+        <footer>
+          <Image
+            className="kh-auth__testimonial-avatar"
+            src={testimonial.image}
+            alt=""
+            width={36}
+            height={36}
+          />
+          <span className="kh-auth__testimonial-person">
+            <strong>{testimonial.name}</strong>
+            <span>{testimonial.location}</span>
+          </span>
+        </footer>
+      </div>
+      <div
+        className="kh-auth__testimonial-dots"
+        aria-label="Choose a customer story"
+      >
+        {TESTIMONIALS.map((item, index) => (
+          <button
+            type="button"
+            className={index === activeIndex ? "is-active" : undefined}
+            key={item.name}
+            aria-label={`Show testimonial from ${item.name}`}
+            aria-pressed={index === activeIndex}
+            onClick={() => setActiveIndex(index)}
+          />
+        ))}
+      </div>
+    </aside>
   );
 }
 

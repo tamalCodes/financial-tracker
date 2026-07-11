@@ -214,8 +214,8 @@ html.dark .kh-auth {
 }
 
 .kh-auth__brand--desktop {
-  gap: 16px;
-  font-size: 23px;
+  gap: 14px;
+  font-size: 21px;
 }
 
 .kh-auth__brand--mobile {
@@ -226,16 +226,16 @@ html.dark .kh-auth {
 .kh-auth__mark {
   display: grid;
   flex: 0 0 auto;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   place-items: center;
   border: 1px solid var(--kh-logo-border);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--kh-logo-bg);
   color: var(--kh-logo-fg);
   box-shadow: 0 1px 5px rgba(32, 27, 19, 0.07);
   font-family: var(--font-geist), "Geist", system-ui, sans-serif;
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -510,30 +510,16 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-.kh-auth__security,
 .kh-auth__switch {
-  margin: 18px 0 0;
+  margin: 20px 0 0;
   color: var(--kh-muted);
-  font-size: 11.5px;
+  font-size: 13px;
   line-height: 1.45;
   text-align: center;
 }
 
-.kh-auth__security {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.kh-auth__security svg {
-  width: 12px;
-  height: 12px;
-}
-
 .kh-auth__switch {
-  margin-top: 13px;
-  font-size: 13px;
+  margin-bottom: 0;
 }
 
 .kh-auth__switch button {
@@ -553,6 +539,93 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 .kh-auth__switch button:hover,
 .kh-auth__password-label button:hover {
   text-decoration-color: var(--kh-accent);
+}
+
+.kh-auth__password-reveal {
+  overflow: clip;
+  animation: kh-field-reveal 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.kh-auth__testimonial {
+  margin: 29px 0 0;
+  border-top: 1px solid var(--kh-divider);
+  padding-top: 24px;
+}
+
+.kh-auth__testimonial-card {
+  animation: kh-testimonial-enter 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.kh-auth__testimonial-card > p {
+  margin: 0;
+  color: var(--kh-fg);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.65;
+}
+
+.kh-auth__testimonial footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  color: var(--kh-muted);
+  font-size: 11px;
+}
+
+.kh-auth__testimonial-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px rgba(243, 239, 229, 0.16);
+}
+
+.kh-auth__testimonial-person {
+  display: grid;
+  gap: 1px;
+}
+
+.kh-auth__testimonial-person strong {
+  color: var(--kh-fg);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.kh-auth__testimonial-person span {
+  font-size: 11px;
+}
+
+.kh-auth__testimonial-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 16px;
+}
+
+.kh-auth__testimonial-dots button {
+  width: 5px;
+  height: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--kh-divider);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.kh-auth__testimonial-dots button:hover {
+  background: color-mix(in srgb, var(--kh-accent) 55%, var(--kh-divider));
+}
+
+.kh-auth__testimonial-dots button:focus-visible {
+  outline: 2px solid var(--kh-accent);
+  outline-offset: 3px;
+}
+
+.kh-auth__testimonial-dots button.is-active {
+  background: var(--kh-accent);
+  transform: scale(1.2);
 }
 
 .kh-loop {
@@ -764,6 +837,16 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   70%, 100% { opacity: 0; transform: scale(1.45); }
 }
 
+@keyframes kh-field-reveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kh-testimonial-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kh-auth [class*="kh-"] {
     animation-duration: 0.001ms !important;
@@ -871,8 +954,8 @@ html.dark .kh-auth__social:hover:not(:disabled) {
     min-height: 50px;
   }
 
-  .kh-auth__security {
-    margin-top: 15px;
+  .kh-auth__testimonial {
+    display: none;
   }
 }
 

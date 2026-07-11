@@ -1,6 +1,6 @@
 # Auth
 
-Reverse-engineered from `src/app/api/auth/*`, `src/app/auth/callback/route.ts`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json}`, `lib/supabase/{auth,cookies}.ts`, `supabase/config.toml`,
+Reverse-engineered from `src/app/api/auth/*`, `src/app/auth/callback/route.ts`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json,auth-testimonials/*.png}`, `lib/supabase/{auth,cookies}.ts`, `supabase/config.toml`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
 `src/app/(auth)/layout.tsx`, `src/middleware.ts`,
 `supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
@@ -72,16 +72,21 @@ avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) he
 for dark and `#F4F1E8` / `#201B13` / `#9C7B33` for light. Bricolage Grotesque remains display/UI;
 Geist is used for field and supporting copy.
 
-Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 56px rupee brand, a 250px through-line,
+Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 48px rupee brand, a 250px through-line,
 and the `Money, clearly.` story. Right has a vertically centred 390px form with Google and Apple
 buttons always side-by-side and equal-width. Mobile at ≤600px becomes a 390×844 single column with
 the 44px mark, device notch, condensed 44px through-line, and three-up step labels.
 
 The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
-pauses `kh-*` animation while preserving the static path and labels. Login/signup switch in place;
-signup adds full name/current balance, login alone shows forgot-password. Password eye toggles
-text/password. Hover, focus halo, placeholder, and autofill rules match the handoff.
+pauses `kh-*` animation while preserving the static path and labels. Login is email-first: a valid
+email submit changes the CTA to the password step with a short reveal transition, then `Continue`
+uses the existing password login route. It intentionally does not expose whether an email exists.
+Signup adds full name/current balance. The desktop login shows a slow (8s) rotating customer-story
+carousel, with five fictional AI-generated profile portraits and no star rating. Its dot controls
+are keyboard-accessible buttons: selecting one switches to that story and restarts the 8s timer.
+Mobile omits the carousel. Password eye toggles text/password. Hover, focus halo, placeholder,
+and autofill rules match the handoff.
 
 Supabase project configuration must enable Google and Apple providers and allow each deployed
 `https://<origin>/auth/callback` redirect URL; local source alone cannot supply provider credentials.
@@ -95,12 +100,14 @@ Supabase project configuration must enable Google and Apple providers and allow 
 - [ ] Google and Apple start Supabase OAuth and callback exchanges the PKCE code into a cookie session.
 - [ ] Desktop/mobile dark/light through-line, side-by-side social controls, focus/hover, password eye,
   in-place mode switch, and reduced-motion behaviour match the Kharcha handoff.
+- [ ] Login initially renders email plus `Continue`; password animates in only after the email step,
+  with no account-existence disclosure.
 
 ## Files to touch
 `src/app/api/auth/*/route.ts`, `src/app/auth/callback/route.ts`, `lib/api/schemas.ts` (`signupSchema`), `lib/supabase/auth.ts`,
 `lib/supabase/cookies.ts`, `features/auth/{AuthContext.tsx,identity.ts}`,
 `features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `src/app/{globals,layout}.tsx`,
-`public/{icon.svg,manifest.json}`,
+`public/{icon.svg,manifest.json,auth-testimonials/*.png}`,
 `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
 `supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `supabase/config.toml`, `src/middleware.ts`.
 
