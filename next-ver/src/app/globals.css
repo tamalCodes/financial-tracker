@@ -815,7 +815,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 
 .kh-loop__mobile-callouts li {
   position: absolute;
-  width: 116px;
+  width: 0;
 }
 
 .kh-loop__mobile-callouts p {
@@ -828,11 +828,30 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  width: 116px;
 }
 
-.kh-loop__mobile-callout--income { top: 76%; left: 0; }
-.kh-loop__mobile-callout--spending { top: 0; left: 46%; }
-.kh-loop__mobile-callout--growth { top: 62%; right: 0; text-align: right; }
+.kh-loop__mobile-callout--income {
+  top: calc(65.8333% + 18px);
+  left: 3.5714%;
+}
+
+.kh-loop__mobile-callout--income p { transform: translateX(-8px); }
+
+.kh-loop__mobile-callout--spending {
+  top: 0;
+  left: 50%;
+}
+
+.kh-loop__mobile-callout--spending p { transform: translateX(-14px); }
+
+.kh-loop__mobile-callout--growth {
+  top: calc(45.8333% + 26px);
+  left: 96.4286%;
+  text-align: right;
+}
+
+.kh-loop__mobile-callout--growth p { transform: translateX(-116px); }
 .kh-loop__mobile-callout--growth p { justify-content: flex-end; }
 
 .kh-loop__mobile-callout--income::after,
@@ -846,19 +865,19 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 
 .kh-loop__mobile-callout--income::after {
   top: -22px;
-  left: 8px;
+  left: 0;
   height: 18px;
 }
 
 .kh-loop__mobile-callout--spending::after {
   top: 25px;
-  left: 8px;
+  left: 0;
   height: 24px;
 }
 
 .kh-loop__mobile-callout--growth::after {
   top: -28px;
-  right: 4px;
+  left: 0;
   height: 22px;
 }
 

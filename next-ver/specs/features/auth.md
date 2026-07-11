@@ -80,8 +80,8 @@ when larger), the 44px mark, condensed 44px through-line, and three-up step labe
 three vertical zones: brand/story at top, sign-in controls through middle, and account-creation link
 near bottom. Its money loop gets a responsive 148–172px stage and larger moving/step markers so the
 visual reads at phone scale; it now uses the desktop curve geometry with Income/Spending/Growth
-positioned around the path (and connector lines at each step), rather than a compressed one-line
-label row. Signup remains naturally compact for its extra fields.
+positioned around the path. Each mobile callout and connector is percentage-pinned to its SVG node,
+instead of a compressed one-line label row. Signup remains naturally compact for its extra fields.
 
 The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
