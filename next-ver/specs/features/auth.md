@@ -74,8 +74,14 @@ Geist is used for field and supporting copy.
 
 Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 48px rupee brand, a 250px through-line,
 and the `Money, clearly.` story. Right has a vertically centred 390px form with Google and Apple
-buttons always side-by-side and equal-width. Mobile at ≤600px becomes a 390×844 single column with
-the 44px mark, device notch, condensed 44px through-line, and three-up step labels.
+buttons always side-by-side and equal-width. Mobile at ≤600px is a full-viewport single column:
+no simulated device bezel or Dynamic Island, with 20px horizontal gutters (or the device safe area,
+when larger), the 44px mark, condensed 44px through-line, and three-up step labels. Login uses
+three vertical zones: brand/story at top, sign-in controls through middle, and account-creation link
+near bottom. Its money loop gets a responsive 148–172px stage and larger moving/step markers so the
+visual reads at phone scale; it now uses the desktop curve geometry with Income/Spending/Growth
+positioned around the path (and connector lines at each step), rather than a compressed one-line
+label row. Signup remains naturally compact for its extra fields.
 
 The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
@@ -85,8 +91,11 @@ uses the existing password login route. It intentionally does not expose whether
 Signup adds full name/current balance. The desktop login shows a slow (8s) rotating customer-story
 carousel, with five fictional AI-generated profile portraits and no star rating. Its dot controls
 are keyboard-accessible buttons: selecting one switches to that story and restarts the 8s timer.
-Mobile omits the carousel. Password eye toggles text/password. Hover, focus halo, placeholder,
-and autofill rules match the handoff.
+Mobile omits the carousel. `/` renders its auth UI immediately and lazy-loads the dashboard only
+after the client session resolves, avoiding a client-side loading screen and dashboard bundle on
+auth entry. The OAuth callback error reads from `window.location.search` after hydration, avoiding a
+`useSearchParams` rendering bailout on `/`. Password eye toggles text/password. Hover, focus halo,
+placeholder, and autofill rules match the handoff.
 
 Supabase project configuration must enable Google and Apple providers and allow each deployed
 `https://<origin>/auth/callback` redirect URL; local source alone cannot supply provider credentials.

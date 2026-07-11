@@ -3,7 +3,7 @@
 import { useAuth } from "@/features/auth/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 
 interface AuthFormProps {
@@ -54,17 +54,12 @@ const TESTIMONIALS = [
 
 export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [openingBalance, setOpeningBalance] = useState("");
-  const [error, setError] = useState(
-    searchParams.get("error") === "oauth"
-      ? "Unable to continue with that provider."
-      : "",
-  );
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -75,6 +70,12 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [router, user]);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("error") === "oauth") {
+      setError("Unable to continue with that provider.");
+    }
+  }, []);
 
   const switchMode = () => {
     setMode((current) => (current === "login" ? "signup" : "login"));
@@ -138,7 +139,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     : "Your financial overview starts here.";
 
   return (
-    <main className="kh-auth-page">
+    <main className={`kh-auth-page${isLogin ? " kh-auth-page--login" : ""}`}>
       <section className="kh-auth" aria-label="Kharcha authentication">
         <aside className="kh-auth__story">
           <Brand variant="desktop" />
@@ -478,9 +479,9 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
   const desktop = variant === "desktop";
   const pathId = `kh-path-${rawId}`;
   const gradientId = `kh-gradient-${rawId}`;
-  const path = desktop
-    ? "M20 158 C110 186 200 78 280 78 C360 78 430 158 540 110"
-    : "M20 82 C120 104 200 30 280 32 C360 34 440 88 540 58";
+  const markerRadius = desktop ? 3.5 : 7;
+  const trailRadius = desktop ? 1.7 : 3;
+  const path = "M20 158 C110 186 200 78 280 78 C360 78 430 158 540 110";
 
   return (
     <section
@@ -493,7 +494,7 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
       </div>
       <div className="kh-loop__stage">
         <svg
-          viewBox={desktop ? "0 0 560 240" : "0 0 560 120"}
+          viewBox="0 0 560 240"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
@@ -528,7 +529,7 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
               <circle
                 key={begin}
                 className={index ? "kh-loop__trail" : "kh-loop__marker"}
-                r={index ? 1.7 : 3.5}
+                r={index ? trailRadius : markerRadius}
               >
                 <animateMotion
                   dur="11s"
@@ -543,9 +544,8 @@ function MoneyLoop({ variant }: { variant: "desktop" | "mobile" }) {
           </g>
           {desktop ? <DesktopNodes /> : <MobileNodes />}
         </svg>
-        {desktop && <DesktopCallouts />}
+        {desktop ? <DesktopCallouts /> : <MobileCallouts />}
       </div>
-      {!desktop && <MobileLabels />}
     </section>
   );
 }
@@ -578,16 +578,16 @@ function MobileNodes() {
   return (
     <g className="kh-loop__nodes kh-loop__nodes--mobile">
       {[
-        [20, 82],
-        [280, 32],
-        [540, 58],
+        [20, 158],
+        [280, 78],
+        [540, 110],
       ].map(([cx, cy]) => (
         <circle
           key={`${cx}-${cy}`}
           className="kh-loop__dot"
           cx={cx}
           cy={cy}
-          r="3"
+          r="6"
         />
       ))}
     </g>
@@ -630,17 +630,17 @@ function DesktopCallouts() {
   );
 }
 
-function MobileLabels() {
+function MobileCallouts() {
   return (
-    <ol className="kh-loop__mobile-labels">
-      <li>
-        <span>01</span>Income
+    <ol className="kh-loop__mobile-callouts">
+      <li className="kh-loop__mobile-callout--income">
+        <p><span>01</span>Income</p>
       </li>
-      <li>
-        <span>02</span>Spending
+      <li className="kh-loop__mobile-callout--spending">
+        <p><span>02</span>Spending</p>
       </li>
-      <li>
-        <span>03</span>Growth
+      <li className="kh-loop__mobile-callout--growth">
+        <p><span>03</span>Growth</p>
       </li>
     </ol>
   );

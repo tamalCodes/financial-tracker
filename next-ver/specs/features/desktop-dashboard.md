@@ -110,7 +110,9 @@ All `"use client"`. Mobile path is **untouched**.
     The 6M/12M `WindowToggle` **and the Earned/Spent/Invested legend** are both **hidden** while locked
     (nothing to window over / label). This replaces the old flat-zero line / bare "Nothing to chart yet" text.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
-  glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme.
+  glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme. It loads as a client-only
+  dynamic chunk with a fixed-size card placeholder, so the chart library never delays mobile UI or the
+  desktop dashboard shell's first paint.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,
   refetches on window + month change. Loading/error states.
 - **`hooks/useInfiniteExpenses.ts`** (new) — desktop-only scroll pagination for Recent payments:

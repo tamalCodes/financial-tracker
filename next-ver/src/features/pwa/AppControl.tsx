@@ -30,7 +30,7 @@ async function purgeCachesAndReload() {
 
 /**
  * DB-driven kill switch + cache-purge broadcast. Mounted globally; it polls
- * /api/app-control on load and again whenever the tab/PWA is foregrounded, so a
+ * /api/app-control after the first 1.5 seconds and again whenever the tab/PWA is foregrounded, so a
  * flag flipped in the database converges on real devices within seconds.
  *
  * - killed → this session was invalidated server-side; sign out and go home.
@@ -78,13 +78,14 @@ export default function AppControl() {
       }
     };
 
-    check();
+    const initialCheck = window.setTimeout(check, 1500);
     const onVisible = () => {
       if (document.visibilityState === "visible") check();
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      window.clearTimeout(initialCheck);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [signOut]);

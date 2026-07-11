@@ -18,8 +18,23 @@ import Toaster from "@/features/dashboard/mobile/Toaster";
 import Transactions from "@/features/dashboard/mobile/Transactions";
 import { useFinance } from "@/features/dashboard/mobile/useFinance";
 import { usePortfolioData } from "@/features/dashboard/mobile/usePortfolioData";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import TrendChart from "./TrendChart";
+
+const TrendChart = dynamic(() => import("./TrendChart"), {
+  ssr: false,
+  loading: () => (
+    <div
+      aria-label="Loading monthly trend"
+      style={{
+        height: 352,
+        border: "1px solid var(--c-line)",
+        borderRadius: 28,
+        background: "var(--c-surface)",
+      }}
+    />
+  ),
+});
 
 function greetingForHour(hour: number) {
   if (hour < 12) return "Good morning";

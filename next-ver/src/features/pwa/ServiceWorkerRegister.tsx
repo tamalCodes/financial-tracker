@@ -16,7 +16,16 @@ export default function ServiceWorkerRegister() {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
 
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    const register = () => navigator.serviceWorker.register("/sw.js").catch(() => {});
+    const schedule = () => window.setTimeout(register, 0);
+
+    if (document.readyState === "complete") {
+      const timeout = schedule();
+      return () => window.clearTimeout(timeout);
+    }
+
+    window.addEventListener("load", schedule, { once: true });
+    return () => window.removeEventListener("load", schedule);
   }, []);
 
   return null;

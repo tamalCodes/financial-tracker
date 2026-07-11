@@ -723,7 +723,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 .kh-loop__callouts,
-.kh-loop__mobile-labels {
+.kh-loop__mobile-callouts {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -747,7 +747,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 .kh-loop__callouts p span,
-.kh-loop__mobile-labels span {
+.kh-loop__mobile-callouts p span {
   color: var(--kh-accent);
   font-family: var(--font-geist), "Geist", system-ui, sans-serif;
   font-size: 10px;
@@ -769,7 +769,8 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 .kh-loop__callout--growth p { justify-content: flex-end; }
 
 .kh-loop__callout--income::after,
-.kh-loop__callout--spending::after {
+.kh-loop__callout--spending::after,
+.kh-loop__callout--growth::after {
   position: absolute;
   width: 1px;
   background: color-mix(in srgb, var(--kh-accent) 42%, transparent);
@@ -788,8 +789,14 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   height: 17px;
 }
 
+.kh-loop__callout--growth::after {
+  top: -32px;
+  right: 0;
+  height: 24px;
+}
+
 .kh-loop--mobile {
-  margin: 26px 0 22px;
+  margin: 38px 0 0;
 }
 
 .kh-loop--mobile .kh-loop__eyebrow {
@@ -797,8 +804,8 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 }
 
 .kh-loop--mobile .kh-loop__stage {
-  height: 44px;
-  margin-top: 11px;
+  height: clamp(148px, 45vw, 172px);
+  margin-top: 16px;
 }
 
 .kh-loop__nodes--mobile .kh-loop__dot {
@@ -806,22 +813,53 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   stroke-width: 1.5px;
 }
 
-.kh-loop__mobile-labels {
+.kh-loop__mobile-callouts li {
+  position: absolute;
+  width: 116px;
+}
+
+.kh-loop__mobile-callouts p {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 11px;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
   color: var(--kh-fg);
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif;
+  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
-.kh-loop__mobile-labels li {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
+.kh-loop__mobile-callout--income { top: 76%; left: 0; }
+.kh-loop__mobile-callout--spending { top: 0; left: 46%; }
+.kh-loop__mobile-callout--growth { top: 62%; right: 0; text-align: right; }
+.kh-loop__mobile-callout--growth p { justify-content: flex-end; }
+
+.kh-loop__mobile-callout--income::after,
+.kh-loop__mobile-callout--spending::after,
+.kh-loop__mobile-callout--growth::after {
+  position: absolute;
+  width: 1px;
+  background: color-mix(in srgb, var(--kh-accent) 42%, transparent);
+  content: "";
+}
+
+.kh-loop__mobile-callout--income::after {
+  top: -22px;
+  left: 8px;
+  height: 18px;
+}
+
+.kh-loop__mobile-callout--spending::after {
+  top: 25px;
+  left: 8px;
+  height: 24px;
+}
+
+.kh-loop__mobile-callout--growth::after {
+  top: -28px;
+  right: 4px;
+  height: 22px;
 }
 
 @keyframes kh-dash {
@@ -861,33 +899,17 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 
 @media (max-width: 600px) {
   .kh-auth-page {
-    display: grid;
-    min-height: 100svh;
-    place-items: center;
+    width: 100%;
   }
 
   .kh-auth {
-    position: relative;
     display: block;
-    width: min(100%, 390px);
+    width: 100%;
     min-height: 100svh;
-    border: 1px solid var(--kh-bezel);
-    border-radius: 46px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
-    padding: 58px 26px 26px;
-  }
-
-  .kh-auth::before {
-    position: absolute;
-    z-index: 2;
-    top: 12px;
-    left: 50%;
-    width: 118px;
-    height: 30px;
-    border-radius: 999px;
-    background: #000;
-    content: "";
-    transform: translateX(-50%);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: calc(24px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
   }
 
   .kh-auth__story,
@@ -957,12 +979,33 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   .kh-auth__testimonial {
     display: none;
   }
-}
 
-@media (max-width: 360px) {
-  .kh-auth {
-    padding-right: 21px;
-    padding-left: 21px;
+  /* Login uses the available viewport as three quiet zones: brand/story at the
+     top, sign-in controls through the middle, and account creation near bottom.
+     Signup stays naturally compact because it has more required fields. */
+  .kh-auth-page--login .kh-auth {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kh-auth-page--login .kh-auth__form-panel,
+  .kh-auth-page--login .kh-auth__form-wrap {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .kh-auth-page--login .kh-auth__form-wrap {
+    height: auto;
+  }
+
+.kh-auth-page--login .kh-auth__form {
+    margin-top: clamp(32px, 5svh, 48px);
+  }
+
+  .kh-auth-page--login .kh-auth__switch {
+    margin-top: auto;
+    padding-top: 32px;
   }
 }
 

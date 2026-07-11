@@ -52,7 +52,7 @@ Any session minted before that epoch is rejected, and later successful logins up
 - **Why not the JWT secret**: the earlier design keyed enforcement on `getAccessTokenClaims()`, which needs `SUPABASE_JWT_SECRET`. That var is commented out in `.env` (and absent on Vercel), so claims were always `null`, `requireUser` fell straight through, and the kill switch was a no-op. The decode-`iat` path removes that dependency.
 
 ## UI / components
-- `features/pwa/AppControl.tsx` (`"use client"`) — mounted **globally** in `src/app/layout.tsx` (inside `AuthProvider`, beside `ServiceWorkerRegister`). Polls `/api/app-control` on mount and on `visibilitychange` → visible (PWA foreground), so a flag flip converges within seconds.
+- `features/pwa/AppControl.tsx` (`"use client"`) — mounted **globally** in `src/app/layout.tsx` (inside `AuthProvider`, beside `ServiceWorkerRegister`). Defers its first `/api/app-control` poll by 1.5s so it cannot compete with first paint, then polls again on `visibilitychange` → visible (PWA foreground); a flag flip still converges within seconds.
   - `killed` → `signOut()` then `location.href = "/"`.
   - `purgeVersion` changed vs `localStorage["app-purge-version"]` → unregister all SWs, delete all caches, reload. First run baselines silently (no reload). All failures swallowed.
 - Client never reads `app_control` directly — only through the endpoint.
