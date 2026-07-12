@@ -14,6 +14,8 @@ interface Props {
   loading?: boolean;
   fill?: boolean; // desktop: fill column height, pin header + tabs, scroll the list
   onAdd?: () => void; // desktop: contextual "+" by the total → add investment
+  onManage?: () => void;
+  onRecordSips?: () => void;
 }
 
 function SkeletonRows({ count }: { count: number }) {
@@ -87,7 +89,7 @@ function EmptyPortfolio({ text }: { text: string }) {
   );
 }
 
-export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill, onAdd }: Props) {
+export default function Investments({ portfolioTotal, fds, funds, sips, loading, fill, onAdd, onManage, onRecordSips }: Props) {
   const [tab, setTab] = useState<"holdings" | "sips">("holdings");
 
   return (
@@ -125,7 +127,10 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
             </span>
           )}
         </div>
-        {onAdd && <AddButton variant="investment" label="Add investment" onClick={onAdd} />}
+        <div style={{ display: "flex", gap: 8 }}>
+          {onManage && <button onClick={onManage} style={SMALL_BUTTON}>Manage</button>}
+          {onAdd && <AddButton variant="investment" label="Add investment" onClick={onAdd} />}
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: 4, background: "var(--c-field)", borderRadius: 13, padding: 4 }}>
@@ -224,9 +229,17 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
               </span>
             </div>
           ))}
+          {onRecordSips && (
+            <button onClick={onRecordSips} style={RECORD_BUTTON}>
+              Record this month · ₹{sips.reduce((total, sip) => total + sip.rawMonthly, 0).toLocaleString("en-IN")}
+            </button>
+          )}
         </div>
       )}
       </div>
     </div>
   );
 }
+
+const SMALL_BUTTON: React.CSSProperties = { cursor: "pointer", border: "1px solid var(--c-line)", borderRadius: 10, background: "var(--c-faint)", color: "var(--c-body-2)", font: `600 12px ${DISPLAY}`, padding: "8px 10px" };
+const RECORD_BUTTON: React.CSSProperties = { cursor: "pointer", border: "1px solid rgba(99,102,241,.35)", borderRadius: 12, background: "rgba(99,102,241,.10)", color: "var(--c-accent)", font: `600 12.5px ${DISPLAY}`, padding: "11px 12px", textAlign: "left", marginTop: 4 };

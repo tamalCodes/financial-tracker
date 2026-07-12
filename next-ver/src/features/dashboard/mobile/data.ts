@@ -88,8 +88,10 @@ export interface Fund {
   current: string;
 }
 export interface SipRow {
+  id: string;
   name: string;
   monthly: string;
+  rawMonthly: number;
   due: string;
   paid: string;
 }

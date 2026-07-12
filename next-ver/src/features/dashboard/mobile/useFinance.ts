@@ -588,6 +588,7 @@ export function useFinance() {
 
   return {
     loading: isBootstrapping,
+    reload,
     month: monthLabel,
     currentMonth, // 'YYYY-MM-01' key — used by the desktop trend chart (useTrendData)
     canNavigateNextMonth,

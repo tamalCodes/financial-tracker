@@ -200,6 +200,12 @@ export type Database = {
         }>;
         Relationships: [];
       };
+      sip_payments: {
+        Row: { id: string; user_id: string; sip_id: string; month: string; amount: number; debited_balance: boolean; created_at: string };
+        Insert: { id?: string; user_id: string; sip_id: string; month: string; amount: number; debited_balance?: boolean; created_at?: string };
+        Update: Partial<{ month: string; amount: number; debited_balance: boolean }>;
+        Relationships: [];
+      };
       portfolio_totals: {
         Row: { user_id: string; value: number };
         Insert: { user_id: string; value?: number };
@@ -258,6 +264,10 @@ export type Database = {
       cumulative_left_in_bank: {
         Args: { p_month: string };
         Returns: number;
+      };
+      record_sip_payments: {
+        Args: { p_month: string; p_sip_ids: string[]; p_debit_balance: boolean };
+        Returns: { total: number; paid_count: number }[];
       };
     };
     Enums: Record<string, never>;

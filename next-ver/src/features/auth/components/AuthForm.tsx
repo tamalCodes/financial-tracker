@@ -349,7 +349,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
                   ? "Please wait..."
                   : isLogin
                     ? "Continue"
-                    : "Create account"}
+                    : "Start tracking with Kharcha"}
               </button>
             </form>
 

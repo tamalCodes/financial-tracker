@@ -125,6 +125,12 @@ export const sipUpdateSchema = sipCreateSchema
   .partial()
   .extend({ id: z.string().min(1) });
 
+export const sipPaymentCreateSchema = z.object({
+  currentMonth: month,
+  sipIds: z.array(z.string().uuid()).min(1).max(50),
+  debitBalance: z.boolean(),
+});
+
 /** PUT body for the manual portfolio total. */
 export const portfolioTotalSchema = z.object({ value: amount });
 

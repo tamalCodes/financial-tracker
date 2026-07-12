@@ -397,7 +397,11 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   min-height: 50px;
   border: 1px solid var(--kh-input-border);
   border-radius: 12px;
-  outline: none;
+  outline: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   background: var(--kh-input-bg);
   color: var(--kh-fg);
   padding: 13px 14px;
@@ -413,14 +417,17 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 
 .kh-auth__field input:focus {
   border-color: var(--kh-accent);
-  box-shadow: none;
+  outline: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .kh-auth__field input:-webkit-autofill,
 .kh-auth__field input:-webkit-autofill:hover,
 .kh-auth__field input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--kh-fg);
-  box-shadow: none;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
   background: var(--kh-input-bg);
   transition: background-color 9999s ease-out 0s;
 }

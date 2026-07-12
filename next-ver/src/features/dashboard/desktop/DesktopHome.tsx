@@ -14,12 +14,14 @@ import Emis from "@/features/dashboard/mobile/Emis";
 import HeroBalance from "@/features/dashboard/mobile/HeroBalance";
 import Income from "@/features/dashboard/mobile/Income";
 import Investments from "@/features/dashboard/mobile/Investments";
+import PortfolioManager from "@/features/dashboard/mobile/PortfolioManager";
+import SipPaymentSheet from "@/features/dashboard/mobile/SipPaymentSheet";
 import Toaster from "@/features/dashboard/mobile/Toaster";
 import Transactions from "@/features/dashboard/mobile/Transactions";
 import { useFinance } from "@/features/dashboard/mobile/useFinance";
 import { usePortfolioData } from "@/features/dashboard/mobile/usePortfolioData";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const TrendChart = dynamic(() => import("./TrendChart"), {
   ssr: false,
@@ -54,6 +56,8 @@ export default function DesktopHome() {
   const { user } = useAuth();
   const f = useFinance();
   const portfolio = usePortfolioData();
+  const [portfolioManagerOpen, setPortfolioManagerOpen] = useState(false);
+  const [sipPaymentOpen, setSipPaymentOpen] = useState(false);
   const trend = useTrendData(f.currentMonth);
   // Desktop "Recent payments" scrolls + appends instead of paging. Reload the list
   // when the month changes (handled inside) or the expense count shifts (add/delete).
@@ -270,6 +274,8 @@ export default function DesktopHome() {
                 loading={portfolio.loading}
                 fill
                 onAdd={() => f.openSheet("investment")}
+                onManage={() => setPortfolioManagerOpen(true)}
+                onRecordSips={() => setSipPaymentOpen(true)}
               />
             </div>
           </div>
@@ -343,6 +349,9 @@ export default function DesktopHome() {
           onClose={f.closeBillEdit}
         />
       )}
+
+      {portfolioManagerOpen && <PortfolioManager onClose={() => setPortfolioManagerOpen(false)} onDone={portfolio.reload} />}
+      {sipPaymentOpen && <SipPaymentSheet sips={portfolio.sips} currentMonth={f.currentMonth} onClose={() => setSipPaymentOpen(false)} onDone={async () => { await Promise.all([portfolio.reload(), f.reload()]); }} />}
 
       <Toaster />
     </div>

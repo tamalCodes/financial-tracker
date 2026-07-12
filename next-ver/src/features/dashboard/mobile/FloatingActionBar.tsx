@@ -2,8 +2,8 @@
 
 import type { SheetMode } from "./data";
 
-// Floating action bar — pixel from FinanceDashboard.dc.html (handoff §5.5).
-// Fixed bottom-centre frosted pill; 3 circular icon-only buttons. Respects safe-area.
+// Floating action bar — fixed bottom-centre pill; three crisp icon-only actions.
+// Opaque surfaces avoid the hazy frosted effect on mobile. Respects safe-area.
 interface Props {
   onOpen: (mode: SheetMode) => void;
 }
@@ -61,20 +61,17 @@ export default function FloatingActionBar({ onOpen }: Props) {
           display: "flex",
           alignItems: "center",
           gap: 10,
-          background: "var(--c-glass-strong)",
-          backdropFilter: "blur(18px) saturate(1.8)",
-          WebkitBackdropFilter: "blur(18px) saturate(1.8)",
+          background: "var(--c-surface)",
           border: "1px solid var(--c-line)",
           borderRadius: 999,
           padding: 7,
-          boxShadow: "0 22px 48px -14px rgba(15,23,42,0.45), 0 2px 8px rgba(15,23,42,0.06)",
         }}
       >
         <Fab
           label="Add expense"
           onClick={() => onOpen("expense")}
-          gradient="linear-gradient(135deg,rgba(239,68,68,0.26),rgba(239,68,68,0.13))"
-          border="rgba(239,68,68,0.42)"
+          gradient="color-mix(in srgb, var(--c-expense) 18%, var(--c-surface))"
+          border="color-mix(in srgb, var(--c-expense) 58%, var(--c-surface))"
           stroke="var(--c-expense)"
         >
           <path d="M10 4v12" />
@@ -83,8 +80,8 @@ export default function FloatingActionBar({ onOpen }: Props) {
         <Fab
           label="Add income"
           onClick={() => onOpen("income")}
-          gradient="linear-gradient(135deg,rgba(16,185,129,0.28),rgba(16,185,129,0.14))"
-          border="rgba(16,185,129,0.45)"
+          gradient="color-mix(in srgb, var(--c-credit) 18%, var(--c-surface))"
+          border="color-mix(in srgb, var(--c-credit) 58%, var(--c-surface))"
           stroke="var(--c-credit)"
         >
           <path d="M10 16V4" />
@@ -93,8 +90,8 @@ export default function FloatingActionBar({ onOpen }: Props) {
         <Fab
           label="Add investment"
           onClick={() => onOpen("investment")}
-          gradient="linear-gradient(135deg,rgba(139,92,246,0.26),rgba(139,92,246,0.13))"
-          border="rgba(139,92,246,0.42)"
+          gradient="color-mix(in srgb, var(--c-violet) 18%, var(--c-surface))"
+          border="color-mix(in srgb, var(--c-violet) 58%, var(--c-surface))"
           stroke="var(--c-violet)"
         >
           <path d="M3 14l5-5 3 3 6-7" />

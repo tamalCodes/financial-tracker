@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/features/auth/AuthContext";
 import { identityFrom } from "@/features/auth/identity";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import AddSheet from "./AddSheet";
 import BillEditSheet from "./BillEditSheet";
 import Bills from "./Bills";
@@ -13,6 +13,8 @@ import GreetingHeader from "./GreetingHeader";
 import HeroBalance from "./HeroBalance";
 import Income from "./Income";
 import Investments from "./Investments";
+import PortfolioManager from "./PortfolioManager";
+import SipPaymentSheet from "./SipPaymentSheet";
 import Toaster from "./Toaster";
 import Transactions from "./Transactions";
 import { useFinance } from "./useFinance";
@@ -29,6 +31,8 @@ export default function MobileHome() {
   const { user } = useAuth();
   const f = useFinance();
   const portfolio = usePortfolioData();
+  const [portfolioManagerOpen, setPortfolioManagerOpen] = useState(false);
+  const [sipPaymentOpen, setSipPaymentOpen] = useState(false);
 
   const { name, initials } = useMemo(
     () => identityFrom(user?.fullName, user?.email),
@@ -119,6 +123,8 @@ export default function MobileHome() {
             funds={portfolio.funds}
             sips={portfolio.sips}
             loading={portfolio.loading}
+            onManage={() => setPortfolioManagerOpen(true)}
+            onRecordSips={() => setSipPaymentOpen(true)}
           />
         </div>
       </div>
@@ -188,6 +194,9 @@ export default function MobileHome() {
           onClose={f.closeBillEdit}
         />
       )}
+
+      {portfolioManagerOpen && <PortfolioManager onClose={() => setPortfolioManagerOpen(false)} onDone={portfolio.reload} />}
+      {sipPaymentOpen && <SipPaymentSheet sips={portfolio.sips} currentMonth={f.currentMonth} onClose={() => setSipPaymentOpen(false)} onDone={async () => { await Promise.all([portfolio.reload(), f.reload()]); }} />}
 
       <Toaster />
     </div>
