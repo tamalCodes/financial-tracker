@@ -69,7 +69,10 @@ cumulative Left-in-bank replaces the old copy-forward behavior.
   - **Category pills** — the slim glassy chip is the shared **`CatPill`** component (also used by
     EditSheet): 30px tall, 10px radius, dot + label, category-tinted gradient when selected.
 - **EditSheet** — tap a Recent-payments row → edit amount, title (description), single `tag`, and
-  category → `PUT /api/expenses`. Uses the shared `AmountField` (₹-prefixed) and `CatPill`. The
+  category → `PUT /api/expenses`. Uses the shared `AmountField` (₹-prefixed) and `CatPill`.
+  **Responsive container (mirrors AddSheet)** — a bottom sheet on mobile that becomes a centered
+  dialog card on desktop (`useMediaQuery("(min-width: 1024px)")`): full 24px radius, grabber hidden,
+  `max-height: calc(100vh - 48px)` with scroll, centered overlay with 24px padding. The
   `tag` is a **chip**: a dashed "+ Add tag" pill when empty; tapping it (or the filled indigo chip)
   drops into a compact inline input committed on blur/Enter; the chip's ✕ clears the tag.
 - **Transactions** — Recent-payments list: merchant + category pill + date + amount, no minus sign;

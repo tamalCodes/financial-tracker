@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { cloneElement, isValidElement, useMemo, useState } from "react";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { BODY, DISPLAY, type SipRow } from "./data";
 import { toast } from "./toast";
 
@@ -33,7 +34,18 @@ export default function SipPaymentSheet({ sips, currentMonth, onClose, onDone }:
   </div></Overlay>;
 }
 
-export function Overlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) { return <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(2,6,14,.62)", backdropFilter: "blur(4px)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}><div onClick={(e) => e.stopPropagation()} style={{ width: 500, maxWidth: "100%" }}>{children}</div></div>; }
+// Bottom sheet on mobile; centered dialog card on desktop (≥1024px). The card's
+// top-only radius + flush-bottom is overridden to a full-radius floating card on
+// desktop, so every consumer (SipPaymentSheet, PortfolioManager) tracks together.
+export function Overlay({ children, onClose, desktopWidth = 500 }: { children: React.ReactNode; onClose: () => void; desktopWidth?: number }) {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const card = isDesktop && isValidElement(children)
+    ? cloneElement(children as React.ReactElement<{ style?: React.CSSProperties }>, {
+        style: { ...(children as React.ReactElement<{ style?: React.CSSProperties }>).props.style, borderRadius: 24, maxHeight: "calc(100vh - 48px)", overflowY: "auto" },
+      })
+    : children;
+  return <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(2,6,14,.62)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: isDesktop ? "center" : "flex-end", justifyContent: "center", padding: isDesktop ? 24 : 0 }}><div onClick={(e) => e.stopPropagation()} style={{ width: isDesktop ? desktopWidth : 500, maxWidth: "100%" }}>{card}</div></div>;
+}
 export const CARD: React.CSSProperties = { background: "var(--c-surface)", border: "1px solid var(--c-line-strong)", borderRadius: "28px 28px 0 0", padding: "22px 22px calc(22px + env(safe-area-inset-bottom))", fontFamily: BODY };
 export const HEADER: React.CSSProperties = { display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 20 };
 export const TITLE: React.CSSProperties = { font: `600 21px ${DISPLAY}`, color: "var(--c-ink)" };

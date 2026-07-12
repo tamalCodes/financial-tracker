@@ -24,6 +24,7 @@ let eqs: EqCall[];
 let writes: Write[];
 let signUpSpy: ReturnType<typeof vi.fn>;
 let signInSpy: ReturnType<typeof vi.fn>;
+let rpcSpy: ReturnType<typeof vi.fn>;
 
 function makeClient(authUserId: string | null = "user-1") {
   const _eqs: EqCall[] = [];
@@ -77,12 +78,16 @@ function makeClient(authUserId: string | null = "user-1") {
       error: null,
     })
   );
+  const rpc = vi.fn(() =>
+    Promise.resolve({ data: [{ total: 14000, paid_count: 2 }], error: null })
+  );
   return {
-    client: { from, auth: { signUp, signInWithPassword } },
+    client: { from, rpc, auth: { signUp, signInWithPassword } },
     eqs: _eqs,
     writes: _writes,
     signUp,
     signInWithPassword,
+    rpc,
   };
 }
 
@@ -108,6 +113,7 @@ import * as investments from "@/app/api/investments/route";
 import * as bills from "@/app/api/bills/route";
 import * as signup from "@/app/api/auth/signup/route";
 import * as login from "@/app/api/auth/login/route";
+import * as sipPayments from "@/app/api/sip-payments/route";
 
 const USER = "user-1";
 
@@ -135,6 +141,7 @@ beforeEach(() => {
   writes = c.writes;
   signUpSpy = c.signUp;
   signInSpy = c.signInWithPassword;
+  rpcSpy = c.rpc;
   requireUserMock.mockReset();
   requireUserMock.mockResolvedValue({ userId: USER });
 });
@@ -210,6 +217,16 @@ describe("money-model writes — POST inserts user-scoped per-month row", () => 
     await investments.POST(post({ currentMonth: "2026-06-01", description: "sip", amount: 3000 }));
     const w = writes.find((x) => x.table === "investments" && x.op === "insert");
     expect(w?.row).toMatchObject({ user_id: USER, month: "2026-06-01", amount: 3000 });
+  });
+  it("SIP batch delegates atomic monthly update to database", async () => {
+    const ids = ["11111111-1111-4111-8111-111111111111"];
+    const res = await sipPayments.POST(
+      post({ currentMonth: "2026-06-01", sipIds: ids, debitBalance: true })
+    );
+    expect(res.status).toBe(200);
+    expect(rpcSpy).toHaveBeenCalledWith("record_sip_payments", {
+      p_month: "2026-06-01", p_sip_ids: ids, p_debit_balance: true,
+    });
   });
 });
 

@@ -52,6 +52,22 @@ AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. Investment
 (holdings/SIPs/hero value CRUD) and **Record this month** in Active SIPs. Manage uses segmented
 holding-type controls instead of a native select, expands the selected holding/SIP editor directly
 below its row, and reuses the expense `AmountField` calculator + operator bar for add and edit values.
+Both the **Manage portfolio** (PortfolioManager) and **Record SIPs** (SipPaymentSheet) modals share
+the `Overlay`/`CARD` chrome exported from `SipPaymentSheet.tsx`. `Overlay` is **responsive**: a bottom
+sheet on mobile that becomes a centered dialog on desktop (`useMediaQuery("(min-width: 1024px)")`) —
+it clones its card child to override the top-only radius with a full 24px radius, `max-height:
+calc(100vh - 48px)` with scroll, and centers the overlay with 24px padding. `Overlay` takes an optional
+`desktopWidth` (default 500) so a modal can go wider on desktop; PortfolioManager passes `860`.
+
+**Manage portfolio layout.** PortfolioManager tracks a `loading` state (true until the first
+`/api/portfolio-panel` fetch resolves) and renders **shimmer skeleton rows** (`Skeleton` + `.ft-skel`)
+in place of the old empty-then-populated flash. On the Holdings/SIPs tabs:
+- **Desktop (≥1024px)** — two-column grid: the scrollable item list on the left (glassy rows, no inline
+  expansion) and the **add/edit form in a sticky right panel**. Tapping **Edit** on a row swaps the
+  panel to that item's edit form (row highlighted); otherwise the panel shows the add form.
+- **Mobile** — single column: list on top with the edit form expanding **inline** beneath the tapped
+  row, add form under a divider at the bottom.
+The **Value** tab is single-column on both, with a skeleton for the value input while loading.
 
 ## Acceptance criteria
 - [ ] POST/PUT/DELETE investment flows change `invested_m` + Left-in-bank; no balance row written.

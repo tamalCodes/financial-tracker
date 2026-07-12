@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { BODY, DISPLAY, type Category, type CategoryKey } from "./data";
 import AmountField, {
   OperatorBar,
@@ -8,8 +9,9 @@ import AmountField, {
 } from "./AmountField";
 import CatPill from "./CatPill";
 
-// EditSheet — tap a recent payment to edit it. Same visual language as AddSheet
-// (bottom sheet, glassy overlay), but pre-filled and PUTs instead of POSTs.
+// EditSheet — tap a recent payment to edit it. Same visual language as AddSheet:
+// a bottom sheet on mobile that becomes a centered dialog on desktop (≥1024px),
+// glassy overlay — but pre-filled and PUTs instead of POSTs.
 // Fields: amount (shared calculator field), title, a single free-form tag chip,
 // and category (shared slim pills).
 interface Props {
@@ -200,6 +202,10 @@ export default function EditSheet({
   );
   const showOps = touch && amountFocus;
 
+  // Desktop (≥1024px): render as a centered dialog card — full radius, no
+  // bottom-sheet grabber. Below that, keep the mobile bottom sheet. Mirrors AddSheet.
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
   return (
     <div
       onClick={onClose}
@@ -207,12 +213,13 @@ export default function EditSheet({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(15,23,42,0.40)",
-        backdropFilter: "blur(3px)",
-        WebkitBackdropFilter: "blur(3px)",
+        background: "rgba(2,6,14,0.62)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: isDesktop ? "center" : "flex-end",
         justifyContent: "center",
+        padding: isDesktop ? 24 : 0,
       }}
     >
       <div
@@ -220,9 +227,14 @@ export default function EditSheet({
         style={{
           width: 460,
           maxWidth: "100%",
+          maxHeight: isDesktop ? "calc(100vh - 48px)" : undefined,
+          overflowY: isDesktop ? "auto" : undefined,
           background: "var(--c-surface)",
-          borderRadius: "30px 30px 0 0",
-          boxShadow: "0 -18px 60px -18px rgba(15,23,42,0.45)",
+          border: "1px solid var(--c-line-strong)",
+          borderRadius: isDesktop ? 24 : "30px 30px 0 0",
+          boxShadow: isDesktop
+            ? "0 24px 80px -12px rgba(0,0,0,0.65)"
+            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
         }}
       >
         <div
@@ -231,8 +243,8 @@ export default function EditSheet({
             padding: "10px 22px calc(24px + env(safe-area-inset-bottom))",
           }}
         >
-          {/* Grabber */}
-          <div style={{ display: "flex", justifyContent: "center", padding: "4px 0 16px" }}>
+          {/* Grabber (mobile bottom-sheet affordance only) */}
+          <div style={{ display: isDesktop ? "none" : "flex", justifyContent: "center", padding: "4px 0 16px" }}>
             <span style={{ width: 42, height: 5, borderRadius: 999, background: "var(--c-line)" }} />
           </div>
 
