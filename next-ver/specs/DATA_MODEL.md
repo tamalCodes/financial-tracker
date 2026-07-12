@@ -3,8 +3,8 @@
 Post **mobile redesign**. Migrations `supabase/migrations/001..008`:
 `001_mobile_redesign`, `002_profiles_opening_balance`, `003_rls`, `004_expense_tag`,
 `005_bill_emi`, `006_perf_leftinbank_sum`, `007_bills_autopaid_pagination`,
-`008_profiles_full_name`, plus app-control/auth-audit migrations `009_app_control` and
-`010_profiles_last_login`. Schema in `supabase/schema.sql`. Plan:
+`008_profiles_full_name`, plus app-control/auth-audit migrations `009_app_control`,
+`010_profiles_last_login`, and `011_sip_payments`. Schema in `supabase/schema.sql`. Plan:
 [features/mobile-redesign.md](./features/mobile-redesign.md). All tables are owned per-user
 via `user_id`.
 
@@ -81,9 +81,15 @@ state.**
 `id, user_id, kind ('fd'|'mutual_fund'), name, current_value, rate (FD), maturity_date (FD),
 created_at`. Display-only; no money-model effect.
 
-### `sips` — active SIPs (manual)
-`id, user_id, name, monthly, due_date, paid_total, created_at`. Static reference; not cumulative;
-no money-model effect.
+### `sips` — active SIP plans
+`id, user_id, name, monthly, due_date, paid_total, created_at`. Plans are editable. A monthly
+record increments `paid_total`, matching mutual-fund holding, and portfolio value. It affects cash
+flow only when its payment has `debited_balance = true`.
+
+### `sip_payments` — one recorded SIP per plan/month
+`id, user_id, sip_id, month, amount, debited_balance, created_at`, unique `(sip_id, month)`.
+`record_sip_payments` writes this alongside portfolio reference updates. Debit true also writes one
+`investments` flow row for selected plans, feeding `invested_m` and Left-in-bank.
 
 ### `portfolio_totals` — manual hero number
 `user_id (PK), value`. One row per user; the portfolio value shown on the Investments panel.

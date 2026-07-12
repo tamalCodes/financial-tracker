@@ -53,6 +53,8 @@ Returns (`loadDashboardData`):
 (recent payments) → `BillsEmis` → `Investments`, overlaid by `FloatingActionBar` + `AddSheet` +
 `EditSheet` + `Toaster`. `useFinance(month)` fetches `/api/dashboard`, holds lists + summary,
 optimistic add/edit/remove per resource, `reload()`. Month nav can't go past the current month.
+`FloatingActionBar` is an opaque, bordered surface with flat semantic-tinted action buttons; it
+does not use backdrop blur or a drop shadow on mobile.
 
 ## Acceptance criteria
 - [ ] `leftInBank` cumulates across months and starts from `opening_balance`.

@@ -173,3 +173,10 @@ tiles need only aggregates.
 Migration `003_rls.sql` enables Postgres row-level security on the user tables. This does **not**
 change D-era practice: every query still filters `.eq("user_id", userId)` in code (ARCHITECTURE
 step 4). RLS is a second wall in case a query ever forgets the filter — not a replacement for it.
+
+## D22 — SIP plans have explicit monthly recording; bank debit is optional
+Owner needs this month's SIP total, selected paid funds, and a choice for whether money has left
+the bank. `sip_payments` allows one payment per SIP/month and a DB transaction updates plan totals,
+matching mutual-fund holding, and portfolio value together. **Debit balance** defaults on and writes
+one investment-flow row, reducing Left-in-bank. Turning it off retains portfolio updates without
+claiming bank debit. This resolves D15's open SIP sub-decision.

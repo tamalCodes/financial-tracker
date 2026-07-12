@@ -1,14 +1,14 @@
 # Investments
 
-Reverse-engineered from `src/app/api/investments/route.ts`, `src/app/api/portfolio-panel/route.ts`,
-`lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Investments,useFinance,usePortfolioData}.tsx`.
-Post mobile redesign — DECISIONS D15 (recurring/soft-delete model **removed**).
+Reverse-engineered from `src/app/api/{investments,portfolio-panel,sip-payments}/route.ts`,
+`features/dashboard/mobile/{AddSheet,Investments,PortfolioManager,SipPaymentSheet,useFinance,usePortfolioData}.tsx`.
+Post mobile redesign — DECISIONS D15/D22 (recurring/soft-delete model **removed**).
 
 ## Two distinct concepts (D15)
 1. **Investment FLOW** — this spec. Plain per-month rows that drive the **Invested** tile +
    Left-in-bank.
-2. **Portfolio panel** — manual, display-only reference (`holdings`, `sips`, `portfolio_totals`);
-   does **not** affect the money model. Separate routes/UI.
+2. **Portfolio panel** — editable holdings/SIP plans and a monthly SIP-recording action. Portfolio
+   reference updates on a recorded SIP; cash-flow effect is opt-in.
 
 ## Problem (flow)
 Users log per-month money moved into investments; it feeds `invested_m` and reduces Left-in-bank.
@@ -34,23 +34,36 @@ The Investments panel loads its manual reference data in **one** request via `us
 ```
 Consolidates the old `/api/portfolio` + `/api/holdings` + `/api/sips` fan-out (three GETs → one) to
 cut the mobile home's cold-start invocations — see ARCHITECTURE → "Initial-paint fan-out". Rate limit
-`portfolio-panel:get` 60/60s. The per-resource routes still exist and remain the path for **mutations**
-(POST/PUT/DELETE holdings/sips, PUT portfolio total); display-only, no money-model effect (D15).
+`portfolio-panel:get` 60/60s. Per-resource routes power **Manage** (POST/PUT/DELETE holdings/sips,
+PUT portfolio total).
+
+## Record SIPs — `POST /api/sip-payments`
+Active SIPs shows a monthly total and opens a payment sheet. User selects paid plans and chooses
+**Deduct from Left in bank** (on by default).
+
+- Request: `{ currentMonth, sipIds, debitBalance }`.
+- `record_sip_payments` atomically writes one `sip_payments` row per selected SIP/month, increments
+  `sips.paid_total`, increments matching mutual-fund holding (or creates it), and increments hero value.
+- Debit on writes one `investments` flow row, increasing Invested and lowering Left-in-bank. Debit off
+  updates portfolio reference only — for money not yet debited.
 
 ## UI / components (mobile)
-AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. The Investments panel
-(portfolio value + Holdings/SIPs) is manual reference — see DATA_MODEL `holdings`/`sips`/
-`portfolio_totals`, fetched via `GET /api/portfolio-panel` above.
+AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. Investments adds **Manage**
+(holdings/SIPs/hero value CRUD) and **Record this month** in Active SIPs. Manage uses segmented
+holding-type controls instead of a native select, expands the selected holding/SIP editor directly
+below its row, and reuses the expense `AmountField` calculator + operator bar for add and edit values.
 
 ## Acceptance criteria
-- [ ] POST/PUT/DELETE change `invested_m` + Left-in-bank; no balance row written.
+- [ ] POST/PUT/DELETE investment flows change `invested_m` + Left-in-bank; no balance row written.
+- [ ] Recording SIPs updates portfolio reference atomically; only checked debit changes `invested_m`.
+- [ ] A SIP cannot be recorded twice in same month.
 - [ ] Per-month rows only — no `start_month`/`is_active`/`carry_forward`/soft-delete logic.
 - [ ] user_id scoping on all queries.
 
 ## Files to touch
-`src/app/api/investments/route.ts`, `src/app/api/portfolio-panel/route.ts`, `lib/api/schemas.ts`,
-`lib/api/dashboard.ts`, `features/dashboard/mobile/{AddSheet,Investments,useFinance,usePortfolioData}.tsx`.
+`src/app/api/{investments,portfolio-panel,sip-payments}/route.ts`, `lib/api/schemas.ts`,
+`features/dashboard/mobile/{AddSheet,Investments,PortfolioManager,SipPaymentSheet,useFinance,usePortfolioData}.tsx`,
+`supabase/migrations/011_sip_payments.sql`.
 
 ## Out of scope
-Returns/valuation feeds, sell flow. Portfolio panel CRUD (holdings/sips/portfolio) tracked
-separately.
+Returns/valuation feeds, sell flow, undoing recorded SIP batches.

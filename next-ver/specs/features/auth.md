@@ -87,6 +87,7 @@ instead of a compressed one-line label row. Mobile signup uses lower viewport sp
 current step: its field, CTA, and sign-in link form a spacious action group below the story.
 The initial mobile signup field (full name) receives focus after hydration. Auth inputs use an
 accent border on focus without a focus-ring shadow.
+The final signup CTA reads `Start tracking with Kharcha`.
 
 The through-line is one gradient Bézier path with a 12s dashed flow, 11s glow marker with desktop
 trails, and three desktop pulse-ring nodes. Reduced-motion removes animated markers/rings and
