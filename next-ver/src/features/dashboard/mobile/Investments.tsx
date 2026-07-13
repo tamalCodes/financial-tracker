@@ -35,7 +35,7 @@ function SkeletonRows({ count }: { count: number }) {
 }
 
 const CARD_SHADOW =
-  "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
+  "0 1px 2px rgba(32,27,19,0.04), 0 14px 30px -22px rgba(32,27,19,0.30)";
 
 const SECTION_LABEL: React.CSSProperties = {
   fontFamily: DISPLAY,
@@ -71,7 +71,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
         transition: "all .15s",
         background: active ? "var(--c-surface)" : "transparent",
         color: active ? "var(--c-ink)" : "var(--c-body-2)",
-        boxShadow: active ? "0 1px 2px rgba(15,23,42,0.12)" : "none",
+        boxShadow: active ? "0 1px 2px rgba(32,27,19,0.12)" : "none",
       }}
     >
       {children}
@@ -242,4 +242,4 @@ export default function Investments({ portfolioTotal, fds, funds, sips, loading,
 }
 
 const SMALL_BUTTON: React.CSSProperties = { cursor: "pointer", border: "1px solid var(--c-line)", borderRadius: 10, background: "var(--c-faint)", color: "var(--c-body-2)", font: `600 12px ${DISPLAY}`, padding: "8px 10px" };
-const RECORD_BUTTON: React.CSSProperties = { cursor: "pointer", border: "1px solid rgba(99,102,241,.35)", borderRadius: 12, background: "rgba(99,102,241,.10)", color: "var(--c-accent)", font: `600 12.5px ${DISPLAY}`, padding: "11px 12px", textAlign: "left", marginTop: 4 };
+const RECORD_BUTTON: React.CSSProperties = { cursor: "pointer", border: "1px solid rgb(var(--c-accent-rgb) / .35)", borderRadius: 12, background: "rgb(var(--c-accent-rgb) / .10)", color: "var(--c-accent)", font: `600 12.5px ${DISPLAY}`, padding: "11px 12px", textAlign: "left", marginTop: 4 };

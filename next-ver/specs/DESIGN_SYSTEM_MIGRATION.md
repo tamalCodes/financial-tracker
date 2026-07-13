@@ -91,3 +91,19 @@ Utilities now available (additive; raw palette utils still work):
 - 2026-06-27 — 0.3 done (DESIGN_SYSTEM.md §6 mobile standards + viewport-fit=cover bug fix, build
   green). 1.3 partial: react-best-practices clean, build green; screenshots blocked (no Chrome
   extension + password-entry rule). New a11y items for backlog: Modal aria-labelledby, close-btn 44px.
+- 2026-07-13 — WARM THEME UNIFICATION (plan: WARM_THEME_UNIFICATION_PLAN.md). Pivoted the whole app
+  from cool indigo/slate to one warm palette (cream + charcoal, gold accent) shared by app + auth.
+  User-picked accent = warm gold (matches Kharcha auth).
+  - P1: rebased `--c-*` light+dark token blocks to warm values; warmed `.subtle-scroll`;
+    `layout.tsx` themeColor #0f172a→#191613.
+  - P2: retired the independent `--kh-*` palette — auth tokens now alias `--c-*`; deleted the whole
+    `html.dark .kh-auth` override + unused `--kh-bezel`. AuthForm untouched (class-only). 4 auth-local
+    surfaces kept (logo plate + translucent inputs).
+  - P3: added `--c-accent-rgb` (theme-aware gold triplet) + swept ~30 hardcoded indigo `rgba()` glass
+    tiles/borders/glows across 13 files to `rgb(var(--c-accent-rgb)/α)`. Added CTA pair `--c-cta`/
+    `--c-cta-fg` (inverting charcoal button, fixes gold-on-white contrast) → AddSheet/EditSheet/
+    BillEditSheet/SipPaymentSheet Save buttons + MonthPicker selected day. Warmed Toaster info +
+    ~20 cool-slate shadows (15,23,42→32,27,19) + blue-black scrims (2,6,14→20,16,10). tsc + eslint green.
+  - P4: rewrote DESIGN_SYSTEM.md (canonical warm token table, gold accent principle, §0.6 charcoal-CTA
+    rule); updated INDEX.md + auth.md. NOTE: this supersedes all earlier "indigo-only accent" /
+    "slate neutral" entries above in this log.

@@ -112,8 +112,8 @@ function TagField({
             lineHeight: 1,
             color: "var(--c-accent)",
             background:
-              "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))",
-            border: "1px solid rgba(99,102,241,0.45)",
+              "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.20),rgb(var(--c-accent-rgb) / 0.10))",
+            border: "1px solid rgb(var(--c-accent-rgb) / 0.45)",
           }}
         >
           {tag}
@@ -130,7 +130,7 @@ function TagField({
               height: 20,
               borderRadius: 7,
               border: "none",
-              background: "rgba(99,102,241,0.15)",
+              background: "rgb(var(--c-accent-rgb) / 0.15)",
               color: "var(--c-accent)",
               fontSize: 11,
               display: "flex",
@@ -213,7 +213,7 @@ export default function EditSheet({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(2,6,14,0.62)",
+        background: "rgba(20,16,10,0.62)",
         backdropFilter: "blur(4px)",
         WebkitBackdropFilter: "blur(4px)",
         display: "flex",
@@ -234,7 +234,7 @@ export default function EditSheet({
           borderRadius: isDesktop ? 24 : "30px 30px 0 0",
           boxShadow: isDesktop
             ? "0 24px 80px -12px rgba(0,0,0,0.65)"
-            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
+            : "0 -18px 60px -18px rgba(32,27,19,0.45)",
         }}
       >
         <div
@@ -343,13 +343,13 @@ export default function EditSheet({
                 height: 54,
                 border: "none",
                 borderRadius: 16,
-                background: "var(--c-accent-2)",
-                color: "var(--c-onaccent)",
+                background: "var(--c-cta)",
+                color: "var(--c-cta-fg)",
                 fontFamily: DISPLAY,
                 fontWeight: 600,
                 fontSize: 15.5,
                 opacity: saveDisabled ? 0.6 : 1,
-                boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
+                boxShadow: "0 8px 20px -8px rgba(32,27,19,0.28)",
                 transition: "opacity .25s ease",
               }}
             >

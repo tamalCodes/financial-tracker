@@ -24,8 +24,8 @@ const VARIANTS: Record<AddVariant, { gradient: string; border: string; stroke: s
     stroke: "var(--c-violet)",
   },
   bill: {
-    gradient: "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))",
-    border: "rgba(99,102,241,0.38)",
+    gradient: "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.20),rgb(var(--c-accent-rgb) / 0.10))",
+    border: "rgb(var(--c-accent-rgb) / 0.38)",
     stroke: "var(--c-accent)",
   },
 };

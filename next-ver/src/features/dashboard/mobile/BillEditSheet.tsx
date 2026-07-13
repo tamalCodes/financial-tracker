@@ -91,7 +91,7 @@ export default function BillEditSheet({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(15,23,42,0.40)",
+        background: "rgba(32,27,19,0.40)",
         backdropFilter: "blur(3px)",
         WebkitBackdropFilter: "blur(3px)",
         display: "flex",
@@ -108,8 +108,8 @@ export default function BillEditSheet({
           background: "var(--c-surface)",
           borderRadius: isDesktop ? 24 : "30px 30px 0 0",
           boxShadow: isDesktop
-            ? "0 24px 70px -20px rgba(15,23,42,0.45)"
-            : "0 -18px 60px -18px rgba(15,23,42,0.45)",
+            ? "0 24px 70px -20px rgba(32,27,19,0.45)"
+            : "0 -18px 60px -18px rgba(32,27,19,0.45)",
         }}
       >
         <div
@@ -270,9 +270,9 @@ export default function BillEditSheet({
                           width: 44,
                           height: 44,
                           borderRadius: 12,
-                          border: "1px solid rgba(79,70,229,0.18)",
+                          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
                           background:
-                            "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+                            "linear-gradient(180deg, rgb(var(--c-accent-rgb) / 0.10), rgb(var(--c-accent-rgb) / 0.06))",
                           color: "var(--c-accent-2)",
                           fontSize: 24,
                           fontWeight: 600,
@@ -308,13 +308,13 @@ export default function BillEditSheet({
                   height: 54,
                   border: "none",
                   borderRadius: 16,
-                  background: "var(--c-accent-2)",
-                  color: "var(--c-onaccent)",
+                  background: "var(--c-cta)",
+                  color: "var(--c-cta-fg)",
                   fontFamily: DISPLAY,
                   fontWeight: 600,
                   fontSize: 15.5,
                   opacity: saveDisabled ? 0.6 : 1,
-                  boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
+                  boxShadow: "0 8px 20px -8px rgba(32,27,19,0.28)",
                   transition: "opacity .25s ease",
                 }}
               >

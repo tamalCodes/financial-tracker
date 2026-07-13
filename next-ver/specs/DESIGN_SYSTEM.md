@@ -6,67 +6,105 @@ Before styling a new screen or dialog, follow the existing live dashboard patter
 Do not add wrapper components until repeated live usage justifies them.
 
 > Reverse-engineered from `src/app/globals.css` (theme tokens), `src/features/theme/ThemeContext.tsx`,
-> `src/features/dashboard/mobile/AvatarMenu.tsx`.
+> `src/app/layout.tsx` (`themeColor`), `src/features/dashboard/mobile/AvatarMenu.tsx`,
+> `src/features/auth/components/AuthForm.tsx`.
+> Migration to the warm palette: `specs/WARM_THEME_UNIFICATION_PLAN.md`.
 
-## Dark mode (theme tokens)
+## Palette — one warm system (theme tokens)
 
-The dashboard components style with **inline CSS `var(--c-*)` tokens**, not raw hex. All color
-tokens are declared twice in `globals.css`: `:root` (light — values equal the historical hex, so
-light is unchanged) and `html.dark` (dark overrides). A single `dark` class on `<html>` flips the
-whole app.
+The whole app — dashboard **and** the auth screen — shares **one** warm palette: cream + warm
+charcoal neutrals with a **gold** brand accent. There is no second (indigo/slate) system anymore.
+
+Components style with **inline CSS `var(--c-*)` tokens**, not raw hex. Every color token is declared
+twice in `globals.css`: `:root` (light = warm cream) and `html.dark` (dark = warm charcoal). A single
+`dark` class on `<html>` flips the whole app. The auth screen's `--kh-*` names are now thin **aliases**
+of `--c-*` (see `globals.css` `.kh-auth`), so login and app can never drift apart.
 
 - **Provider:** `ThemeContext.tsx` (`ThemeProvider` + `useTheme`). Preference order: explicit user
   choice in `localStorage['ft-theme']` → OS `prefers-color-scheme`. `toggle()` collapses "system"
   to an explicit light/dark. It only toggles the `<html>.dark` class; tokens do the rest.
 - **Anti-flash:** `THEME_SCRIPT` (exported from `ThemeContext`) is injected as a blocking inline
   `<script>` in `layout.tsx` `<head>`; it sets the class before paint. `<html suppressHydrationWarning>`.
+  The PWA `themeColor` meta is warm charcoal `#191613`.
 - **Toggle UI:** in `AvatarMenu` (avatar dropdown, shared by mobile `GreetingHeader` and
   `DesktopHome`) — Dark mode switch + Log out.
 - **Token families** (`--c-*`): surfaces (`surface`, `glass`, `glass-strong`, `bg1/bg2`), text
   (`ink`, `ink-2`, `body`, `body-2`, `muted`), lines (`line`, `line-strong`, `field`, `faint`),
-  accent indigo (`accent`, `accent-2..4`, `accent-bg`), `violet-*`, `credit-*`, `expense-*`, plus
-  `onaccent` (white text on colored CTAs — stays white in both themes).
-- **Adding new UI:** use `var(--c-*)` for any color that must adapt. Never hardcode a slate/white
-  hex inline. `rgba(99,102,241,…)` indigo tints and `rgba(15,23,42,…)` shadows are left literal
-  (they read acceptably on both themes).
+  **gold accent** (`accent`, `accent-2..4`, `accent-bg`, `accent-rgb`), `violet-*`, `credit-*`,
+  `expense-*`, `amber`, plus `onaccent` (white text on **green/red/violet** CTAs — stays white both
+  themes) and the **CTA pair** `cta` / `cta-fg` (primary buttons — see §0.6).
+- **Adding new UI:** use `var(--c-*)` for any color that must adapt. Never hardcode a slate/white/
+  indigo hex inline. For a translucent gold tint (glass tiles, borders, glows) use
+  `rgb(var(--c-accent-rgb) / <alpha>)` — it flips with the theme. Shadows are warm charcoal
+  (`rgba(32,27,19,…)`), never cool slate.
+
+### Canonical token values
+
+| Token | Light (cream) | Dark (charcoal) | Role |
+|---|---|---|---|
+| `--c-bg1` / `--c-bg2` | `#f6f3ea` / `#efe9db` | `#201b13` / `#191613` | page gradient stops |
+| `--c-surface` | `#fbf8f0` | `#241f17` | cards / sheets |
+| `--c-glass` / `--c-glass-strong` | `rgba(255,253,247,.6)` / `.85` | `rgba(40,34,24,.55)` / `.8` | translucent surfaces |
+| `--c-ink` / `--c-ink-2` | `#201b13` / `#3a332a` | `#f3efe5` / `#ddd6c6` | headings / strong |
+| `--c-body` / `--c-body-2` | `#57503f` / `#6b6355` | `#bcb4a2` / `#9d9483` | body text |
+| `--c-muted` | `#8a8172` | `#857c6b` | subtitles / labels |
+| `--c-line` / `--c-line-strong` | `#e7e0d0` / `#d6cdb8` | `rgba(243,239,229,.10)` / `#4a4234` | borders |
+| `--c-field` / `--c-faint` | `#f1ecdf` / `#f8f4ea` | `#2a2418` / `#211c14` | field / faint fills |
+| `--c-accent` … `-4` | `#8a6d2c` `#9c7b33` `#b89a54` `#d8b36a` | `#d8b36a` `#c8a860` `#d8b36a` `#eacb8a` | gold accent (text→light) |
+| `--c-accent-bg` | `#f4ecd8` | `rgba(216,179,106,.16)` | flat gold tint |
+| `--c-accent-rgb` | `156 123 51` | `216 179 106` | `rgb(var(--c-accent-rgb)/α)` glass |
+| `--c-cta` / `--c-cta-fg` | `= ink` / `= bg2` | (flips) | primary button fill / text |
+| `--c-onaccent` | `#ffffff` | `#ffffff` | text on green/red/violet CTAs |
+
+Money semantics (`credit`=green, `expense`=red, `violet`=investment, `amber`=food) keep their
+values — they carry meaning and are **not** re-tinted gold. See DECISIONS.
 
 > Context: an earlier shared primitive layer was retired after the live app moved to high-fidelity mobile sheets.
 > Keep new UI aligned with the current sheets and tokens, not with deleted wrappers.
 
 ## 0. Principles (read first)
 
-1. **One accent: indigo.** `indigo-500/600` is the *only* brand hue — toggles, focus, active
-   state, the AmountInput cue. Don't introduce a second solid brand color.
+1. **One accent: warm gold.** `--c-accent*` (gold, `#9c7b33` light / `#d8b36a` dark) is the *only*
+   brand hue — active state, links, focus border, selected tabs, chart primary. Don't introduce a
+   second solid brand color. The neutrals are **warm cream + charcoal**, never cool slate/white.
 2. **Color comes through glass, not paint.** When something needs to read as "colorful"
-   (category tags, status pills), use the **Glass treatment** (§2): a translucent tint + frost +
-   deep-family text. **Never opaque, saturated fills with white text** — that look was explicitly
-   rejected. Glassy / semi-transparent is the house style. (See DECISIONS D11.)
-3. **Neutral by default.** Surfaces and text are `slate-*`. Most of the UI is white + slate;
-   indigo and glass are accents, used sparingly.
+   (category tags, status pills, gold accents), use the **Glass treatment** (§2): a translucent tint
+   + frost + deep-family text. **Never opaque, saturated fills with white text** — that look was
+   explicitly rejected. Glassy / semi-transparent is the house style. (See DECISIONS D11.)
+3. **Neutral by default.** Surfaces are warm cream (`--c-surface`/`--c-bg*`), text warm charcoal
+   (`--c-ink`/`--c-body`). Gold and glass are accents, used sparingly.
 4. **No layout shift, no fake delay.** Reserve slot heights; motion is fast and honest (D9/D10).
 5. **Flat focus.** Inputs focus by **border color only** — no `box-shadow`, no ring, no glow
    (D12). The whole UI avoids drop shadows on controls; depth comes from surface/border, not glow.
+6. **Primary buttons are charcoal, not gold.** Gold is a mid-tone: white text on a gold fill fails
+   contrast. So a primary CTA fills with `var(--c-cta)` (= inverting `--c-ink`) and uses
+   `var(--c-cta-fg)` (= inverting `--c-bg2`) text — charcoal-on-cream in light, cream-on-charcoal
+   in dark, exactly like the auth "Continue" button. `--c-onaccent` (white) is only for the
+   green/red/violet semantic CTAs. Never fill a button with gold + white text.
 
 ## 1. Tokens — color & layout
 
-| Category | Value | Notes |
+Pull exact hex from the **Canonical token values** table above; this table maps them to roles.
+
+| Category | Token | Notes |
 |----------|-------|-------|
-| Accent (brand) | `indigo-500` / `indigo-600` | **The only** brand hue: toggles, focus, active chips, AmountInput cue. |
-| Neutral | `slate-*` | Surfaces & text. |
-| Text — primary | `slate-900` | Headings, input values. |
-| Text — body | `slate-600/700` | Labels, secondary buttons. |
-| Text — muted | `slate-500` | Subtitles. **Not** `slate-400` (contrast). |
-| Text — placeholder | `slate-400` | Placeholders, hints only. |
-| Field surface | `bg-slate-50` + `border-slate-200` | Idle input. |
-| Field focus | `border-indigo-400` + `bg-white` (no ring, **no box-shadow**) | All inputs. Border-color change only. Ring removed D10; the AmountInput settle glow removed D12. |
-| Semantic — error | `bg-red-50` + `text-red-600` | Inline error row only. |
-| Radius — control | `rounded-xl` | Inputs, buttons, chips containers. |
+| Accent (brand) | `--c-accent` … `--c-accent-4` (gold) | **The only** brand hue: active chips, links, focus, chart primary. Gold. |
+| Accent tint (glass) | `rgb(var(--c-accent-rgb) / α)` | Translucent gold tiles/borders/glows. Theme-aware. |
+| Primary CTA | `--c-cta` fill + `--c-cta-fg` text | Charcoal button (see §0.6). Not gold. |
+| Neutral surface | `--c-surface` / `--c-bg1/2` | Warm cream cards & page. |
+| Text — primary | `--c-ink` | Headings, input values. Warm charcoal. |
+| Text — body | `--c-body` / `--c-body-2` | Labels, secondary. |
+| Text — muted | `--c-muted` | Subtitles. |
+| Field surface | `--c-field` + `1px solid --c-line` | Idle input. |
+| Field focus | `border: 1px solid --c-accent-3` (no ring, **no box-shadow**) | All inputs. Border-color change only. |
+| Semantic — error | `--c-expense` (+ red tint) | Inline error / expense. |
+| Radius — control | `rounded-xl` (~14–16px) | Inputs, buttons, chips. |
 | Radius — pill | `rounded-full` | Tags, quick-pick chips. |
 | Radius — surface | `rounded-3xl` (sheet/card) | Modal shell. |
 | Field gap | `gap-5` (20px) | Vertical rhythm between form fields. |
 | Section padding | `px-6` (24px) | Modal body horizontal. |
 | Heading | `text-2xl font-semibold` Bricolage Grotesque | Modal title. |
-| Label | `text-sm font-medium text-slate-600` | Field label. |
+| Label | `text-sm font-medium` `--c-body` | Field label. |
 
 ## 2. Glass treatment (the colorful layer)
 
@@ -83,7 +121,7 @@ background-image: linear-gradient(135deg,
 border: 1px solid rgb(<rgb> / 0.45);            /* translucent colored hairline */
 backdrop-filter: blur(14px) saturate(1.7);      /* the frost — also -webkit- */
 box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.6),  /* top sheen */
-            0 1px 2px 0 rgb(15 23 42 / 0.06);        /* faint lift */
+            0 1px 2px 0 rgb(32 27 19 / 0.06);        /* faint lift — warm charcoal */
 ```
 
 Reference hues (used by category tags — `TagInput`):

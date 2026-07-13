@@ -16,7 +16,7 @@ import { BODY, DISPLAY, fmt, fmtCompact } from "@/features/dashboard/mobile/data
 
 // Card idiom mirrors the mobile cards (Bills.tsx).
 const CARD_SHADOW =
-  "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
+  "0 1px 2px rgba(32,27,19,0.04), 0 14px 30px -22px rgba(32,27,19,0.30)";
 
 // Money-model colors (DESIGN_SYSTEM): credit=green, expense=red, investment=purple.
 const SERIES = [
@@ -97,7 +97,7 @@ function WindowToggle({
               font: `600 12px ${DISPLAY}`,
               color: active ? "var(--c-accent)" : "var(--c-muted)",
               background: active ? "var(--c-surface)" : "transparent",
-              boxShadow: active ? "0 1px 2px rgba(15,23,42,0.10)" : "none",
+              boxShadow: active ? "0 1px 2px rgba(32,27,19,0.10)" : "none",
               transition: "color 120ms",
             }}
           >
@@ -134,7 +134,7 @@ function ChartTooltip({
         border: "1px solid var(--c-line)",
         borderRadius: 14,
         padding: "10px 12px",
-        boxShadow: "0 12px 30px -14px rgba(15,23,42,0.35)",
+        boxShadow: "0 12px 30px -14px rgba(32,27,19,0.35)",
         minWidth: 130,
       }}
     >
@@ -372,7 +372,7 @@ function LockedPreview({ window }: { window: TrendWindow }) {
             border: "1px solid var(--c-line)",
             borderRadius: 18,
             padding: "18px 22px",
-            boxShadow: "0 12px 34px -18px rgba(15,23,42,0.4)",
+            boxShadow: "0 12px 34px -18px rgba(32,27,19,0.4)",
           }}
         >
           <span

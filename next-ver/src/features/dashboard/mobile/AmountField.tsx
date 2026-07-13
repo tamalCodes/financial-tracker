@@ -230,7 +230,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
         display: "flex",
         alignItems: "center",
         gap: 8,
-        border: `1px solid ${calcActive ? "rgba(79,70,229,0.55)" : "var(--c-line)"}`,
+        border: `1px solid ${calcActive ? "rgb(var(--c-accent-rgb) / 0.55)" : "var(--c-line)"}`,
         borderRadius: 16,
         padding: "0 16px",
         height: 62,
@@ -252,7 +252,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
               bottom: 0,
               width: "45%",
               background:
-                "linear-gradient(90deg, transparent, rgba(99,102,241,0.16) 40%, rgba(129,140,248,0.30) 50%, rgba(99,102,241,0.16) 60%, transparent)",
+                "linear-gradient(90deg, transparent, rgb(var(--c-accent-rgb) / 0.16) 40%, rgb(var(--c-accent-rgb) / 0.30) 50%, rgb(var(--c-accent-rgb) / 0.16) 60%, transparent)",
               filter: "blur(1px)",
               animation: "aiSweep 1.15s ease-in-out infinite",
             }}
@@ -311,7 +311,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
           width: "100%",
           fontVariantNumeric: "tabular-nums",
           textShadow:
-            phase === "reveal" ? "0 0 22px rgba(79,70,229,0.40)" : "none",
+            phase === "reveal" ? "0 0 22px rgb(var(--c-accent-rgb) / 0.40)" : "none",
           animation: phase === "reveal" ? "aiPop .55s ease-out" : undefined,
           transition: "color .4s ease, text-shadow .4s ease",
         }}
@@ -327,8 +327,8 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
             height: 28,
             padding: "0 10px",
             borderRadius: 999,
-            background: "rgba(79,70,229,0.08)",
-            border: "1px solid rgba(79,70,229,0.18)",
+            background: "rgb(var(--c-accent-rgb) / 0.08)",
+            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
             color: "var(--c-accent-2)",
             flexShrink: 0,
             zIndex: 1,
@@ -397,9 +397,9 @@ export function OperatorBar({ onOp }: { onOp: (op: string) => void }) {
             flex: 1,
             height: "100%",
             borderRadius: 16,
-            border: "1px solid rgba(79,70,229,0.18)",
+            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
             background:
-              "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+              "linear-gradient(180deg, rgb(var(--c-accent-rgb) / 0.10), rgb(var(--c-accent-rgb) / 0.06))",
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
             color: "var(--c-accent-2)",

@@ -100,7 +100,7 @@ export default function MonthPicker({ value, onChange }: Props) {
             background: "var(--c-surface)",
             border: "1px solid var(--c-line)",
             borderRadius: 18,
-            boxShadow: "0 18px 50px -18px rgba(15,23,42,0.35)",
+            boxShadow: "0 18px 50px -18px rgba(32,27,19,0.35)",
             padding: 14,
           }}
         >
@@ -162,8 +162,8 @@ export default function MonthPicker({ value, onChange }: Props) {
                     border: isSel
                       ? "1px solid transparent"
                       : "1px solid var(--c-line)",
-                    background: isSel ? "var(--c-accent-2)" : "var(--c-faint)",
-                    color: isSel ? "var(--c-surface)" : "var(--c-ink-2)",
+                    background: isSel ? "var(--c-cta)" : "var(--c-faint)",
+                    color: isSel ? "var(--c-cta-fg)" : "var(--c-ink-2)",
                     fontFamily: BODY,
                     fontWeight: 600,
                     fontSize: 14,
@@ -185,8 +185,8 @@ const YEAR_BTN: React.CSSProperties = {
   width: 36,
   height: 36,
   borderRadius: 10,
-  border: "1px solid rgba(79,70,229,0.18)",
-  background: "linear-gradient(180deg, rgba(99,102,241,0.10), rgba(79,70,229,0.06))",
+  border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
+  background: "linear-gradient(180deg, rgb(var(--c-accent-rgb) / 0.10), rgb(var(--c-accent-rgb) / 0.06))",
   color: "var(--c-accent-2)",
   fontSize: 20,
   fontWeight: 600,

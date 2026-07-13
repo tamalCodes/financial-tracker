@@ -45,9 +45,9 @@ function greetingForHour(hour: number) {
 }
 
 const INDIGO_PILL =
-  "linear-gradient(135deg,rgba(99,102,241,0.18),rgba(99,102,241,0.09))";
+  "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.18),rgb(var(--c-accent-rgb) / 0.09))";
 const INDIGO_BADGE =
-  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
+  "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.30),rgb(var(--c-accent-rgb) / 0.16))";
 
 // Desktop / tablet-landscape home. Reuses the same data hooks and cards as MobileHome
 // (specs/features/desktop-dashboard.md), reflowed into a two-column dashboard with a
@@ -113,7 +113,7 @@ export default function DesktopHome() {
                 alignItems: "center",
                 justifyContent: "center",
                 background: INDIGO_BADGE,
-                border: "1px solid rgba(99,102,241,0.45)",
+                border: "1px solid rgb(var(--c-accent-rgb) / 0.45)",
               }}
             >
               <svg
@@ -152,7 +152,7 @@ export default function DesktopHome() {
                 font: `600 12.5px ${DISPLAY}`,
                 color: "var(--c-accent)",
                 background: INDIGO_PILL,
-                border: "1px solid rgba(99,102,241,0.34)",
+                border: "1px solid rgb(var(--c-accent-rgb) / 0.34)",
                 borderRadius: 999,
                 padding: "8px 14px",
                 whiteSpace: "nowrap",

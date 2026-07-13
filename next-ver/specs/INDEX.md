@@ -25,7 +25,7 @@ those files. Keep this index + the spec's file list current when code moves (CLA
 | `DECISIONS.md` | Numbered decisions (D13–D20…) referenced by feature specs |
 | `CONVENTIONS.md` | API route shape, error/400 format, rate-limit + `requireUser` scoping |
 | `ARCHITECTURE.md` | App/route/layer structure |
-| `DESIGN_SYSTEM.md` | Indigo-only accent, glass treatment, color semantics (credit=green, expense=red, investment=purple); **dark mode** via `var(--c-*)` tokens in `globals.css` + `features/theme/ThemeContext.tsx` |
+| `DESIGN_SYSTEM.md` | **One warm palette** (cream + charcoal neutrals, **gold** accent) shared by app + auth; glass treatment; primary CTA = charcoal (`--c-cta`), never gold; money semantics (credit=green, expense=red, investment=purple) kept; **light/dark** via `var(--c-*)` tokens in `globals.css` + `features/theme/ThemeContext.tsx` |
 | `SPEC_TEMPLATE.md` | Template for a new feature spec |
 
 ## Planning / status docs (not "as-built")

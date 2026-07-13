@@ -44,7 +44,7 @@ export function Overlay({ children, onClose, desktopWidth = 500 }: { children: R
         style: { ...(children as React.ReactElement<{ style?: React.CSSProperties }>).props.style, borderRadius: 24, maxHeight: "calc(100vh - 48px)", overflowY: "auto" },
       })
     : children;
-  return <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(2,6,14,.62)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: isDesktop ? "center" : "flex-end", justifyContent: "center", padding: isDesktop ? 24 : 0 }}><div onClick={(e) => e.stopPropagation()} style={{ width: isDesktop ? desktopWidth : 500, maxWidth: "100%" }}>{card}</div></div>;
+  return <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(20,16,10,.62)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: isDesktop ? "center" : "flex-end", justifyContent: "center", padding: isDesktop ? 24 : 0 }}><div onClick={(e) => e.stopPropagation()} style={{ width: isDesktop ? desktopWidth : 500, maxWidth: "100%" }}>{card}</div></div>;
 }
 export const CARD: React.CSSProperties = { background: "var(--c-surface)", border: "1px solid var(--c-line-strong)", borderRadius: "28px 28px 0 0", padding: "22px 22px calc(22px + env(safe-area-inset-bottom))", fontFamily: BODY };
 export const HEADER: React.CSSProperties = { display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 20 };
@@ -53,4 +53,4 @@ export const SUB: React.CSSProperties = { display: "block", font: `500 11.5px ${
 export const CLOSE: React.CSSProperties = { cursor: "pointer", width: 34, height: 34, borderRadius: 10, border: "1px solid var(--c-line)", background: "var(--c-faint)", color: "var(--c-body-2)" };
 export const ROW: React.CSSProperties = { display: "flex", gap: 10, padding: "11px 2px", borderBottom: "1px solid var(--c-field)", font: `600 13px ${BODY}`, color: "var(--c-ink)", alignItems: "center" };
 export const TOTAL: React.CSSProperties = { display: "flex", justifyContent: "space-between", padding: "16px 0", font: `600 15px ${DISPLAY}`, color: "var(--c-ink)" };
-export const SAVE: React.CSSProperties = { cursor: "pointer", width: "100%", border: "none", borderRadius: 13, background: "var(--c-accent)", color: "white", padding: "13px", font: `600 14px ${DISPLAY}` };
+export const SAVE: React.CSSProperties = { cursor: "pointer", width: "100%", border: "none", borderRadius: 13, background: "var(--c-cta)", color: "var(--c-cta-fg)", padding: "13px", font: `600 14px ${DISPLAY}` };

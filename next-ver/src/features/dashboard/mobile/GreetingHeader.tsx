@@ -13,7 +13,7 @@ interface Props {
 }
 
 const INDIGO_PILL =
-  "linear-gradient(135deg,rgba(99,102,241,0.20),rgba(99,102,241,0.10))";
+  "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.20),rgb(var(--c-accent-rgb) / 0.10))";
 
 export default function GreetingHeader({
   greeting = "Good evening",
@@ -55,7 +55,7 @@ export default function GreetingHeader({
             font: `600 12px ${DISPLAY}`,
             color: "var(--c-accent)",
             background: INDIGO_PILL,
-            border: "1px solid rgba(99,102,241,0.36)",
+            border: "1px solid rgb(var(--c-accent-rgb) / 0.36)",
             borderRadius: 999,
             padding: "6px 11px",
             whiteSpace: "nowrap",

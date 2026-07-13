@@ -29,7 +29,7 @@ interface Props {
 }
 
 const CARD_SHADOW =
-  "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
+  "0 1px 2px rgba(32,27,19,0.04), 0 14px 30px -22px rgba(32,27,19,0.30)";
 
 function SkeletonRow() {
   return (
@@ -101,8 +101,8 @@ function PagerButton({ label, disabled, onClick }: { label: string; disabled: bo
       style={{
         font: `600 12px ${DISPLAY}`,
         color: disabled ? "var(--c-line-strong)" : "var(--c-accent-2)",
-        background: disabled ? "var(--c-faint)" : "rgba(79,70,229,0.08)",
-        border: `1px solid ${disabled ? "var(--c-bg1)" : "rgba(79,70,229,0.22)"}`,
+        background: disabled ? "var(--c-faint)" : "rgb(var(--c-accent-rgb) / 0.08)",
+        border: `1px solid ${disabled ? "var(--c-bg1)" : "rgb(var(--c-accent-rgb) / 0.22)"}`,
         borderRadius: 999,
         padding: "6px 16px",
         cursor: disabled ? "default" : "pointer",

@@ -35,7 +35,7 @@ interface Props {
 }
 
 const CARD_SHADOW =
-  "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
+  "0 1px 2px rgba(32,27,19,0.04), 0 14px 30px -22px rgba(32,27,19,0.30)";
 
 function EmiRow({ card, onPay, onEdit }: { card: EmiCard; onPay: (id: string) => void; onEdit: (emi: EmiProgress) => void }) {
   const { emi, thisMonth } = card;

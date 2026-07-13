@@ -14,7 +14,7 @@ const VARIANT: Record<
   // stroke icon paths on a 20×20 viewBox
   success: { rgb: "16,185,129", text: "var(--c-credit)", icon: "M4 10.5 8.5 15 16 6" },
   error: { rgb: "239,68,68", text: "var(--c-expense)", icon: "M6 6l8 8 M14 6l-8 8" },
-  info: { rgb: "79,70,229", text: "var(--c-accent)", icon: "M10 9v5 M10 6h.01" },
+  info: { rgb: "156,123,51", text: "var(--c-accent)", icon: "M10 9v5 M10 6h.01" },
 };
 
 export default function Toaster() {
@@ -55,7 +55,7 @@ export default function Toaster() {
               borderRadius: 16,
               background: `linear-gradient(135deg,rgba(${v.rgb},0.16),rgba(${v.rgb},0.08)),var(--c-glass)`,
               border: `1px solid rgba(${v.rgb},0.32)`,
-              boxShadow: "0 10px 30px -10px rgba(15,23,42,0.35)",
+              boxShadow: "0 10px 30px -10px rgba(32,27,19,0.35)",
               backdropFilter: "blur(14px) saturate(160%)",
               WebkitBackdropFilter: "blur(14px) saturate(160%)",
               animation: "toastIn 0.24s cubic-bezier(0.16,1,0.3,1)",

@@ -114,7 +114,7 @@ export default function AddSheet({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(2,6,14,0.62)",
+        background: "rgba(20,16,10,0.62)",
         backdropFilter: "blur(4px)",
         WebkitBackdropFilter: "blur(4px)",
         display: "flex",
@@ -253,7 +253,7 @@ export default function AddSheet({
                     fontSize: 13.5,
                     color: t.on ? "var(--c-accent-2)" : "var(--c-body-2)",
                     background: t.on ? "var(--c-surface)" : "transparent",
-                    boxShadow: t.on ? "0 1px 3px rgba(15,23,42,0.10)" : "none",
+                    boxShadow: t.on ? "0 1px 3px rgba(32,27,19,0.10)" : "none",
                   }}
                 >
                   {t.label}
@@ -452,12 +452,12 @@ export default function AddSheet({
                 height: 54,
                 border: "none",
                 borderRadius: 16,
-                background: "var(--c-accent-2)",
-                color: "var(--c-onaccent)",
+                background: "var(--c-cta)",
+                color: "var(--c-cta-fg)",
                 fontFamily: DISPLAY,
                 fontWeight: 600,
                 fontSize: 15.5,
-                boxShadow: "0 8px 20px -8px rgba(79,70,229,0.55)",
+                boxShadow: "0 8px 20px -8px rgba(32,27,19,0.28)",
                 opacity: calcActive ? 0.5 : 1,
                 transition: "opacity .25s ease",
               }}

@@ -83,7 +83,7 @@
   border: 1px solid rgb(var(--tile-rgb) / 0.45);
   backdrop-filter: blur(14px) saturate(1.7);
   -webkit-backdrop-filter: blur(14px) saturate(1.7);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(32 27 19 / 0.04);
 }
 
 body {
@@ -105,32 +105,35 @@ h2 {
   font-family: "Bricolage Grotesque", sans-serif;
 }
 
-/* Kharcha auth — handoff tokens stay local. Dashboard keeps its indigo system. */
+/* Kharcha auth — colors now source from the shared --c-* palette (single source of
+   truth; see the theme-token blocks below). The `--kh-*` names survive only as thin
+   auth-scoped aliases, so the login screen and the app can never drift apart. Only
+   genuinely auth-local surfaces (the light logo plate + translucent inputs) keep their
+   own values, flipped in the slim html.dark block. */
 .kh-auth-page {
   min-height: 100svh;
-  background: #f4f1e8;
-}
-
-html.dark .kh-auth-page {
-  background: #191613;
+  background: var(--c-bg2);
 }
 
 .kh-auth {
-  --kh-bg: #f4f1e8;
-  --kh-fg: #201b13;
-  --kh-accent: #9c7b33;
-  --kh-accent-bright: #9c7b33;
+  /* Aliases → shared palette (auto-flip light/dark via --c-*) */
+  --kh-bg: var(--c-bg2);
+  --kh-fg: var(--c-ink);
+  --kh-accent: var(--c-accent-2);
+  --kh-accent-bright: var(--c-accent-2);
+  --kh-primary-bg: var(--c-ink);
+  --kh-primary-fg: var(--c-bg2);
+  --kh-primary-hover: var(--c-ink-2);
+  --kh-input-border: var(--c-line-strong);
+  --kh-divider: var(--c-line);
+  --kh-muted: var(--c-muted);
+
+  /* Auth-local surfaces (no shared equivalent) — light values; dark overrides below */
   --kh-logo-bg: #ffffff;
   --kh-logo-fg: #201b13;
   --kh-logo-border: rgba(32, 27, 19, 0.1);
-  --kh-primary-bg: #201b13;
-  --kh-primary-fg: #f4f1e8;
-  --kh-primary-hover: #3a332a;
   --kh-input-bg: rgba(255, 255, 255, 0.55);
-  --kh-input-border: rgba(32, 27, 19, 0.2);
-  --kh-divider: rgba(32, 27, 19, 0.15);
-  --kh-muted: rgba(32, 27, 19, 0.55);
-  --kh-bezel: rgba(32, 27, 19, 0.1);
+
   display: grid;
   grid-template-columns: 0.92fr 1.08fr;
   min-height: 100svh;
@@ -141,21 +144,10 @@ html.dark .kh-auth-page {
 }
 
 html.dark .kh-auth {
-  --kh-bg: #191613;
-  --kh-fg: #f3efe5;
-  --kh-accent: #d8b36a;
-  --kh-accent-bright: #eacb8a;
   --kh-logo-bg: #f6f3ea;
   --kh-logo-fg: #191613;
   --kh-logo-border: transparent;
-  --kh-primary-bg: #f3efe5;
-  --kh-primary-fg: #191613;
-  --kh-primary-hover: #ffffff;
   --kh-input-bg: rgba(255, 255, 255, 0.03);
-  --kh-input-border: rgba(243, 239, 229, 0.16);
-  --kh-divider: rgba(243, 239, 229, 0.12);
-  --kh-muted: rgba(243, 239, 229, 0.5);
-  --kh-bezel: rgba(255, 255, 255, 0.08);
 }
 
 .kh-auth *,
@@ -1202,34 +1194,35 @@ html.dark .kh-auth__social:hover:not(:disabled) {
  * Applied by ThemeProvider (src/features/theme/ThemeContext.tsx). Spec: DESIGN_SYSTEM §Dark.
  */
 :root {
-  /* Page background gradient stops */
-  --c-bg1: #eef2f7;
-  --c-bg2: #e3e8ef;
+  /* Page background gradient stops (warm cream — Kharcha palette) */
+  --c-bg1: #f6f3ea;
+  --c-bg2: #efe9db;
 
   /* Surfaces (cards / sheets / pills). Glass = translucent over the page gradient. */
-  --c-surface: #ffffff;
-  --c-glass: rgba(255, 255, 255, 0.6);
-  --c-glass-strong: rgba(255, 255, 255, 0.85);
+  --c-surface: #fbf8f0;
+  --c-glass: rgba(255, 253, 247, 0.6);
+  --c-glass-strong: rgba(255, 253, 247, 0.85);
 
-  /* Text */
-  --c-ink: #0f172a;      /* primary headings / values */
-  --c-ink-2: #334155;    /* strong secondary */
-  --c-body: #475569;     /* body */
-  --c-body-2: #64748b;   /* body secondary */
-  --c-muted: #94a3b8;    /* subtitles / labels */
+  /* Text (warm charcoal) */
+  --c-ink: #201b13;      /* primary headings / values */
+  --c-ink-2: #3a332a;    /* strong secondary */
+  --c-body: #57503f;     /* body */
+  --c-body-2: #6b6355;   /* body secondary */
+  --c-muted: #8a8172;    /* subtitles / labels */
 
-  /* Lines */
-  --c-line: #e2e8f0;         /* default border */
-  --c-line-strong: #cbd5e1;  /* strong border / faint separator / placeholder */
-  --c-field: #f1f5f9;        /* idle field bg */
-  --c-faint: #f8fafc;        /* faint fill */
+  /* Lines (warm) */
+  --c-line: #e7e0d0;         /* default border */
+  --c-line-strong: #d6cdb8;  /* strong border / faint separator / placeholder */
+  --c-field: #f1ecdf;        /* idle field bg */
+  --c-faint: #f8f4ea;        /* faint fill */
 
-  /* Accent (indigo) — text on translucent indigo pills */
-  --c-accent: #4338ca;
-  --c-accent-2: #4f46e5;
-  --c-accent-3: #818cf8;
-  --c-accent-4: #a5b4fc;
-  --c-accent-bg: #eef2ff;    /* indigo-50 flat fill */
+  /* Accent (warm gold — Kharcha) — text on translucent gold pills */
+  --c-accent: #8a6d2c;       /* deep gold for WCAG text on cream */
+  --c-accent-2: #9c7b33;
+  --c-accent-3: #b89a54;
+  --c-accent-4: #d8b36a;
+  --c-accent-bg: #f4ecd8;    /* gold-50 flat fill */
+  --c-accent-rgb: 156 123 51; /* #9c7b33 — for rgb(var(--c-accent-rgb) / α) glass tiles */
 
   /* Investment (violet) text */
   --c-violet: #6d28d9;
@@ -1249,36 +1242,44 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   /* Food category (amber) text */
   --c-amber: #b45309;
 
-  /* White text on colored CTAs — stays white in both themes */
+  /* White text on colored (green/red/violet) CTAs — stays white in both themes */
   --c-onaccent: #ffffff;
+
+  /* Primary CTA button (charcoal fill + cream text, like the auth "Continue" button).
+     Both reference inverting tokens, so the pair flips together: charcoal-on-cream in
+     light, cream-on-charcoal in dark. Use instead of gold fill (gold fails white-text
+     contrast). See specs/WARM_THEME_UNIFICATION_PLAN.md §5.5. */
+  --c-cta: var(--c-ink);
+  --c-cta-fg: var(--c-bg2);
 }
 
 html.dark {
   color-scheme: dark;
 
-  --c-bg1: #10141d;
-  --c-bg2: #0a0d14;
+  --c-bg1: #201b13;
+  --c-bg2: #191613;
 
-  --c-surface: #171c27;
-  --c-glass: rgba(30, 37, 52, 0.55);
-  --c-glass-strong: rgba(30, 37, 52, 0.78);
+  --c-surface: #241f17;
+  --c-glass: rgba(40, 34, 24, 0.55);
+  --c-glass-strong: rgba(40, 34, 24, 0.8);
 
-  --c-ink: #e8ecf3;
-  --c-ink-2: #cbd3e0;
-  --c-body: #aeb8c9;
-  --c-body-2: #94a0b3;
-  --c-muted: #7c8699;
+  --c-ink: #f3efe5;
+  --c-ink-2: #ddd6c6;
+  --c-body: #bcb4a2;
+  --c-body-2: #9d9483;
+  --c-muted: #857c6b;
 
-  --c-line: rgba(255, 255, 255, 0.09);
-  --c-line-strong: #3a4353;
-  --c-field: #1c2230;
-  --c-faint: #191e29;
+  --c-line: rgba(243, 239, 229, 0.1);
+  --c-line-strong: #4a4234;
+  --c-field: #2a2418;
+  --c-faint: #211c14;
 
-  --c-accent: #a5b4fc;
-  --c-accent-2: #818cf8;
-  --c-accent-3: #a5b4fc;
-  --c-accent-4: #c7d2fe;
-  --c-accent-bg: rgba(99, 102, 241, 0.16);
+  --c-accent: #d8b36a;
+  --c-accent-2: #c8a860;
+  --c-accent-3: #d8b36a;
+  --c-accent-4: #eacb8a;
+  --c-accent-bg: rgba(216, 179, 106, 0.16);
+  --c-accent-rgb: 216 179 106; /* #d8b36a — dark-mode gold for glass tiles */
 
   --c-violet: #c4b5fd;
   --c-violet-2: #c4b5fd;
@@ -1302,7 +1303,7 @@ html.dark {
  */
 .subtle-scroll {
   scrollbar-width: thin;                       /* Firefox */
-  scrollbar-color: rgb(15 23 42 / 0.16) transparent;
+  scrollbar-color: rgb(32 27 19 / 0.16) transparent;
   overscroll-behavior: contain;                /* don't chain to the page */
 }
 .subtle-scroll::-webkit-scrollbar {
@@ -1312,11 +1313,11 @@ html.dark {
   background: transparent;
 }
 .subtle-scroll::-webkit-scrollbar-thumb {
-  background: rgb(15 23 42 / 0.12);
+  background: rgb(32 27 19 / 0.12);
   border-radius: 999px;
 }
 .subtle-scroll:hover::-webkit-scrollbar-thumb {
-  background: rgb(15 23 42 / 0.22);
+  background: rgb(32 27 19 / 0.22);
 }
 
 /* Dark-mode fixups for CSS-file utilities whose fills were tuned for a light bg. */

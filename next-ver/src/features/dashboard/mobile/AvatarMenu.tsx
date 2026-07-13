@@ -11,7 +11,7 @@ import { DISPLAY } from "./data";
 // or Escape. Replaces the previously-inert avatar (issue: no way to sign out).
 
 const INDIGO_AVATAR =
-  "linear-gradient(135deg,rgba(99,102,241,0.30),rgba(99,102,241,0.16))";
+  "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.30),rgb(var(--c-accent-rgb) / 0.16))";
 
 interface Props {
   initials: string;
@@ -77,7 +77,7 @@ export default function AvatarMenu({ initials, size = 40 }: Props) {
           font: `600 14px ${DISPLAY}`,
           color: "var(--c-accent)",
           background: INDIGO_AVATAR,
-          border: "1px solid rgba(99,102,241,0.45)",
+          border: "1px solid rgb(var(--c-accent-rgb) / 0.45)",
           cursor: "pointer",
           padding: 0,
         }}
@@ -100,7 +100,7 @@ export default function AvatarMenu({ initials, size = 40 }: Props) {
             border: "1px solid var(--c-line)",
             backdropFilter: "blur(18px) saturate(1.7)",
             WebkitBackdropFilter: "blur(18px) saturate(1.7)",
-            boxShadow: "0 16px 40px rgba(15,23,42,0.18)",
+            boxShadow: "0 16px 40px rgba(32,27,19,0.18)",
             animation: "none",
           }}
         >
@@ -169,7 +169,7 @@ export default function AvatarMenu({ initials, size = 40 }: Props) {
                   borderRadius: 999,
                   background: "#fff",
                   transition: "left 140ms ease",
-                  boxShadow: "0 1px 2px rgba(15,23,42,0.35)",
+                  boxShadow: "0 1px 2px rgba(32,27,19,0.35)",
                 }}
               />
             </span>

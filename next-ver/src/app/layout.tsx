@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 // keyboard opens, so bottom-anchored sheets (and their CTA / AmountField operator
 // bar) lift above the keyboard instead of hiding under it.
 export const viewport: Viewport = {
-  themeColor: "#0f172a",
+  themeColor: "#191613",
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
 };

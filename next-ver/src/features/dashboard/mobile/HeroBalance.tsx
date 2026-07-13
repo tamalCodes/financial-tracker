@@ -16,8 +16,8 @@ interface Props {
 }
 
 const CARD_SHADOW =
-  "0 1px 2px rgba(15,23,42,0.04), 0 14px 30px -22px rgba(15,23,42,0.30)";
-const TILE_INSET = "inset 0 1px 0 var(--c-glass), 0 1px 2px rgba(15,23,42,0.04)";
+  "0 1px 2px rgba(32,27,19,0.04), 0 14px 30px -22px rgba(32,27,19,0.30)";
+const TILE_INSET = "inset 0 1px 0 var(--c-glass), 0 1px 2px rgba(32,27,19,0.04)";
 
 interface TileProps {
   label: string;

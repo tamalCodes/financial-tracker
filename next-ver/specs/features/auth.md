@@ -70,9 +70,11 @@ avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) he
 `signOut()` then `router.replace("/login")`. The avatar was previously inert (no logout path).
 
 **Auth pages support light and dark mode.** Root `ThemeProvider` owns `<html>.dark` before paint.
-`AuthForm` scopes the Kharcha gold design tokens to auth only: `#191613` / `#F3EFE5` / `#D8B36A`
-for dark and `#F4F1E8` / `#201B13` / `#9C7B33` for light. Bricolage Grotesque remains display/UI;
-Geist is used for field and supporting copy.
+As of the warm-theme unification (`specs/WARM_THEME_UNIFICATION_PLAN.md`), the auth screen's `--kh-*`
+tokens are **thin aliases of the shared `--c-*` palette** (`globals.css` `.kh-auth`), not an
+independent set — the whole app is now warm cream/charcoal with a gold accent, so login and dashboard
+can't drift. Only the light logo plate + translucent inputs stay auth-local. Bricolage Grotesque
+remains display/UI; Geist is used for field and supporting copy.
 
 Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 48px rupee brand, a 250px through-line,
 and the `Money, clearly.` story. Right has a vertically centred 390px form with Google and Apple
