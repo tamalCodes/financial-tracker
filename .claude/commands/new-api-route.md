@@ -3,7 +3,7 @@ description: Generate an API route.ts skeleton wired to CONVENTIONS (auth, rate 
 argument-hint: <resource-name>
 ---
 
-Create `src/app/api/$ARGUMENTS/route.ts` for the next-ver app. First read
+Create `src/app/api/$ARGUMENTS/route.ts` for the app. First read
 `specs/CONVENTIONS.md` and the reference route `src/app/api/credits/route.ts`. Match it exactly.
 
 Emit handlers the feature needs (POST/PUT/DELETE/GET), each following this skeleton — replace

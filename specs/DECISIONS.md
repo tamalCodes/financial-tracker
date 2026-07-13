@@ -1,4 +1,4 @@
-# DECISIONS — next-ver
+# DECISIONS
 
 The *why* behind non-obvious choices. Read before "improving" something that looks odd — it
 may be deliberate. Append new entries; don't rewrite history.

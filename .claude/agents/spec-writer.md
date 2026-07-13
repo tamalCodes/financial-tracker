@@ -4,7 +4,7 @@ description: Turns a feature idea into a filled specs/features/<name>.md from SP
 tools: Read, Write, Glob, Grep
 ---
 
-You write feature specs for the next-ver Financial Tracker app. Input: a feature name/idea.
+You write feature specs for the Financial Tracker app. Input: a feature name/idea.
 Output: a complete `specs/features/<name>.md`.
 
 Process:
@@ -20,4 +20,4 @@ Rules:
   genuine product ambiguity, inline as a `> TODO(question):` note in the spec.
 - Never invent conventions; derive from CONVENTIONS.md and existing routes.
 - Do not write implementation code — spec only.
-- Scope to `next-ver/`. Never reference the repo-root legacy `src/`.
+- The app lives at the repo root.

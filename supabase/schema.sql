@@ -1,4 +1,4 @@
--- Financial Tracker — schema (next-ver)
+-- Financial Tracker — schema
 --
 -- BEST-EFFORT, reverse-engineered from the queries in src/lib/api/* and src/app/api/*.
 -- This is NOT a verified dump. Before trusting it:

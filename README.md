@@ -1,15 +1,13 @@
 # Financial Tracker
 
 Next.js PWA for personal finance tracking.
-The active app lives in this `next-ver/` directory.
-Legacy root app files are not the deployment target.
+The app lives at the repository root.
 
 ## Quick Setup
 
 Clone, install, and create local env:
 
 ```bash
-cd next-ver
 npm ci
 cp .env.example .env
 ```
@@ -69,9 +67,10 @@ gitleaks detect --source . --redact --no-banner
 
 ## Vercel
 
-This directory is linked to Vercel through `next-ver/.vercel/project.json`.
+This repo is linked to Vercel through `.vercel/project.json`.
+The Vercel project's **Root Directory** must be the repository root (empty / `./`).
 
-Deploy production from this directory:
+Deploy production from the repository root:
 
 ```bash
 vercel --prod
@@ -102,8 +101,6 @@ This repo intentionally keeps Claude/Codex project instructions and hooks:
 - Root `CLAUDE.md`
 - `.codex/`
 - `.claude/`
-- `next-ver/AGENTS.md`
-- `next-ver/.claude/`
 
 They are not secrets.
 They document the workflow and help a new machine behave like the current one.

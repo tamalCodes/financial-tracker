@@ -3,7 +3,7 @@ description: Bring an API route up to the current CONVENTIONS (requireUser, rate
 argument-hint: <path-to-route.ts>
 ---
 
-Migrate `$ARGUMENTS` to the current next-ver conventions. Read `specs/CONVENTIONS.md` and the
+Migrate `$ARGUMENTS` to the current project conventions. Read `specs/CONVENTIONS.md` and the
 reference route `src/app/api/credits/route.ts` first. Apply, preserving behavior + balance signs:
 
 1. **Auth**: replace any inlined `getUserFromCookies` → fallback → 401 block with

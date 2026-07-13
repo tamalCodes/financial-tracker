@@ -19,7 +19,7 @@ Canonical scripts live in `supabase/ops/` (see `supabase/ops/README.md`):
 - **Log out all users**: `npm run ops:logout-all` or `supabase/ops/logout-all-users.sql`.
 - **Force cache purge**: `npm run ops:purge-caches` or `supabase/ops/force-cache-purge.sql`.
 
-The npm scripts run `supabase/ops/run.sh`, which PATCHes the row over the REST API using `SUPABASE_SERVICE_ROLE_KEY` from `next-ver/.env` (bypasses RLS; hits prod). Raw SQL equivalent:
+The npm scripts run `supabase/ops/run.sh`, which PATCHes the row over the REST API using `SUPABASE_SERVICE_ROLE_KEY` from `.env` (repo root; bypasses RLS; hits prod). Raw SQL equivalent:
 ```sql
 -- Log out ALL users now:
 update public.app_control set session_epoch = extract(epoch from now())::bigint,

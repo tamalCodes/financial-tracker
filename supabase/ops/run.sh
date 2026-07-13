@@ -13,7 +13,7 @@ action="${1:-}"
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$here/../.." && pwd)"
 
-# Load SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from next-ver/.env
+# Load SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from .env (repo root)
 set -a
 # shellcheck disable=SC1091
 source "$root/.env"

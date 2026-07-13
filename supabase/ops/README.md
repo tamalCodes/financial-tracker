@@ -29,7 +29,7 @@ once. Use after a deploy if returning users might carry a stale service worker.
 ## How the npm scripts reach prod
 
 [`run.sh`](./run.sh) reads `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` from
-`next-ver/.env` and PATCHes the row over the REST API with the service-role key
+`.env` (repo root) and PATCHes the row over the REST API with the service-role key
 (bypasses RLS). No extra login needed. These hit **production** — the row is the
 same one the linked remote project serves.
 

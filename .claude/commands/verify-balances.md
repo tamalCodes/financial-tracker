@@ -2,7 +2,7 @@
 description: Audit the balance invariant across the codebase — delta signs, applyBalanceDelta coverage, recompute paths.
 ---
 
-Verify the balances logic of the next-ver app holds. Read `specs/DATA_MODEL.md` (invariant),
+Verify the balances logic of the app holds. Read `specs/DATA_MODEL.md` (invariant),
 `specs/CONVENTIONS.md` §4, `src/lib/api/balances.ts`, `src/lib/api/dashboard.ts`, and every
 mutating route under `src/app/api/{credits,expenses,investments,balances}`.
 

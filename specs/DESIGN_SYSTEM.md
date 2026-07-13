@@ -1,4 +1,4 @@
-# DESIGN_SYSTEM — next-ver
+# DESIGN_SYSTEM
 
 The shared visual language for the app's UI and the **source of truth** for color, type, and
 components.

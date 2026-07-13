@@ -3,7 +3,7 @@ description: Scaffold a feature spec from SPEC_TEMPLATE, then implement it to CO
 argument-hint: <feature-name> [one-line idea]
 ---
 
-Build a new feature for the next-ver app. `$ARGUMENTS` = feature name (+ optional idea).
+Build a new feature for the app. `$ARGUMENTS` = feature name (+ optional idea).
 
 ## Steps
 1. **Read context**: `AGENTS.md`, `specs/CONVENTIONS.md`, `specs/DATA_MODEL.md`,
@@ -21,4 +21,4 @@ Build a new feature for the next-ver app. `$ARGUMENTS` = feature name (+ optiona
 5. **Verify**: `user_id` scoping on every query, balance deltas correct, error shapes match.
 6. Run `graphify update .` from the repo root.
 
-Scope strictly to `next-ver/`. Never touch the repo-root legacy `src/`.
+The app lives at the repo root.

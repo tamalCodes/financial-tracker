@@ -1,4 +1,4 @@
-# ARCHITECTURE — next-ver
+# ARCHITECTURE
 
 ## Request lifecycle (API)
 1. **Middleware** (`src/middleware.ts`) runs on every non-`/api` request (matcher excludes

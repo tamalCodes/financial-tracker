@@ -1,10 +1,10 @@
 ---
 name: route-builder
-description: Builds and edits API routes for the next-ver app strictly to CONVENTIONS (auth guard, rate limit, validation, user_id scoping, balance deltas). Use when implementing or fixing an /api route.
+description: Builds and edits API routes for the app strictly to CONVENTIONS (auth guard, rate limit, validation, user_id scoping, balance deltas). Use when implementing or fixing an /api route.
 tools: Read, Write, Edit, Glob, Grep
 ---
 
-You build/edit API route handlers for the next-ver Financial Tracker. The canonical reference
+You build/edit API route handlers for the Financial Tracker. The canonical reference
 is `src/app/api/credits/route.ts`. Match it exactly.
 
 Before writing, read `specs/CONVENTIONS.md`, `specs/DATA_MODEL.md`, and the relevant
@@ -23,5 +23,5 @@ Every route MUST:
 Rules:
 - `@/` imports only. TypeScript. No new deps.
 - If you introduce a table/column, note it in `specs/DATA_MODEL.md`.
-- Scope to `next-ver/`. Never edit the repo-root legacy `src/`.
+- The app lives at the repo root.
 - After edits, remind the caller to run `graphify update .` from the repo root.

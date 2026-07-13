@@ -1,4 +1,4 @@
-# DATA_MODEL — next-ver
+# DATA_MODEL
 
 Post **mobile redesign**. Migrations `supabase/migrations/001..008`:
 `001_mobile_redesign`, `002_profiles_opening_balance`, `003_rls`, `004_expense_tag`,

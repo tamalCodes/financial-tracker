@@ -1,4 +1,4 @@
-# CONVENTIONS — next-ver
+# CONVENTIONS
 
 Copy-pasteable rules derived from real code. Cited file = where the pattern lives.
 The canonical reference route is `src/app/api/credits/route.ts` (refactored to all rules below).

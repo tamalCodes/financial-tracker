@@ -1,4 +1,4 @@
-# Design Critique — next-ver dashboard (0.1c)
+# Design Critique — dashboard (0.1c)
 
 Code-based (screenshots blocked). Scope: Dashboard, TransactionList, BalancePanel, MonthHeader,
 TransactionSection. Forms follow the modal recipe (not re-reviewed). 2026-06-27.

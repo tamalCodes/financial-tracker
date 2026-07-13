@@ -21,4 +21,4 @@ Check each rule:
 7. **Style** (§7): `@/` imports, `route.ts` exports, month-key handling.
 
 End with a one-line verdict: `PASS` (no 🔴) or `FAIL: N must-fix`. Suggest `/new-api-route`
-patterns for fixes. Scope to `next-ver/` only.
+patterns for fixes. Scope to the repo root only.
