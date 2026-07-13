@@ -116,8 +116,8 @@ no `.env.example`.
       lint + test + build), but still needs `gitleaks detect` on push/PR.
 - [x] 🟠 5.4 `.env.example`: committed template of required vars (no secrets) so a fresh
       clone / agent knows what to set.
-- [ ] 🟠 5.5 Dual-app ambiguity: legacy Vite root app vs `next-ver`. Archive/delete or
-      hard-document "next-ver only" so agents don't edit the dead tree. (WHATS_LEFT #5)
+- [x] 🟠 5.5 Dual-app ambiguity: RESOLVED — `next-ver/` flattened to the repo root (2026-07-13);
+      no legacy Vite tree remains, so there is one unambiguous app. (WHATS_LEFT #5)
 - [ ] 🟠 5.6 Supabase local: `db:start`/`db:reset` scripts exist ✅ — add seed data so
       data-touching tests + E2E run deterministically. (WHATS_LEFT #6)
 - [ ] 🟡 5.7 `AGENTS.md` is 67 lines — keep it the single entry point; ensure it points
@@ -126,8 +126,8 @@ no `.env.example`.
 
 ## 6. Deploy
 
-- [ ] 🔴 6.1 Deploy `next-ver` to Vercel (free tier, HTTPS auto). Set env vars in Vercel
-      (not committed). PWA requires HTTPS.
+- [x] 🔴 6.1 Deploy to Vercel (free tier, HTTPS auto) from the **repo root** (Vercel Root Directory
+      cleared 2026-07-13). Live at `https://khorcha.vercel.app`. Env vars set in Vercel (not committed).
 - [ ] 🟠 6.2 Post-deploy: re-run Lighthouse on the live URL; install on both phones.
 
 ---

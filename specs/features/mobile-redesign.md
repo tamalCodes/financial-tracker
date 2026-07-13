@@ -1,8 +1,8 @@
-# Implementation Plan — Finance Dashboard Mobile (cloth handoff → next-ver)
+# Implementation Plan — Finance Dashboard Mobile (cloth handoff → repo-root app)
 
 Source (vendored into repo): [`specs/design-handoff/`](../design-handoff/) — [`README.md`](../design-handoff/README.md) = behavior/token source of truth; `*.dc.html` = visual reference only; `screenshots/` = rendered fidelity refs. (`support.js` prototype runtime intentionally not vendored — handoff says ignore.) Scope per handoff: **mobile UI only** (desktop + QuickActions excluded).
 
-Target app: `next-ver/` — Next 16 App Router, React 19, Tailwind v4, Supabase, lucide-react. Existing dashboard lives in `src/features/dashboard/`.
+Target app: the repo-root app — Next 16 App Router, React 19, Tailwind v4, Supabase, lucide-react. Existing dashboard lives in `src/features/dashboard/`. (This app was nested under `next-ver/` when this plan was written; it was flattened to the repo root on 2026-07-13.)
 
 > **Execution order is backend-first.** PART A = decisions + model. PART B = backend phases (B0–B6). PART C = frontend phases (F0–F6). Do not start frontend until backend phases verify green. One phase per commit on `main` (no branches — see repo `CLAUDE.md`).
 >
@@ -16,7 +16,7 @@ Target app: `next-ver/` — Next 16 App Router, React 19, Tailwind v4, Supabase,
 
 The cloth design already matches house style — minimal token work:
 
-| Cloth spec | Already in next-ver | Action |
+| Cloth spec | Already in app | Action |
 |---|---|---|
 | Bricolage Grotesque display | `globals.css` body/headings | reuse |
 | Geist body font | not loaded | add (`next/font` or Google Fonts) |

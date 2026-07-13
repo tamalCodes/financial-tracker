@@ -1,5 +1,12 @@
 # ARCHITECTURE
 
+## Repository layout
+- The app lives at the **repository root** — `package.json`, `next.config.ts`, `src/`, `public/`,
+  `supabase/`, and `specs/` are all top-level. Run `npm`, `supabase`, and `vercel` from the root.
+- History note: the app was previously nested under a `next-ver/` subdirectory and was **flattened
+  to the root on 2026-07-13**. There is no legacy Vite app; the root *is* the app. Vercel's project
+  Root Directory is cleared (repo root) to match.
+
 ## Request lifecycle (API)
 1. **Middleware** (`src/middleware.ts`) runs on every non-`/api` request (matcher excludes
    `api`, `_next/*`, static files). It builds an SSR Supabase client over the request cookies

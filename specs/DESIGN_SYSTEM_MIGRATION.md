@@ -4,7 +4,7 @@
 > Source of truth for *design rules* stays [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md); this file
 > tracks the *migration work*. Update the "Status" + "Log" sections each session.
 
-**Scope:** `next-ver/` only (Next 16, React 19, Tailwind v4 CSS-first). Root Vite app = legacy, ignore.
+**Scope:** the app at the **repository root** (Next 16, React 19, Tailwind v4 CSS-first). Historically this lived under `next-ver/`; it was flattened to the root on 2026-07-13 and no legacy Vite app remains.
 **Started:** 2026-06-27
 
 ## Locked decisions
@@ -39,7 +39,7 @@
 ## 0.1a Audit findings (design-system, code-based)
 Score 38/100. `globals.css` has **no `@theme` block** — 0 defined tokens. All raw utilities.
 
-Hardcoded counts (next-ver/src, *.tsx): ~120 raw `slate-*`, ~15 `indigo-*`, 19 `red-*`,
+Hardcoded counts (src, *.tsx): ~120 raw `slate-*`, ~15 `indigo-*`, 19 `red-*`,
 62 radius utils (6 distinct), 10 arbitrary sizes.
 
 Drift vs spec:
@@ -53,7 +53,7 @@ Drift vs spec:
 6. **Arbitrary sizes** `[20px][18px][6rem][500px]` bypass a (nonexistent) spacing scale.
 
 Open items:
-- ~~No purple in next-ver~~ → RESOLVED: investment = `text-indigo-600` in `TransactionList.getAmountTone()`,
+- ~~No purple~~ → RESOLVED: investment = `text-indigo-600` in `TransactionList.getAmountTone()`,
   aliases the brand accent (reads purple, isn't a separate token). User OK with look. Tokenize
   `--color-investment` → indigo-600 now; option B = split to violet-600 later. See memory transaction-color-semantics.
 - AmountInput uses inline `style={{}}` (the only inline-style file) — review during 1.1.

@@ -32,7 +32,8 @@ Status: `[x]` done · `[~]` in progress · `[ ]` not started · `⏸` blocked (n
 
 ## C. CI — GitHub Actions verify gate (Track B #4) ✅
 - [x] `.github/workflows/verify.yml`: push (main) + PR → Node 20, `npm ci`, `npm run verify`,
-      working dir `next-ver`; SUPABASE_URL/ANON_KEY from secrets with safe fallbacks.
+      run from the repo root (working dir was `next-ver` before the 2026-07-13 flatten);
+      SUPABASE_URL/ANON_KEY from secrets with safe fallbacks.
 
 ## D. Live-DB integration tests (Track B #6) ✅ written — runs only with Docker+CLI
 - [x] `supabase/config.toml` (local config; email confirmations off so signup yields a session).

@@ -32,7 +32,7 @@ Priority: 🔴 blocks loop · 🟠 important · 🟡 nice
 - [ ] 🔴 #2 Test coverage — only 2 test files vs ~60 src. Add component, auth, API-route tests
 - [ ] 🔴 #3 Runtime/visual verification — no Playwright/E2E; wire core-flow smoke (login→dashboard→add txn) + screenshot recipe
 - [ ] 🟠 #4 CI — `.github/workflows` running `verify` on push/PR
-- [ ] 🟠 #5 Dual-app ambiguity — archive/delete legacy Vite root app, OR hard-document "next-ver only"
+- [x] 🟠 #5 Dual-app ambiguity — RESOLVED: the `next-ver/` app was flattened to the repo root (2026-07-13); no legacy Vite app exists, so there is one unambiguous tree
 - [ ] 🟠 #6 Supabase integration — local DB/seed/migration runner so data-touching tests can run
 - [ ] 🟡 #7 Permission friction — run fewer-permission-prompts to allowlist common commands
 
