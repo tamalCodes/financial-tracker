@@ -45,14 +45,15 @@ cumulative Left-in-bank replaces the old copy-forward behavior.
     component (used by AddSheet and EditSheet). It holds the operator-capable draft in local `expr`
     state (the parent `onAmount` only ever receives sanitised digits, so operators never
     round-trip). `evalExpr` parses it with a no-`eval` shunting-yard evaluator. On a complete
-    expression the field pauses ~900ms, runs a ~0.75s indigo "thinking" state (border glow +
+    expression the field pauses ~900ms, runs a ~0.75s gold-accent "thinking" state (border glow +
     sweeping shimmer + ✦/pulsing-dots badge), then reveals the result with an easeOutCubic count-up
     + glow pop and pushes the final integer up via `onAmount`. Reports its animating state via
     `onCalcActiveChange` so the parent can disable Save. Optional `prefix` (e.g. `₹`) and
-    `placeholder`. Indigo-only per design system.
+    `placeholder`. Uses the shared brand accent (`--c-accent`, warm gold) per design system — the
+    glow/shimmer/badge are all `rgb(var(--c-accent-rgb) / …)`, so they follow the theme, not a hardcoded hue.
     - **Operator bar in the CTA slot (mobile keypad fallback)** — the field keeps
       `inputMode="numeric"`, but mobile numeric keypads don't expose `+ − × ÷`. Rather than a
-      separate floating strip, the exported **`OperatorBar`** (glassy indigo-translucent row of
+      separate floating strip, the exported **`OperatorBar`** (glassy accent-translucent row of
       `+ − × ÷`, no "Done" button) **takes over the sheet's primary CTA slot** — the Save / "Add
       expense" button — while the Amount field is focused; blurring swaps the Save button back in.
       `AmountField` is a `forwardRef` exposing an `AmountFieldHandle` (`insertOp`) and reports focus
@@ -73,7 +74,7 @@ cumulative Left-in-bank replaces the old copy-forward behavior.
   **Responsive container (mirrors AddSheet)** — a bottom sheet on mobile that becomes a centered
   dialog card on desktop (`useMediaQuery("(min-width: 1024px)")`): full 24px radius, grabber hidden,
   `max-height: calc(100vh - 48px)` with scroll, centered overlay with 24px padding. The
-  `tag` is a **chip**: a dashed "+ Add tag" pill when empty; tapping it (or the filled indigo chip)
+  `tag` is a **chip**: a dashed "+ Add tag" pill when empty; tapping it (or the filled accent chip)
   drops into a compact inline input committed on blur/Enter; the chip's ✕ clears the tag.
 - **Transactions** — Recent-payments list: merchant + category pill + date + amount, no minus sign;
   count subtitle + red total pill. Paginated ("load more" via `GET /api/expenses?page=`).

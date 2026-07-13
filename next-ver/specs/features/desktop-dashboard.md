@@ -24,9 +24,10 @@ the chart is a net-new addition.
 - **Ambition:** reflow of existing cards **+ charts** (not a full redesign).
 - **Graphs:** monthly-trend line **only** — the sole feature needing new backend.
 - **Trend metric:** three lines **Earned / Spent / Invested**, colored per DESIGN_SYSTEM
-  (green `#10b981` / red `#ef4444` / purple `#8b5cf6`). Indigo stays brand-only.
+  (green `#10b981` / red `#ef4444` / purple `#8b5cf6`). The warm **gold** accent (`--c-accent`)
+  stays brand-only.
 - **Window:** user-toggle **6 / 12 months** in the UI.
-- **Chart lib:** **Recharts** (themed to glass/indigo).
+- **Chart lib:** **Recharts** (themed to glass + gold brand accent).
 - **Breakpoint:** `min-width: 1024px` → desktop (covers tablet-landscape). Below → unchanged mobile.
 
 ## Data model touched
@@ -82,7 +83,8 @@ All `"use client"`. Mobile path is **untouched**.
 - **Actions (contextual per-card `+`)**: desktop drops the global `FloatingActionBar` (the fixed
   bottom-center pill occluded Recent payments + the cards below it). Instead each card header carries a
   small glass `+` (`mobile/AddButton.tsx`), scoped to that card and coloured to its semantic:
-  Recent payments → expense (red), Bills → one-off bill (indigo), EMIs → EMI (indigo), Income →
+  Recent payments → expense (red), Bills → one-off bill (gold brand accent), EMIs → EMI (gold brand
+  accent), Income →
   income (green), Portfolio value → investment (purple). Each card gained an **opt-in `onAdd` prop**;
   only `DesktopHome` passes it, so **mobile is pixel-unchanged** (still uses the FAB). Bills/EMI adds go
   through `openSheet("expense", { isBill, billKind })` — a new pre-scoping arg on `useFinance.openSheet`
@@ -110,7 +112,7 @@ All `"use client"`. Mobile path is **untouched**.
     The 6M/12M `WindowToggle` **and the Earned/Spent/Invested legend** are both **hidden** while locked
     (nothing to window over / label). This replaces the old flat-zero line / bare "Nothing to chart yet" text.
 - **`desktop/TrendChart.tsx`** (new) — Recharts multi-line/area (Earned/Spent/Invested), 6/12 toggle,
-  glass card wrapper, tabular-nums tooltip, indigo/green/red/purple theme. It loads as a client-only
+  glass card wrapper, tabular-nums tooltip, gold-accent/green/red/purple theme. It loads as a client-only
   dynamic chunk with a fixed-size card placeholder, so the chart library never delays mobile UI or the
   desktop dashboard shell's first paint.
 - **`hooks/useTrendData.ts`** (new) — fetches `/api/trend?months=`, owns the 6/12 window state,
