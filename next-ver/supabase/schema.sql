@@ -99,8 +99,9 @@ create table if not exists public.holdings (
 );
 create index if not exists holdings_user_idx on public.holdings (user_id);
 
--- sips (manual portfolio: active SIPs) ----------------------------------------
--- Static reference; not cumulative; does NOT affect the money model.
+-- sips (active SIP plans) ------------------------------------------------------
+-- A monthly payment is recorded separately in sip_payments. It updates this
+-- paid_total and portfolio reference; debit is optional and creates investment flow.
 create table if not exists public.sips (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users (id) on delete cascade,
@@ -111,6 +112,18 @@ create table if not exists public.sips (
   created_at  timestamptz not null default now()
 );
 create index if not exists sips_user_idx on public.sips (user_id);
+
+create table if not exists public.sip_payments (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  sip_id uuid not null references public.sips (id) on delete cascade,
+  month text not null,
+  amount numeric not null check (amount > 0),
+  debited_balance boolean not null default true,
+  created_at timestamptz not null default now(),
+  unique (sip_id, month)
+);
+create index if not exists sip_payments_user_month_idx on public.sip_payments (user_id, month);
 
 -- portfolio_totals (manual hero number) ---------------------------------------
 create table if not exists public.portfolio_totals (
