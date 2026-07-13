@@ -6,6 +6,16 @@
 ## Source of truth
 - This codebase is the single source of truth. Never store plans, specs, or artifacts in scratchpad, Claude memory, or external/desktop locations — write them into the repo (e.g. `next-ver/specs/`).
 
+## Supabase migrations (apply these yourself, don't hand them back)
+- The Supabase CLI is installed and the project is already linked (`next-ver/supabase/.temp/linked-project.json`, project ref `zbjqcdkjgycxqqfazscl`), authenticated via the user's stored CLI login. So a pending migration can be applied without asking the user to do it.
+- All commands run from `next-ver/` (the dir holding `supabase/`).
+- Whenever you add a `supabase/migrations/NNN_*.sql` file, apply it as part of the same task:
+  1. `supabase migration list` — shows Local vs Remote; any migration with a Local number but blank Remote is pending.
+  2. `supabase db push` — applies every pending migration to the remote database. Migrations are written idempotently (`create table if not exists`, `create or replace function`, `drop policy if exists`), so re-running is safe.
+  3. `supabase migration list` again — confirm the new number now appears under both Local and Remote.
+- Also mirror the change into `next-ver/supabase/schema.sql` (the canonical full-schema snapshot) in the same commit, then commit both the migration and the schema update to `main`.
+- If a command fails with an auth/login error, the stored CLI token has expired — ask the user to run `supabase login` (and, if needed, `supabase link`) in their terminal, then retry. Never ask the user to paste tokens or DB passwords into chat.
+
 ## Spec-first (read before coding)
 - **Before writing or searching code, consult `next-ver/specs/` first.** Start at `next-ver/specs/INDEX.md` — grep it, match the task to a feature row, open that spec, then jump straight to the code files it lists ("Reverse-engineered from"). This is faster than blind code search.
 - A `UserPromptSubmit` hook (`.claude/hooks/inject-spec-index.sh`) auto-injects the index each prompt, so the map is always in context.
