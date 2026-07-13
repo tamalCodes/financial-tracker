@@ -19,6 +19,20 @@ No recurring model, no soft delete, no balance side-effect — computed on read 
 `start_month, is_active, carry_forward` (old recurring/soft-delete model — D15). Feeds
 `invested_m` + Left-in-bank.
 
+`sip_payments` table (migration `011_sip_payments.sql`): `id, user_id, sip_id, month, amount,
+debited_balance, created_at`, with a `unique (sip_id, month)` guard (one payment per SIP per month)
+and `sip_payments_user_month_idx` on `(user_id, month)`. RLS `sip_payments_owner` scopes all rows to
+`auth.uid()`. This is a ledger of recorded SIP batches; it does **not** itself feed the money model —
+the optional cash-flow effect is a separate `investments` row (see below).
+
+`record_sip_payments(p_month text, p_sip_ids uuid[], p_debit_balance boolean)` — `SECURITY`-scoped
+plpgsql RPC returning `table(total numeric, paid_count integer)`. Validates auth + `YYYY-MM-01` month
+format + non-empty selection, then, per selected SIP under a `for update` lock: rejects a duplicate
+month, inserts the `sip_payments` row, adds `sips.monthly` to `sips.paid_total`, and increments (or
+creates) the matching `mutual_fund` holding by name. It then upserts the delta into `portfolio_totals`
+and, when `p_debit_balance`, inserts one `investments` flow row (`description = 'SIPs'`). Raises if any
+requested id was not found (count mismatch).
+
 ## API contract — `/api/investments`
 - **POST** — `{ currentMonth, description, amount }` → `{ item }`. Inserts `month = currentMonth`.
 - **PUT** — `{ id, description, amount }` → `{ item }` (edit).
@@ -41,11 +55,16 @@ PUT portfolio total).
 Active SIPs shows a monthly total and opens a payment sheet. User selects paid plans and chooses
 **Deduct from Left in bank** (on by default).
 
-- Request: `{ currentMonth, sipIds, debitBalance }`.
+- Request: `{ currentMonth, sipIds, debitBalance }` (validated by `sipPaymentCreateSchema`). Response
+  `{ payment: { total, paid_count } | null }` — the single RPC result row. The route is a thin wrapper:
+  `requireUser` then one `supabase.rpc("record_sip_payments", ...)` call; a raised RPC error surfaces as
+  **400** with its message. Rate limit `sip-payments:post` **12/60s**.
 - `record_sip_payments` atomically writes one `sip_payments` row per selected SIP/month, increments
   `sips.paid_total`, increments matching mutual-fund holding (or creates it), and increments hero value.
 - Debit on writes one `investments` flow row, increasing Invested and lowering Left-in-bank. Debit off
   updates portfolio reference only — for money not yet debited.
+- The `unique (sip_id, month)` constraint plus the per-SIP duplicate check make re-recording a SIP in
+  the same month raise `One or more selected SIPs are already recorded for this month`.
 
 ## UI / components (mobile)
 AddSheet **Invest** mode (amount + fund) → `POST /api/investments`. Investments adds **Manage**
