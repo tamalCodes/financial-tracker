@@ -44,9 +44,9 @@ function greetingForHour(hour: number) {
   return "Good evening";
 }
 
-const INDIGO_PILL =
+const ACCENT_PILL =
   "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.18),rgb(var(--c-accent-rgb) / 0.09))";
-const INDIGO_BADGE =
+const ACCENT_BADGE =
   "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.30),rgb(var(--c-accent-rgb) / 0.16))";
 
 // Desktop / tablet-landscape home. Reuses the same data hooks and cards as MobileHome
@@ -112,7 +112,7 @@ export default function DesktopHome() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: INDIGO_BADGE,
+                background: ACCENT_BADGE,
                 border: "1px solid rgb(var(--c-accent-rgb) / 0.45)",
               }}
             >
@@ -151,7 +151,7 @@ export default function DesktopHome() {
               style={{
                 font: `600 12.5px ${DISPLAY}`,
                 color: "var(--c-accent)",
-                background: INDIGO_PILL,
+                background: ACCENT_PILL,
                 border: "1px solid rgb(var(--c-accent-rgb) / 0.34)",
                 borderRadius: 999,
                 padding: "8px 14px",

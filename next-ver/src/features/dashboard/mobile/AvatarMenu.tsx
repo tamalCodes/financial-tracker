@@ -10,7 +10,7 @@ import { DISPLAY } from "./data";
 // avatar → glass popover with a Dark mode toggle and Log out. Closes on outside-click
 // or Escape. Replaces the previously-inert avatar (issue: no way to sign out).
 
-const INDIGO_AVATAR =
+const ACCENT_AVATAR =
   "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.30),rgb(var(--c-accent-rgb) / 0.16))";
 
 interface Props {
@@ -76,7 +76,7 @@ export default function AvatarMenu({ initials, size = 40 }: Props) {
           justifyContent: "center",
           font: `600 14px ${DISPLAY}`,
           color: "var(--c-accent)",
-          background: INDIGO_AVATAR,
+          background: ACCENT_AVATAR,
           border: "1px solid rgb(var(--c-accent-rgb) / 0.45)",
           cursor: "pointer",
           padding: 0,

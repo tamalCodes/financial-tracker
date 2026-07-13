@@ -12,7 +12,7 @@ interface Props {
   month: string;
 }
 
-const INDIGO_PILL =
+const ACCENT_PILL =
   "linear-gradient(135deg,rgb(var(--c-accent-rgb) / 0.20),rgb(var(--c-accent-rgb) / 0.10))";
 
 export default function GreetingHeader({
@@ -54,7 +54,7 @@ export default function GreetingHeader({
             gap: 5,
             font: `600 12px ${DISPLAY}`,
             color: "var(--c-accent)",
-            background: INDIGO_PILL,
+            background: ACCENT_PILL,
             border: "1px solid rgb(var(--c-accent-rgb) / 0.36)",
             borderRadius: 999,
             padding: "6px 11px",

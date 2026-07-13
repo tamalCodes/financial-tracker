@@ -36,7 +36,7 @@ const FIELD_LABEL: React.CSSProperties = {
   color: "var(--c-body)",
 };
 
-// Tag as a chip: an "+ Add tag" pill when empty, an editable indigo chip once set.
+// Tag as a chip: an "+ Add tag" pill when empty, an editable accent chip once set.
 // Tapping either drops into a compact inline input; blur/Enter commits.
 function TagField({
   tag,

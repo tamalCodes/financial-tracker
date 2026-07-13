@@ -62,8 +62,8 @@ function evalExpr(raw: string): number | null {
   return r;
 }
 
-// Keyframes for the "AI is thinking" shimmer + the reveal pop. Indigo-only per
-// design system; injected once inside the field.
+// Keyframes for the "AI is thinking" shimmer + the reveal pop. Uses the gold
+// brand accent (--c-accent) per design system; injected once inside the field.
 const AI_CSS = `
 @keyframes aiSweep { 0% { transform: translateX(-140%); } 100% { transform: translateX(240%); } }
 @keyframes aiPulse { 0%, 100% { opacity: .45; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.12); } }
@@ -366,7 +366,7 @@ const AmountField = forwardRef<AmountFieldHandle, Props>(function AmountField(
 export default AmountField;
 
 // OperatorBar — the glassy + − × ÷ row a sheet drops into its CTA slot while the
-// Amount field is focused (replacing the Save button). Frosted indigo-translucent
+// Amount field is focused (replacing the Save button). Frosted accent-translucent
 // per the design system — never an opaque saturated fill. No "Done" button:
 // blurring the field (tap another control) swaps the Save button back in.
 // onPointerDown preventDefault keeps the field focused so the tap actually lands.

@@ -5,7 +5,7 @@ import { BODY } from "./data";
 
 // Frosted, minimal toast stack. Fixed at the top of the viewport, centred on the
 // 412-wide mobile column. Translucent glass — never opaque saturated fills (design
-// system). Colour semantics: success=green, error=red, info=indigo (brand accent).
+// system). Colour semantics: success=green, error=red, info=gold (brand accent).
 
 const VARIANT: Record<
   ToastVariant,
