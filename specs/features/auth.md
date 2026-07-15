@@ -74,7 +74,11 @@ As of the warm-theme unification (`specs/WARM_THEME_UNIFICATION_PLAN.md`), the a
 tokens are **thin aliases of the shared `--c-*` palette** (`globals.css` `.kh-auth`), not an
 independent set — the whole app is now warm cream/charcoal with a gold accent, so login and dashboard
 can't drift. Only the light logo plate + translucent inputs stay auth-local. Bricolage Grotesque
-remains display/UI; Geist is used for field and supporting copy.
+remains display/UI; Geist is used for field and supporting copy. The `₹` logo mark (`.kh-auth__mark`,
+both desktop and mobile brand) is animated: a spring entrance on load, a slow gold-accent glow pulse,
+a periodic diagonal sheen sweep across the plate, and a lift + gold ring on hover — so the light-mode
+plate no longer reads as a flat white square. All of it is gated by the shared `kh-*` reduced-motion
+guard.
 
 Desktop is a 0.92fr/1.08fr 1440×850 split. Left has the 48px rupee brand, a 250px through-line,
 and the `Money, clearly.` story. Right has a vertically centred 390px form with Google and Apple

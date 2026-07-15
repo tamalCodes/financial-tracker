@@ -132,7 +132,7 @@ h2 {
   --kh-logo-bg: #ffffff;
   --kh-logo-fg: #201b13;
   --kh-logo-border: rgba(32, 27, 19, 0.1);
-  --kh-input-bg: rgba(255, 255, 255, 0.55);
+  --kh-input-bg: rgba(251, 248, 240, 0.5);
 
   display: grid;
   grid-template-columns: 0.92fr 1.08fr;
@@ -216,11 +216,13 @@ html.dark .kh-auth {
 }
 
 .kh-auth__mark {
+  position: relative;
   display: grid;
   flex: 0 0 auto;
   width: 48px;
   height: 48px;
   place-items: center;
+  overflow: hidden;
   border: 1px solid var(--kh-logo-border);
   border-radius: 16px;
   background: var(--kh-logo-bg);
@@ -230,6 +232,74 @@ html.dark .kh-auth {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0;
+  animation:
+    kh-mark-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) backwards,
+    kh-mark-glow 4.6s ease-in-out 0.9s infinite;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+/* The ₹ glyph sits above the sweeping sheen. */
+.kh-auth__mark > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Periodic gold sheen sweeping diagonally across the plate. */
+.kh-auth__mark::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(
+    115deg,
+    transparent 42%,
+    color-mix(in srgb, var(--kh-accent) 55%, transparent) 50%,
+    rgba(255, 255, 255, 0.7) 53%,
+    transparent 61%
+  );
+  transform: translateX(-130%);
+  animation: kh-mark-sheen 5.2s ease-in-out 1.4s infinite;
+  pointer-events: none;
+}
+
+.kh-auth__brand:hover .kh-auth__mark {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(32, 27, 19, 0.14),
+    0 0 0 3px color-mix(in srgb, var(--kh-accent) 22%, transparent);
+}
+
+@keyframes kh-mark-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.86) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes kh-mark-glow {
+  0%,
+  100% {
+    box-shadow: 0 1px 5px rgba(32, 27, 19, 0.07),
+      0 0 0 0 color-mix(in srgb, var(--kh-accent) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 3px 12px rgba(32, 27, 19, 0.1),
+      0 0 16px 1px color-mix(in srgb, var(--kh-accent) 38%, transparent);
+  }
+}
+
+@keyframes kh-mark-sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  /* One quick pass, then rest for the remainder of the cycle. */
+  18%,
+  100% {
+    transform: translateX(130%);
+  }
 }
 
 .kh-auth__story-heading {

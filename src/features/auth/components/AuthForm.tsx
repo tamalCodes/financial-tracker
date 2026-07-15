@@ -134,6 +134,10 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
     setError("");
 
     if (isLogin && loginStep === "email") {
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        setError("Enter a valid email address.");
+        return;
+      }
       setLoginStep("password");
       return;
     }
@@ -241,7 +245,7 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
               <FormHeading heading={heading} subheading={subheading} />
             </div>
 
-            <form className={`kh-auth__form${!isLogin ? ` kh-auth__form--signup kh-auth__form--signup-step-${signupStep}` : ""}`} onSubmit={handleSubmit}>
+            <form className={`kh-auth__form${!isLogin ? ` kh-auth__form--signup kh-auth__form--signup-step-${signupStep}` : ""}`} onSubmit={handleSubmit} noValidate>
               <div className="kh-auth__social-row">
                 <SocialButton
                   provider="google"
