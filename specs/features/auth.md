@@ -73,8 +73,11 @@ avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) he
 As of the warm-theme unification (`specs/WARM_THEME_UNIFICATION_PLAN.md`), the auth screen's `--kh-*`
 tokens are **thin aliases of the shared `--c-*` palette** (`globals.css` `.kh-auth`), not an
 independent set — the whole app is now warm cream/charcoal with a gold accent, so login and dashboard
-can't drift. Only the light logo plate + translucent inputs stay auth-local. Bricolage Grotesque
-remains display/UI; Geist is used for field and supporting copy. The `₹` logo mark (`.kh-auth__mark`,
+can't drift. Only the light logo plate + translucent inputs stay auth-local. Per the shared three-role
+type system (see `DESIGN_SYSTEM.md` §3), Fraunces (serif) is the display voice for the large headings
+(`Welcome back` / `Money, clearly.`), while Manrope (sans) covers the `Kharcha` brand wordmark
+(`.kh-auth__brand`, tight-tracked 700 — a small serif logotype reads vintage, not premium), the fields,
+controls, and supporting copy. The `₹` logo mark (`.kh-auth__mark`,
 both desktop and mobile brand) is animated: a spring entrance on load, a slow gold-accent glow pulse,
 a periodic diagonal sheen sweep across the plate, and a lift + gold ring on hover — so the light-mode
 plate no longer reads as a flat white square. All of it is gated by the shared `kh-*` reduced-motion

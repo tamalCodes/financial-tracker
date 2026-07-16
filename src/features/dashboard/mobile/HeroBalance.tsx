@@ -1,6 +1,6 @@
 "use client";
 
-import { BODY, DISPLAY } from "./data";
+import { BODY, DISPLAY, SERIF } from "./data";
 import Skeleton from "./Skeleton";
 
 // "Left in bank" card — pixel from HeroBalance.dc.html (handoff §5.1).
@@ -168,7 +168,7 @@ export default function HeroBalance({ net, month, earned, spent, invested, onPre
       ) : (
         <span
           style={{
-            fontFamily: DISPLAY,
+            fontFamily: SERIF,
             fontWeight: 600,
             fontSize: 36,
             lineHeight: 1,

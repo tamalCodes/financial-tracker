@@ -3,18 +3,26 @@ import { THEME_SCRIPT, ThemeProvider } from "@/features/theme/ThemeContext";
 import ServiceWorkerRegister from "@/features/pwa/ServiceWorkerRegister";
 import AppControl from "@/features/pwa/AppControl";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Geist } from "next/font/google";
+import { Fraunces, Manrope, Overpass_Mono } from "next/font/google";
 import "./globals.css";
 
-const bricolageGrotesque = Bricolage_Grotesque({
+// Premium type system inspired by CRED's NeoPOP (Cirka serif + Gilroy sans + Overpass Mono),
+// rebuilt with license-free equivalents. Display = elegant high-contrast serif for headlines
+// and hero numbers; body/UI = geometric sans; mono = tabular numerals / detail labels.
+const fraunces = Fraunces({
   variable: "--font-heading",
   subsets: ["latin"],
 });
 
-// Body / secondary text per the mobile handoff (Geist). Display stays Bricolage.
-const geist = Geist({
+const manrope = Manrope({
   variable: "--font-geist",
   subsets: ["latin"],
+});
+
+const overpassMono = Overpass_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -56,7 +64,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body
-        className={`${bricolageGrotesque.variable} ${geist.variable} ${bricolageGrotesque.className} antialiased`}
+        className={`${fraunces.variable} ${manrope.variable} ${overpassMono.variable} ${manrope.className} antialiased`}
       >
         <ThemeProvider>
           <AuthProvider>

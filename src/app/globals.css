@@ -28,8 +28,11 @@
   --color-expense: var(--color-red-600);
   --color-investment: var(--color-violet-600); /* split from indigo → violet (mobile redesign, handoff §8) */
 
-  /* Body / secondary font (Geist); display stays Bricolage via --font-heading */
-  --font-body: var(--font-geist), system-ui, sans-serif;
+  /* Type roles (CRED-inspired, license-free): display serif = Fraunces (--font-heading),
+     body/UI sans = Manrope (--font-geist / --font-body), tabular mono = Overpass Mono. */
+  --font-body: var(--font-geist), "Manrope", system-ui, sans-serif;
+  /* Wrapper (the raw next/font variable is --font-mono); use --font-numeric in rules. */
+  --font-numeric: var(--font-mono), "Overpass Mono", ui-monospace, monospace;
 
   /* Expense category text colors (deep family for WCAG; tints via --cat-*-rgb below) */
   --color-cat-food: #b45309;
@@ -87,7 +90,9 @@
 }
 
 body {
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif;
+  /* Default document font is the geometric sans (Manrope) — serif is reserved for
+     display headlines and hero numbers, applied explicitly per-surface. */
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
   /* Base page fill so dark mode covers the full viewport (no white flash behind the
      app's own radial gradient, and correct on overscroll). Tokens flip with .dark. */
   background: var(--c-bg2);
@@ -98,11 +103,13 @@ textarea,
 select,
 button,
 label {
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif !important;
 }
 
-h2 {
-  font-family: "Bricolage Grotesque", sans-serif;
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading), "Fraunces", Georgia, serif;
 }
 
 /* Kharcha auth — colors now source from the shared --c-* palette (single source of
@@ -162,7 +169,7 @@ html.dark .kh-auth {
 .kh-auth p,
 .kh-auth small,
 .kh-auth li {
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif !important;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif !important;
 }
 
 .kh-auth__story {
@@ -200,9 +207,12 @@ html.dark .kh-auth {
   z-index: 1;
   display: flex;
   align-items: center;
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.04em;
+  /* Wordmark = geometric sans (Manrope), NOT the display serif. A small serif logotype
+     reads vintage; a tightly-tracked sans reads modern/premium and contrasts the serif
+     headlines. See specs/DESIGN_SYSTEM.md §3. */
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 .kh-auth__brand--desktop {
@@ -228,7 +238,7 @@ html.dark .kh-auth {
   background: var(--kh-logo-bg);
   color: var(--kh-logo-fg);
   box-shadow: 0 1px 5px rgba(32, 27, 19, 0.07);
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0;
@@ -321,7 +331,7 @@ html.dark .kh-auth {
 .kh-auth__heading h2 {
   margin: 0;
   color: var(--kh-fg);
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif;
+  font-family: var(--font-heading), "Fraunces", Georgia, serif;
   font-weight: 500;
 }
 
@@ -631,7 +641,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   background: var(--kh-primary-bg);
   color: var(--kh-primary-fg);
   cursor: pointer;
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
+  font-family: var(--font-heading), "Fraunces", Georgia, serif !important;
   font-size: 15px;
   font-weight: 600;
   transition: background 0.18s, transform 0.18s;
@@ -770,7 +780,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   align-items: center;
   gap: 12px;
   color: var(--kh-muted);
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -872,7 +882,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   gap: 7px;
   margin: 0;
   color: var(--kh-fg);
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
+  font-family: var(--font-heading), "Fraunces", Georgia, serif !important;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -881,7 +891,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
 .kh-loop__callouts p span,
 .kh-loop__mobile-callouts p span {
   color: var(--kh-accent);
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -891,7 +901,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   display: block;
   margin-top: 3px;
   color: var(--kh-muted);
-  font-family: var(--font-geist), "Geist", system-ui, sans-serif;
+  font-family: var(--font-geist), "Manrope", system-ui, sans-serif;
   font-size: 12px;
 }
 
@@ -956,7 +966,7 @@ html.dark .kh-auth__social:hover:not(:disabled) {
   gap: 5px;
   margin: 0;
   color: var(--kh-fg);
-  font-family: var(--font-heading), "Bricolage Grotesque", sans-serif !important;
+  font-family: var(--font-heading), "Fraunces", Georgia, serif !important;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.02em;

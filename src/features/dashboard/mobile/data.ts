@@ -2,9 +2,15 @@
 // AddSheet copy). The seed/model constants that used to live here were removed when
 // the screen was wired to the real API — see specs/features/backend-wiring-checklist.md §2.1.
 
-// Font stacks (next/font CSS vars from layout.tsx). Display = Bricolage, Body = Geist.
-export const DISPLAY = "var(--font-heading), 'Bricolage Grotesque', sans-serif";
-export const BODY = "var(--font-geist), 'Geist', system-ui, sans-serif";
+// Font stacks (next/font CSS vars from layout.tsx). CRED-inspired, license-free.
+// Serif (Fraunces) is scoped to display *headlines* (h1/h2, forced in globals.css) and
+// *hero numbers* only — apply it via SERIF. Everything else (card titles, sheet titles,
+// stat numbers, month labels, body) is Manrope sans: DISPLAY = prominent/semibold sans,
+// BODY = regular sans. MONO = Overpass Mono for tabular numerals / detail labels.
+export const SERIF = "var(--font-heading), 'Fraunces', Georgia, serif";
+export const DISPLAY = "var(--font-geist), 'Manrope', system-ui, sans-serif";
+export const BODY = "var(--font-geist), 'Manrope', system-ui, sans-serif";
+export const MONO = "var(--font-mono), 'Overpass Mono', ui-monospace, monospace";
 
 // "Left in bank" is clamped ≥ 0 (D-B — never show a negative balance). Reused for all
 // money strings so amounts render as grouped en-IN integers without a sign.

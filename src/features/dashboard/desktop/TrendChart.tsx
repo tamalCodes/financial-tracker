@@ -295,14 +295,14 @@ function TrendArea({ rows, interactive }: { rows: ChartRow[]; interactive?: bool
           dataKey="label"
           tickLine={false}
           axisLine={false}
-          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
+          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Manrope" }}
           dy={6}
         />
         <YAxis
           tickLine={false}
           axisLine={false}
           width={52}
-          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Geist" }}
+          tick={{ fill: "var(--c-muted)", fontSize: 11, fontFamily: "Manrope" }}
           tickFormatter={(v: number) => `₹${fmtCompact(v)}`}
         />
         {interactive && (

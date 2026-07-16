@@ -103,7 +103,7 @@ Pull exact hex from the **Canonical token values** table above; this table maps 
 | Radius — surface | `rounded-3xl` (sheet/card) | Modal shell. |
 | Field gap | `gap-5` (20px) | Vertical rhythm between form fields. |
 | Section padding | `px-6` (24px) | Modal body horizontal. |
-| Heading | `text-2xl font-semibold` Bricolage Grotesque | Modal title. |
+| Heading | `text-2xl font-semibold` Manrope (sans) | Modal title. Serif is reserved for page headlines + hero number only. |
 | Label | `text-sm font-medium` `--c-body` | Field label. |
 
 ## 2. Glass treatment (the colorful layer)
@@ -139,10 +139,24 @@ Rules: text is always the **deep family shade** (700/800), never white-on-tint. 
 
 ## 3. Fonts & locale
 
-- **Bricolage Grotesque** — headings *and* form controls (forced in `globals.css` on
-  `input/textarea/select/button/label`), with the Next/Geist sans fallback. This gives the app its
-  distinct, slightly characterful voice on both display and controls.
-- **Body / system text** — `font-sans` (Geist) where Bricolage isn't forced.
+Three-role type system (CRED / NeoPOP-inspired, rebuilt with license-free Google Fonts —
+Cirka→Fraunces, Gilroy→Manrope, Overpass Mono kept as-is). Loaded via `next/font` in
+`layout.tsx` as CSS variables; the `DISPLAY`/`BODY`/`MONO` constants in
+`features/dashboard/mobile/data.ts` mirror them for inline styles.
+
+- **Fraunces** (`--font-heading`, `SERIF`) — elegant high-contrast **serif**, deliberately scoped to
+  just two roles: display **headlines** (`h1/h2/h3` — e.g. auth `Welcome back` / `Money, clearly.`,
+  forced in `globals.css`) and the **hero number** (the `Left in bank` balance in `HeroBalance`, via
+  the `SERIF` constant). Nothing else. A serif reads premium at large display sizes but vintage/heavy
+  when repeated on small UI, so it is kept off card titles, sheet titles, stat numbers, and controls.
+  Fallback `Georgia, serif`.
+- **Manrope** (`--font-geist` / `--font-body`, `DISPLAY` + `BODY`) — geometric **sans** for essentially
+  all UI: the base document font, `input/textarea/select/button/label` (forced in `globals.css`), card
+  and sheet titles, stat/tile numbers, month labels, list rows, supporting copy, and the **`Kharcha`
+  brand wordmark** (`.kh-auth__brand`, weight 700, tight tracking). `DISPLAY` = prominent/semibold sans,
+  `BODY` = regular sans (same family, differing by weight at call sites). Fallback `system-ui, sans-serif`.
+- **Overpass Mono** (`--font-mono` / `--font-numeric`, `MONO`) — monospace for tabular numerals and
+  detail labels. Wired and available; apply per-surface where mono numerals read as premium.
 - Numerals in amounts/totals use `tabular-nums` for stable width.
 - **Locale**: `en-IN`, currency `₹`. Use feature-local formatting helpers and keep rounding consistent with existing dashboard code.
 

@@ -30,4 +30,4 @@ those files. Keep this index + the spec's file list current when code moves (CLA
 
 ## Planning / status docs (not "as-built")
 `features/{mobile-redesign,mobile-redesign-checklist,mobile-app-strategy,backend-wiring-checklist,backend-complete-checklist,pwa-ship-checklist,remaining}.md`,
-`WHATS_LEFT.md`, `DESIGN_CRITIQUE.md`, `DESIGN_SYSTEM_MIGRATION.md`, `design-handoff/` (DC HTML mocks).
+`WHATS_LEFT.md`, `DESIGN_CRITIQUE.md`, `DESIGN_SYSTEM_MIGRATION.md`, `PREMIUM_REVAMP_ROADMAP.md` (HNI-grade revamp plan + checklist), `design-handoff/` (DC HTML mocks).
