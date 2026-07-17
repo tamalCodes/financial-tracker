@@ -156,10 +156,10 @@ is `PUT /api/expenses`; it has **no balance side-effect** (D13 — spend is comp
 `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and a locked
 `Permissions-Policy` on every route. CSP uses `'unsafe-inline'` for script/style because the App
 Router injects inline bootstrap/hydration scripts and Tailwind emits inline styles — a nonce-based
-middleware is the intended follow-up. Dev additionally allows `'unsafe-eval'` + `ws:`/`wss:` for HMR
+proxy is the intended follow-up. Dev additionally allows `'unsafe-eval'` + `ws:`/`wss:` for HMR
 (never shipped to prod, gated on `NODE_ENV`). `connect-src` allowlists the Supabase origin as
 defense-in-depth even though Supabase is called server-side only. Set at the config layer (not
-middleware) so it applies uniformly and survives static/edge responses.
+proxy) so it applies uniformly and survives static/edge responses.
 
 ## D20 — Recent payments are paginated; totals come from an amounts-only sweep
 `/api/dashboard` returns only the first page of expenses (`EXPENSES_PAGE_SIZE`, newest-first);

@@ -2,7 +2,7 @@
 
 Reverse-engineered from `src/app/api/auth/*`, `src/app/auth/callback/route.ts`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json,auth-testimonials/*.png}`, `lib/supabase/{auth,cookies}.ts`, `supabase/config.toml`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
-`src/app/(auth)/layout.tsx`, `src/middleware.ts`,
+`src/app/(auth)/layout.tsx`, `src/proxy.ts`,
 `supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
 
 ## Problem
@@ -42,7 +42,7 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 - `getUserFromCookies`: resolve `sb-<ref>-auth-token` / `sb-access-token` / `*-auth-token`,
   extract access token, `jose.jwtVerify` with `SUPABASE_JWT_SECRET`.
 - `requireUser(supabase)`: cookie path → fallback `getUser()` → throw 401 `NextResponse`.
-- `middleware.ts`: refreshes session on non-`/api` requests (rotates cookies).
+- `proxy.ts`: refreshes session on non-`/api` requests (rotates cookies).
 
 ## Full name & greeting identity (D-A)
 - Signup captures **email + password + full name + current bank balance**; login is
@@ -133,7 +133,7 @@ Supabase project configuration must enable Google and Apple providers and allow 
 `features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `src/app/{globals,layout}.tsx`,
 `public/{icon.svg,manifest.json,auth-testimonials/*.png}`,
 `features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
-`supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `supabase/config.toml`, `src/middleware.ts`.
+`supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `supabase/config.toml`, `src/proxy.ts`.
 
 ## Out of scope
 Password reset, email verification flows, MFA.

@@ -54,14 +54,14 @@ Safari does NOT — it needs a manual instructions banner.
 
 ## 3. Security (financial app — treat as sensitive)
 
-- [x] 🔴 3.1 Security headers via `next.config.ts` `headers()` (or middleware):
+- [x] 🔴 3.1 Security headers via `next.config.ts` `headers()` (or proxy):
       `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options: DENY`,
       `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
       `Permissions-Policy`. CSP must allow the Supabase origin + self; no `unsafe-inline`
       for scripts if avoidable. Done: `headers()` on `/:path*` (verified via curl on `/`
       and `/api/sips`). CSP built from `SUPABASE_URL`; dev-only `'unsafe-eval'` + `ws:`.
       RESIDUAL: `script-src` still needs `'unsafe-inline'` for Next's App Router inline
-      bootstrap — tighten later with a nonce-based middleware (`strict-dynamic`).
+      bootstrap — tighten later with a nonce-based proxy (`strict-dynamic`).
 - [ ] 🔴 3.2 Rate limiting is in-memory (`lib/api/rateLimit.ts` uses a module `Map`) —
       this does NOT hold on Vercel serverless (per-instance, resets on cold start).
       Move to a shared store (Upstash Redis / Vercel KV) before relying on it in prod.

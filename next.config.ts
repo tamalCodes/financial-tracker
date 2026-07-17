@@ -17,7 +17,7 @@ const supabaseOrigin = (() => {
 
 // Content-Security-Policy. Next's App Router injects inline bootstrap/hydration
 // scripts and Tailwind emits inline styles, so 'unsafe-inline' is required for
-// script/style until a nonce-based middleware is wired up. Dev additionally needs
+// script/style until a nonce-based proxy is wired up. Dev additionally needs
 // 'unsafe-eval' for HMR / React Refresh — never shipped to production.
 const csp = [
   "default-src 'self'",

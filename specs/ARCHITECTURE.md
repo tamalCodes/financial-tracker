@@ -8,7 +8,7 @@
   Root Directory is cleared (repo root) to match.
 
 ## Request lifecycle (API)
-1. **Middleware** (`src/middleware.ts`) runs on every non-`/api` request (matcher excludes
+1. **Proxy** (`src/proxy.ts`) runs on every non-`/api` request (matcher excludes
    `api`, `_next/*`, static files). It builds an SSR Supabase client over the request cookies
    and calls `supabase.auth.getUser()` to **refresh the session** and rotate auth cookies
    onto the response. It does NOT gate `/api/*` — route handlers self-authenticate.
@@ -75,8 +75,8 @@ mobile client) and shares the `loadEmiProgress` rollup.
 
 ## Security headers (CSP + hardening) — D19
 `next.config.ts` `headers()` sends on every route: **Content-Security-Policy** (default-src 'self';
-`'unsafe-inline'` for script/style until a nonce middleware lands; dev-only `'unsafe-eval'` + ws for
+`'unsafe-inline'` for script/style until a nonce proxy lands; dev-only `'unsafe-eval'` + ws for
 HMR, gated on `NODE_ENV`; `connect-src` allowlists the Supabase origin as defense-in-depth),
 **HSTS** (2y, preload), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`,
 `Referrer-Policy: strict-origin-when-cross-origin`, and a locked-down `Permissions-Policy`. Set at
-the config layer (not middleware) so it applies uniformly and survives static/edge responses.
+the config layer (not proxy) so it applies uniformly and survives static/edge responses.
