@@ -110,12 +110,7 @@ export default function LandingMotion() {
     gsap.registerPlugin(ScrollTrigger);
     const motion = gsap.matchMedia();
     const chapterPanels = gsap.utils.toArray<HTMLElement>("[data-chapter-panel]");
-    const handoff = document.querySelector<HTMLElement>("[data-chapter-handoff]");
-    const backdrop = handoff?.querySelector<HTMLElement>("[data-chapter-backdrop]");
-    const chapterContent = handoff?.querySelector<HTMLElement>("[data-chapter-content]");
-    const foreground = handoff?.querySelector<HTMLElement>("[data-chapter-foreground]");
-    const storyLead = handoff?.querySelector<HTMLElement>("[data-story-lead]");
-    const storyCards = handoff?.querySelector<HTMLElement>("[data-story-cards]");
+    const depthFollowup = document.querySelector<HTMLElement>("[data-depth-followup]");
 
     motion.add("(min-width: 801px)", () => {
       chapterPanels.forEach((panel) => {
@@ -143,86 +138,21 @@ export default function LandingMotion() {
         );
       });
 
-      if (handoff && backdrop && foreground) {
-        ScrollTrigger.create({
-          trigger: handoff,
-          start: "top bottom",
-          end: "bottom bottom",
-          onUpdate: (self) => handoff.style.setProperty("--handoff-progress", self.progress.toFixed(4)),
-        });
-
+      if (depthFollowup) {
         gsap.fromTo(
-          foreground,
+          depthFollowup,
+          { y: 96 },
           {
-            clipPath: "inset(0 3.2% 0 3.2% round 66px 66px 0 0)",
-            rotationX: 4.2,
-            scale: 0.94,
-            y: 150,
-          },
-          {
-            clipPath: "inset(0 0% 0 0% round 46px 46px 0 0)",
             ease: "none",
-            rotationX: 0,
-            scale: 1,
             scrollTrigger: {
-              trigger: foreground,
-              start: "top 102%",
-              end: "top 10%",
-              scrub: 1.25,
+              trigger: depthFollowup,
+              start: "top 100%",
+              end: "top 14%",
+              scrub: 1.1,
             },
             y: 0,
           },
         );
-
-        gsap.to(backdrop, {
-          ease: "none",
-          filter: "brightness(.68) saturate(.82)",
-          scale: 1.075,
-          scrollTrigger: {
-            trigger: foreground,
-            start: "top 100%",
-            end: "top 14%",
-            scrub: 1.1,
-          },
-          yPercent: -2.5,
-        });
-
-        if (chapterContent) {
-          gsap.fromTo(
-            chapterContent,
-            { opacity: 0.18, scale: 0.95, y: 82 },
-            {
-              ease: "none",
-              opacity: 1,
-              scale: 1,
-              scrollTrigger: {
-                trigger: handoff,
-                start: "top 82%",
-                end: "top 8%",
-                scrub: 1,
-              },
-              y: 0,
-            },
-          );
-        }
-
-        if (storyLead) {
-          gsap.fromTo(storyLead, { x: -54, y: 58 }, {
-            ease: "none",
-            scrollTrigger: { trigger: foreground, start: "top 84%", end: "top 12%", scrub: 1.1 },
-            x: 0,
-            y: 0,
-          });
-        }
-
-        if (storyCards) {
-          gsap.fromTo(storyCards.children, { y: 126 }, {
-            ease: "none",
-            scrollTrigger: { trigger: foreground, start: "top 88%", end: "top 5%", scrub: 1.15 },
-            stagger: 0.08,
-            y: 0,
-          });
-        }
       }
     });
 
@@ -234,16 +164,10 @@ export default function LandingMotion() {
           y: 0,
         });
       });
-      if (handoff && foreground) {
-        ScrollTrigger.create({
-          trigger: handoff,
-          start: "top bottom",
-          end: "bottom bottom",
-          onUpdate: (self) => handoff.style.setProperty("--handoff-progress", self.progress.toFixed(4)),
-        });
-        gsap.fromTo(foreground, { y: 72 }, {
+      if (depthFollowup) {
+        gsap.fromTo(depthFollowup, { y: 64 }, {
           ease: "none",
-          scrollTrigger: { trigger: foreground, start: "top 100%", end: "top 64%", scrub: 0.8 },
+          scrollTrigger: { trigger: depthFollowup, start: "top 100%", end: "top 64%", scrub: 0.8 },
           y: 0,
         });
       }

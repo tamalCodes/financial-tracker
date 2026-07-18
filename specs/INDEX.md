@@ -27,6 +27,7 @@ those files. Keep this index + the spec's file list current when code moves (CLA
 | `CONVENTIONS.md` | API route shape, error/400 format, rate-limit + `requireUser` scoping |
 | `ARCHITECTURE.md` | App/route/layer structure |
 | `DESIGN_SYSTEM.md` | **One warm palette** (cream + charcoal neutrals, **gold** accent) shared by app + auth; glass treatment; primary CTA = charcoal (`--c-cta`), never gold; money semantics (credit=green, expense=red, investment=purple) kept; **light/dark** via `var(--c-*)` tokens in `globals.css` + `features/theme/ThemeContext.tsx` |
+| `LANDING_DESIGN_SYSTEM.md` | **AI-readable public/editorial language** for `/landing`: brand ideology, Fraunces/Manrope typography, warm palette, adaptive liquid glass, motion grammar, subtle gamification, responsive composition, section anatomy, footer, content voice, accessibility, and agent acceptance checklist |
 | `SPEC_TEMPLATE.md` | Template for a new feature spec |
 
 ## Planning / status docs (not "as-built")

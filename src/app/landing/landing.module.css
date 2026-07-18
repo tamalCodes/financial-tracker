@@ -110,36 +110,21 @@
 .heroActions .primaryCta:hover>span,.heroActions .primaryCta:focus-visible>span{transform:translate(2px,-1px)}
 @media (prefers-reduced-motion:reduce){.heroActions .primaryCta,.heroActions .primaryCta::before,.heroActions .primaryCta>span{transition:none}}
 
-/* Dark chapter enters as a physical sheet, then hands off into a pinned story plane. */
+/* Two bounded sheets join the dark product chapter to its light follow-up. */
 .page{perspective:1600px;perspective-origin:50% 50%}
-.depth{position:relative;z-index:3;margin-top:-58px;padding-top:clamp(164px,14vw,224px);padding-bottom:clamp(88px,7vw,120px);overflow:clip;border-radius:48px 48px 0 0;box-shadow:0 -34px 80px -58px rgb(32 27 19 / .58);transform-origin:50% 0;backface-visibility:hidden;will-change:transform,clip-path}
+.depth{position:relative;z-index:3;margin-top:-58px;padding-top:clamp(164px,14vw,224px);padding-bottom:clamp(130px,10vw,170px);overflow:clip;border-radius:48px 48px 0 0;box-shadow:0 -34px 80px -58px rgb(32 27 19 / .58);transform-origin:50% 0;backface-visibility:hidden;will-change:transform,clip-path}
 .depth::before{content:"";position:absolute;z-index:2;top:0;right:5%;left:5%;height:1px;background:linear-gradient(90deg,transparent,rgb(216 179 106 / .55),transparent);opacity:.65}
 .depthHeader{max-width:660px;padding:12px 0 18px}
 .depthHeader h2{margin:34px 0 30px;line-height:1.04}
 .depthHeader>p{max-width:440px}
 .depthGrid{margin-top:clamp(96px,9vw,132px)}
-@media (max-width:800px){.depth{margin-top:-28px;padding-top:112px;padding-bottom:76px;border-radius:28px 28px 0 0;will-change:transform}.depthHeader{padding:0}.depthHeader h2{margin:26px 0 22px;line-height:1.02}.depthGrid{margin-top:58px}}
+@media (max-width:800px){.depth{margin-top:-28px;padding-top:112px;padding-bottom:100px;border-radius:28px 28px 0 0;will-change:transform}.depthHeader{padding:0}.depthHeader h2{margin:26px 0 22px;line-height:1.02}.depthGrid{margin-top:58px}}
 
-.chapterHandoff{--handoff-progress:0;position:relative;z-index:2;isolation:isolate;background:#211c15;perspective:1600px}
-.chapterBackdrop{position:sticky;top:0;height:100svh;min-height:680px;display:flex;align-items:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#302418 0,transparent 42%),#211c15;color:#f3efe5;transform-origin:50% 50%;will-change:transform,filter}
-.chapterBackdrop::after{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;opacity:.065;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");background-size:180px 180px}
-.chapterCanvas{position:absolute;z-index:0;inset:0;width:100%;height:100%;display:block;opacity:.94}
-.chapterAura{position:absolute;z-index:1;top:12%;left:50%;width:min(72vw,980px);aspect-ratio:1.9;border:1px solid rgb(216 179 106 / .16);border-radius:50%;background:radial-gradient(ellipse,rgb(216 179 106 / .07),transparent 67%);box-shadow:inset 0 0 90px rgb(216 179 106 / .035);transform:translateX(-50%) rotate(-5deg)}
-.chapterContent{position:relative;z-index:3;width:min(1180px,calc(100% - 60px));margin:auto;display:grid;grid-template-columns:1.05fr .95fr;align-items:end;gap:clamp(58px,9vw,150px);will-change:transform,opacity}
-.chapterContent>.eyebrow{grid-column:1/-1;color:#d8b36a}.chapterContent>.eyebrow i{background:#d8b36a}
-.chapterContent h3{margin:20px 0 0;font-family:var(--font-heading),Georgia,serif;font-size:clamp(55px,6.4vw,92px);font-weight:400;letter-spacing:-.067em;line-height:.94}
-.chapterContent h3 em{color:#b78a35;font-style:italic}
-.chapterMeasures{border-top:1px solid rgb(243 239 229 / .16)}
-.chapterMeasures span{min-height:66px;display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:14px;border-bottom:1px solid rgb(243 239 229 / .12);color:#d8d0c0;font-size:12px;letter-spacing:.01em}
-.chapterMeasures small{color:#b78a35;font-size:9px;font-weight:700;letter-spacing:.12em}.chapterMeasures b{color:#f3efe5;font-weight:500}
-.chapterMonogram{position:absolute;z-index:1;right:-3vw;bottom:-20vh;color:rgb(243 239 229 / .025);font-family:var(--font-heading),Georgia,serif;font-size:min(54vw,720px);line-height:1;transform:rotate(8deg)}
-.chapterForeground{position:relative;z-index:4;overflow:clip;border-radius:46px 46px 0 0;background:var(--c-bg1);box-shadow:0 -42px 100px -62px rgb(0 0 0 / .78),inset 0 1px 0 rgb(255 255 255 / .8);transform-origin:50% 0;backface-visibility:hidden;will-change:transform,clip-path}
-.chapterForeground::before{content:"";position:absolute;z-index:2;top:0;left:50%;width:76px;height:1px;background:linear-gradient(90deg,transparent,#b78a35,transparent);transform:translateX(-50%);opacity:.75}
-.chapterForeground .stories{padding-top:clamp(150px,13vw,205px);padding-bottom:clamp(150px,12vw,190px)}
-.closing{z-index:5;margin-top:-46px;border-radius:46px 46px 0 0;box-shadow:0 -38px 90px -58px rgb(15 12 8 / .72);transform-origin:50% 0;backface-visibility:hidden;will-change:transform,clip-path}
-
-@media (max-width:800px){.chapterBackdrop{height:78svh;min-height:590px}.chapterAura{top:20%;width:120vw}.chapterContent{width:calc(100% - 48px);grid-template-columns:1fr;align-items:center;gap:34px}.chapterContent>.eyebrow{grid-column:auto}.chapterContent h3{margin-top:4px;font-size:clamp(46px,12vw,66px)}.chapterMeasures span{min-height:52px}.chapterMonogram{right:-16vw;bottom:-5vh;font-size:90vw}.chapterForeground{border-radius:28px 28px 0 0;will-change:transform}.chapterForeground .stories{padding-top:96px;padding-bottom:112px}.closing{margin-top:-24px;border-radius:28px 28px 0 0;will-change:transform}}
-@media (prefers-reduced-motion:reduce){.depth,.closing,.chapterBackdrop,.chapterContent,.chapterForeground{transform:none!important;clip-path:none!important;filter:none!important;will-change:auto}}
+.storiesShell{position:relative;z-index:4;margin-top:-54px;overflow:clip;background:var(--c-bg1);box-shadow:0 -36px 90px -60px rgb(0 0 0 / .68),inset 0 1px 0 rgb(255 255 255 / .8);transform-origin:50% 0;backface-visibility:hidden;will-change:transform}
+.storiesShell::before{content:"";position:absolute;z-index:2;top:0;left:50%;width:76px;height:1px;background:linear-gradient(90deg,transparent,#b78a35,transparent);transform:translateX(-50%);opacity:.75}
+.storiesShell .stories{padding-top:clamp(145px,12vw,190px);padding-bottom:clamp(145px,11vw,180px)}
+@media (max-width:800px){.storiesShell{margin-top:-24px;will-change:transform}.storiesShell .stories{padding-top:96px;padding-bottom:112px}}
+@media (prefers-reduced-motion:reduce){.depth,.storiesShell{transform:none!important;will-change:auto}}
 
 /* Demo cards are one physical surface: frame and typography share the same tilt. */
 .balanceCard,.listCard{position:relative;isolation:isolate;border:1px solid rgb(243 239 229 / .12);background:#30291e;transform:rotate(-3deg);transform-origin:center;backface-visibility:hidden}
