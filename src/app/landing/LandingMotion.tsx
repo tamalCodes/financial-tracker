@@ -12,6 +12,7 @@ export default function LandingMotion() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let menuPinned = false;
     let heroFrame = 0;
+    let menuCloseFrame = 0;
 
     const setMenu = (open: boolean, pinned = menuPinned) => {
       menuPinned = pinned;
@@ -38,10 +39,14 @@ export default function LandingMotion() {
     };
     const onToggle = () => setMenu(!nav?.classList.contains("landing-nav-expanded"), !nav?.classList.contains("landing-nav-expanded"));
     const onEnter = () => {
-      if (nav?.classList.contains("landing-nav-compact")) setMenu(true, false);
+      window.clearTimeout(menuCloseFrame);
+      if (nav?.classList.contains("landing-nav-compact") && !nav.classList.contains("landing-nav-expanded")) setMenu(true, false);
     };
     const onLeave = () => {
-      if (!menuPinned) setMenu(false, false);
+      if (!menuPinned) {
+        window.clearTimeout(menuCloseFrame);
+        menuCloseFrame = window.setTimeout(() => setMenu(false, false), 220);
+      }
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMenu(false, false);
@@ -76,6 +81,8 @@ export default function LandingMotion() {
     toggle?.addEventListener("click", onToggle);
     nav?.addEventListener("mouseenter", onEnter);
     nav?.addEventListener("mouseleave", onLeave);
+    menu?.addEventListener("mouseenter", onEnter);
+    menu?.addEventListener("mouseleave", onLeave);
     menu?.addEventListener("click", onMenuClick);
     window.addEventListener("keydown", onKeyDown);
     heroVisual?.addEventListener("pointermove", onHeroMove);
@@ -87,11 +94,14 @@ export default function LandingMotion() {
         toggle?.removeEventListener("click", onToggle);
         nav?.removeEventListener("mouseenter", onEnter);
         nav?.removeEventListener("mouseleave", onLeave);
+        menu?.removeEventListener("mouseenter", onEnter);
+        menu?.removeEventListener("mouseleave", onLeave);
         menu?.removeEventListener("click", onMenuClick);
         window.removeEventListener("keydown", onKeyDown);
         heroVisual?.removeEventListener("pointermove", onHeroMove);
         heroVisual?.removeEventListener("pointerleave", resetHero);
         cancelAnimationFrame(heroFrame);
+        window.clearTimeout(menuCloseFrame);
       };
     }
 
@@ -112,11 +122,14 @@ export default function LandingMotion() {
       toggle?.removeEventListener("click", onToggle);
       nav?.removeEventListener("mouseenter", onEnter);
       nav?.removeEventListener("mouseleave", onLeave);
+      menu?.removeEventListener("mouseenter", onEnter);
+      menu?.removeEventListener("mouseleave", onLeave);
       menu?.removeEventListener("click", onMenuClick);
       window.removeEventListener("keydown", onKeyDown);
       heroVisual?.removeEventListener("pointermove", onHeroMove);
       heroVisual?.removeEventListener("pointerleave", resetHero);
       cancelAnimationFrame(heroFrame);
+      window.clearTimeout(menuCloseFrame);
     };
   }, []);
 
