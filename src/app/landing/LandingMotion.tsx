@@ -8,8 +8,10 @@ export default function LandingMotion() {
     const nav = document.querySelector<HTMLElement>("[data-landing-nav]");
     const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
     const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
+    const heroVisual = document.querySelector<HTMLElement>("[data-hero-visual]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let menuPinned = false;
+    let heroFrame = 0;
 
     const setMenu = (open: boolean, pinned = menuPinned) => {
       menuPinned = pinned;
@@ -47,6 +49,27 @@ export default function LandingMotion() {
     const onMenuClick = (event: Event) => {
       if ((event.target as HTMLElement).closest("a")) setMenu(false, false);
     };
+    const onHeroMove = (event: PointerEvent) => {
+      if (!heroVisual || reducedMotion.matches) return;
+      const rect = heroVisual.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+      const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      cancelAnimationFrame(heroFrame);
+      heroFrame = requestAnimationFrame(() => {
+        heroVisual.style.setProperty("--hero-shift-x", `${(x * 8).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-shift-y", `${(y * 8).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-card-x", `${(x * -12).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-card-y", `${(y * -10).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-coin-x", `${(x * -15).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-coin-y", `${(y * -12).toFixed(2)}px`);
+        heroVisual.style.setProperty("--hero-tilt-x", `${(y * -1.5).toFixed(2)}deg`);
+        heroVisual.style.setProperty("--hero-tilt-y", `${(x * 1.8).toFixed(2)}deg`);
+      });
+    };
+    const resetHero = () => {
+      ["--hero-shift-x", "--hero-shift-y", "--hero-card-x", "--hero-card-y", "--hero-coin-x", "--hero-coin-y"].forEach((property) => heroVisual?.style.setProperty(property, "0px"));
+      ["--hero-tilt-x", "--hero-tilt-y"].forEach((property) => heroVisual?.style.setProperty(property, "0deg"));
+    };
 
     updateNav();
     window.addEventListener("scroll", updateNav, { passive: true });
@@ -55,6 +78,8 @@ export default function LandingMotion() {
     nav?.addEventListener("mouseleave", onLeave);
     menu?.addEventListener("click", onMenuClick);
     window.addEventListener("keydown", onKeyDown);
+    heroVisual?.addEventListener("pointermove", onHeroMove);
+    heroVisual?.addEventListener("pointerleave", resetHero);
 
     if (reducedMotion.matches) {
       return () => {
@@ -64,6 +89,9 @@ export default function LandingMotion() {
         nav?.removeEventListener("mouseleave", onLeave);
         menu?.removeEventListener("click", onMenuClick);
         window.removeEventListener("keydown", onKeyDown);
+        heroVisual?.removeEventListener("pointermove", onHeroMove);
+        heroVisual?.removeEventListener("pointerleave", resetHero);
+        cancelAnimationFrame(heroFrame);
       };
     }
 
@@ -86,6 +114,9 @@ export default function LandingMotion() {
       nav?.removeEventListener("mouseleave", onLeave);
       menu?.removeEventListener("click", onMenuClick);
       window.removeEventListener("keydown", onKeyDown);
+      heroVisual?.removeEventListener("pointermove", onHeroMove);
+      heroVisual?.removeEventListener("pointerleave", resetHero);
+      cancelAnimationFrame(heroFrame);
     };
   }, []);
 

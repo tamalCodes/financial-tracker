@@ -15,6 +15,14 @@ const footerGroups = [
   ["Support", "Help centre", "Contact", "Privacy"],
 ];
 
+const moneyAreas = [
+  ["SPENDING", "↓"],
+  ["SAVING", "○"],
+  ["INVESTING", "↗"],
+  ["BILLS", "□"],
+  ["GOALS", "✦"],
+];
+
 function Brand() {
   return (
     <Link className={styles.brand} href="/landing" aria-label="Kharcha home">
@@ -44,7 +52,10 @@ export default function LandingPage() {
   return (
     <main className={styles.page}>
       <LandingMotion />
-      <nav className={styles.nav} data-landing-nav aria-label="Main navigation"><Brand /><div className={styles.navLinks}><a href="#how">How it works</a><a href="#features">Why Kharcha</a><a href="#stories">Stories</a></div><div className={styles.navActions}><Link href="/login">Log in</Link><Link className={styles.smallCta} href="/signup">Start free</Link></div><button className={styles.menuToggle} data-nav-toggle type="button" aria-label="Open navigation" aria-expanded="false"><i /><i /></button><div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/login">Log in to Kharcha</Link></div></div></div></nav>
+      <div className={styles.navShell} data-landing-nav>
+        <nav className={styles.nav} aria-label="Main navigation"><Brand /><div className={styles.navLinks}><a href="#how">How it works</a><a href="#features">Why Kharcha</a><a href="#stories">Stories</a></div><div className={styles.navActions}><Link href="/login">Log in</Link><Link className={styles.smallCta} href="/signup">Start free</Link></div><button className={styles.menuToggle} data-nav-toggle type="button" aria-label="Open navigation" aria-expanded="false"><i /><i /></button></nav>
+        <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/login">Log in to Kharcha</Link></div></div></div>
+      </div>
       <section className={styles.hero} id="top">
         <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
@@ -54,15 +65,17 @@ export default function LandingPage() {
             <div className={styles.heroActions}><Link className={styles.primaryCta} href="/signup">Start tracking <span>→</span></Link></div>
             <div className={styles.trust}><div className={styles.faceStack}><Image src="/landing/testimonial-riya.png" alt="Riya" width={54} height={54} /><Image src="/landing/testimonial-meera.png" alt="Meera" width={54} height={54} /><Image src="/landing/testimonial-aarav.png" alt="Aarav" width={54} height={54} /></div><span>Made for people building calmer money habits.</span></div>
           </div>
-          <div className={styles.heroVisual}>
-            <div className={styles.orbit} /><div className={styles.orbitTwo} /><div className={styles.goldCoin}>₹</div><div className={styles.dotOne} /><div className={styles.dotTwo} />
+          <div className={styles.heroVisual} data-hero-visual>
+            <div className={styles.orbit}><i className={styles.orbitDot} /></div><div className={styles.orbitTwo} /><div className={styles.goldCoin}>₹</div>
             <ProductPreview />
             <div className={styles.floatingCard}><span>THIS MONTH</span><b>On track</b><small>₹15,520 left to spend</small><div><i /><i /><i /><i /><i /></div></div>
           </div>
         </div>
+        <section className={styles.proof} aria-label="Every part of your money">
+          <p>ONE QUIET PLACE FOR EVERY PART OF YOUR MONEY</p>
+          <div>{moneyAreas.map(([label, icon], index) => <span key={label} style={{ animationDelay: `${0.55 + index * 0.09}s` }}><i aria-hidden="true">{icon}</i>{label}</span>)}</div>
+        </section>
       </section>
-
-      <section className={styles.proof}><p>ONE QUIET PLACE FOR EVERY PART OF YOUR MONEY</p><div><span>SPENDING</span><span>SAVING</span><span>INVESTING</span><span>BILLS</span><span>GOALS</span></div></section>
 
       <section className={styles.story} id="how">
         <div className={styles.sectionIntro}><span className={styles.eyebrow}><i /> THE MONEY LOOP</span><h2>Less chasing.<br /><em>More knowing.</em></h2><p>Financial clarity does not need more tabs, alerts, or noise. It needs a simple rhythm you can return to.</p></div>
@@ -75,7 +88,7 @@ export default function LandingPage() {
 
       <section className={styles.closing} data-nav-tone="dark"><div className={styles.closingCopy}><span className={styles.eyebrow}><i /> READY WHEN YOU ARE</span><h2>Make space<br />for what matters.</h2><p>Your money has a story. Kharcha helps it make sense.</p><Link className={styles.primaryCta} href="/signup">Start with Kharcha <span>→</span></Link></div><div className={styles.moneyWorld} aria-hidden="true"><div className={styles.worldGlow}/><div className={styles.planet}><b>₹</b><span className={styles.continentOne}/><span className={styles.continentTwo}/><span className={styles.continentThree}/></div><i className={styles.orbitRing}/><i className={styles.orbitRingTwo}/><span className={styles.worldCoin}>₹</span><span className={styles.worldStar}>✦</span></div></section>
 
-      <footer className={styles.footer} data-nav-tone="dark"><div className={styles.footerTop}><div className={styles.footerBrand}><Brand /><p>Your everyday money,<br />in one clear place.</p><div className={styles.socials}><a href="#top" aria-label="Kharcha on X">𝕏</a><a href="#top" aria-label="Kharcha on Instagram">◎</a><a href="#top" aria-label="Kharcha on LinkedIn">in</a></div></div>{footerGroups.map(([heading, ...items]) => <div className={styles.footerGroup} key={heading}><h3>{heading}</h3>{items.map(item => <a href="#top" key={item}>{item}</a>)}</div>)}</div><div className={styles.footerBottom}><span>© 2026 Kharcha. Made for clearer days.</span><div><a href="#top">Terms</a><a href="#top">Privacy</a></div></div></footer>
+      <footer className={styles.footer} data-nav-tone="dark"><div className={styles.footerTop}><div className={styles.footerBrand}><Brand /><p>Your everyday money,<br />in one clear place.</p><div className={styles.socials}><a href="#top" aria-label="Kharcha on X">𝕏</a><a href="#top" aria-label="Kharcha on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1" className={styles.instagramDot}/></svg></a></div></div>{footerGroups.map(([heading, ...items]) => <div className={styles.footerGroup} key={heading}><h3>{heading}</h3>{items.map(item => <a href="#top" key={item}>{item}</a>)}</div>)}</div><div className={styles.footerBottom}><span>© 2026 Kharcha. Made for clearer days.</span><div><a href="#top">Terms</a><a href="#top">Privacy</a></div></div></footer>
     </main>
   );
 }
