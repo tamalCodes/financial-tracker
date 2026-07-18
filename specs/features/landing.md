@@ -7,7 +7,7 @@
 ## UI behaviour
 
 - Public, responsive page at `/landing`; no authentication needed.
-- Navigation is a floating frosted bar with smooth anchor travel to product sections, including a dedicated customer-stories section, plus functional `/login` and `/signup` links.
+- `LandingMotion.tsx` creates Lenis smooth-wheel/anchor scrolling (disabled by `prefers-reduced-motion`) and adds scroll-reactive nav states. Nav sits at page root with the page's highest z-index, so it stays above every hero, card and footer layer. It begins full-width/subtle and compacts after 72px into a restrained 480px × 56px glass bar. Dark sections declare `data-nav-tone="dark"`; the motion controller detects the section beneath the nav and switches brand, menu and toggle text to cream, returning them to charcoal over light sections. Compact state always exposes a visible menu toggle; hover opens menu temporarily, click/tap pins it open, and Escape/link selection closes it.
 - Hero uses editorial Kharcha messaging, product dashboard-inspired CSS artwork, and a charcoal primary CTA.
 - Sections cover money loop, product proof, a dark-feature contrast section, AI-generated fictional customer portraits, an animated money-world final CTA and a full-width multi-column footer.
 - Light/dark colour values use shared `--c-*` tokens where theme-aware; dark feature/footer surfaces are intentionally fixed charcoal to retain their editorial contrast.
@@ -21,4 +21,4 @@
 
 ## Reverse-engineered from
 
-`src/app/landing/page.tsx`, `src/app/landing/landing.module.css`, `public/landing/testimonial-{meera,aarav,riya}.png`, `src/app/layout.tsx`, `src/app/globals.css`.
+`src/app/landing/{page.tsx,LandingMotion.tsx,landing.module.css}`, `public/landing/testimonial-{meera,aarav,riya}.png`, `package.json`, `src/app/layout.tsx`, `src/app/globals.css`.
