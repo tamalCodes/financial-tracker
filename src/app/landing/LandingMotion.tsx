@@ -1,6 +1,8 @@
 "use client";
 
 import Lenis from "lenis";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect } from "react";
 
 export default function LandingMotion() {
@@ -105,6 +107,150 @@ export default function LandingMotion() {
       };
     }
 
+    gsap.registerPlugin(ScrollTrigger);
+    const motion = gsap.matchMedia();
+    const chapterPanels = gsap.utils.toArray<HTMLElement>("[data-chapter-panel]");
+    const handoff = document.querySelector<HTMLElement>("[data-chapter-handoff]");
+    const backdrop = handoff?.querySelector<HTMLElement>("[data-chapter-backdrop]");
+    const chapterContent = handoff?.querySelector<HTMLElement>("[data-chapter-content]");
+    const foreground = handoff?.querySelector<HTMLElement>("[data-chapter-foreground]");
+    const storyLead = handoff?.querySelector<HTMLElement>("[data-story-lead]");
+    const storyCards = handoff?.querySelector<HTMLElement>("[data-story-cards]");
+
+    motion.add("(min-width: 801px)", () => {
+      chapterPanels.forEach((panel) => {
+        gsap.fromTo(
+          panel,
+          {
+            clipPath: "inset(0 2.4% 0 2.4% round 54px 54px 0 0)",
+            rotationX: 3.2,
+            scale: 0.965,
+            y: 92,
+          },
+          {
+            clipPath: "inset(0 0% 0 0% round 38px 38px 0 0)",
+            ease: "none",
+            rotationX: 0,
+            scale: 1,
+            scrollTrigger: {
+              trigger: panel,
+              start: "top 98%",
+              end: "top 24%",
+              scrub: 1.15,
+            },
+            y: 0,
+          },
+        );
+      });
+
+      if (handoff && backdrop && foreground) {
+        ScrollTrigger.create({
+          trigger: handoff,
+          start: "top bottom",
+          end: "bottom bottom",
+          onUpdate: (self) => handoff.style.setProperty("--handoff-progress", self.progress.toFixed(4)),
+        });
+
+        gsap.fromTo(
+          foreground,
+          {
+            clipPath: "inset(0 3.2% 0 3.2% round 66px 66px 0 0)",
+            rotationX: 4.2,
+            scale: 0.94,
+            y: 150,
+          },
+          {
+            clipPath: "inset(0 0% 0 0% round 46px 46px 0 0)",
+            ease: "none",
+            rotationX: 0,
+            scale: 1,
+            scrollTrigger: {
+              trigger: foreground,
+              start: "top 102%",
+              end: "top 10%",
+              scrub: 1.25,
+            },
+            y: 0,
+          },
+        );
+
+        gsap.to(backdrop, {
+          ease: "none",
+          filter: "brightness(.68) saturate(.82)",
+          scale: 1.075,
+          scrollTrigger: {
+            trigger: foreground,
+            start: "top 100%",
+            end: "top 14%",
+            scrub: 1.1,
+          },
+          yPercent: -2.5,
+        });
+
+        if (chapterContent) {
+          gsap.fromTo(
+            chapterContent,
+            { opacity: 0.18, scale: 0.95, y: 82 },
+            {
+              ease: "none",
+              opacity: 1,
+              scale: 1,
+              scrollTrigger: {
+                trigger: handoff,
+                start: "top 82%",
+                end: "top 8%",
+                scrub: 1,
+              },
+              y: 0,
+            },
+          );
+        }
+
+        if (storyLead) {
+          gsap.fromTo(storyLead, { x: -54, y: 58 }, {
+            ease: "none",
+            scrollTrigger: { trigger: foreground, start: "top 84%", end: "top 12%", scrub: 1.1 },
+            x: 0,
+            y: 0,
+          });
+        }
+
+        if (storyCards) {
+          gsap.fromTo(storyCards.children, { y: 126 }, {
+            ease: "none",
+            scrollTrigger: { trigger: foreground, start: "top 88%", end: "top 5%", scrub: 1.15 },
+            stagger: 0.08,
+            y: 0,
+          });
+        }
+      }
+    });
+
+    motion.add("(max-width: 800px)", () => {
+      chapterPanels.forEach((panel) => {
+        gsap.fromTo(panel, { y: 48 }, {
+          ease: "none",
+          scrollTrigger: { trigger: panel, start: "top 98%", end: "top 62%", scrub: 0.75 },
+          y: 0,
+        });
+      });
+      if (handoff && foreground) {
+        ScrollTrigger.create({
+          trigger: handoff,
+          start: "top bottom",
+          end: "bottom bottom",
+          onUpdate: (self) => handoff.style.setProperty("--handoff-progress", self.progress.toFixed(4)),
+        });
+        gsap.fromTo(foreground, { y: 72 }, {
+          ease: "none",
+          scrollTrigger: { trigger: foreground, start: "top 100%", end: "top 64%", scrub: 0.8 },
+          y: 0,
+        });
+      }
+    });
+
+    ScrollTrigger.refresh();
+
     const lenis = new Lenis({
       autoRaf: true,
       anchors: { offset: -104 },
@@ -117,6 +263,7 @@ export default function LandingMotion() {
     });
 
     return () => {
+      motion.revert();
       lenis.destroy();
       window.removeEventListener("scroll", updateNav);
       toggle?.removeEventListener("click", onToggle);
