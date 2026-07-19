@@ -172,6 +172,7 @@ export default function LandingMotion() {
           {
             clipPath: "inset(0 2.4% 0 2.4% round 54px 54px 0 0)",
             rotationX: 3.2,
+            transformPerspective: 1600,
             scale: 0.965,
             y: 92,
           },
@@ -179,6 +180,7 @@ export default function LandingMotion() {
             clipPath: "inset(0 0% 0 0% round 38px 38px 0 0)",
             ease: "none",
             rotationX: 0,
+            transformPerspective: 1600,
             scale: 1,
             scrollTrigger: {
               trigger: panel,
@@ -216,6 +218,7 @@ export default function LandingMotion() {
           {
             clipPath: "inset(0 3.5% 0 3.5% round 38px 38px 0 0)",
             rotationX: 2.2,
+            transformPerspective: 1600,
             scale: 0.955,
             y: 88,
           },
@@ -223,6 +226,7 @@ export default function LandingMotion() {
             clipPath: "inset(0 0% 0 0% round 28px 28px 0 0)",
             ease: "none",
             rotationX: 0,
+            transformPerspective: 1600,
             scale: 1,
             scrollTrigger: {
               trigger: panel,

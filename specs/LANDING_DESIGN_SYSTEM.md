@@ -115,9 +115,17 @@ When sources disagree, use this order:
 4. `specs/features/landing.md` for feature intent.
 5. `specs/DESIGN_SYSTEM.md` for shared app/auth rules.
 
-Landing uses shared `--c-*` tokens whenever a surface should respond to the active app theme.
-Editorial dark chapters intentionally use fixed charcoal/cream values; they remain dark in either
-theme to preserve narrative contrast.
+The landing page is theme-independent from the app.
+The public marketing surface is a fixed warm editorial composition (cream light sections alternating
+with intentional charcoal chapters) and must not follow the app's / OS light-dark preference — the
+web's theme is separate from the app's.
+This is enforced by re-declaring the full light `--c-*` token set on the `[data-landing-root]` element
+in `globals.css`; because custom properties set directly on an element override the value inherited
+from `html.dark`, the landing stays light even when the app is in dark mode.
+Landing still consumes shared `--c-*` tokens for styling (do not hardcode a parallel palette);
+it simply pins those tokens to their light values at the landing root.
+Editorial dark chapters (`.depth`, `.closing`, `.footer`) additionally use fixed charcoal/cream hex
+to preserve narrative contrast.
 
 Do not create a second independent landing palette. If a new theme-aware value is needed, add or
 reuse a semantic `--c-*` token in `globals.css`. Landing-local aliases may describe a role, but must
@@ -712,11 +720,17 @@ On mobile, remove pointer transition dependence.
 
 ### 10.6 Scroll-sheet transitions
 
+The `rotationX` perspective is supplied per-panel via GSAP `transformPerspective: 1600`, never as a `perspective` on `.page`/`main`.
+
+Hero / page background must be one flat tone (`--c-bg1`): the "top-right white patch" bug.
+The whole site body is flat `--c-bg1` (`.page`), and every section below the fold inherits it. The hero must use the **same flat `--c-bg1`**, not a `bg1→bg2` gradient. A diagonal `linear-gradient(125deg, bg1, bg2)` darkens the hero everywhere except its top-left corner, so the flat lighter `bg1` (the page background, and the true body colour) reads as a lighter rectangular "patch" in the one empty spot — the top-right, above/right of the nav. Measured: patch ≈ `#f6f3ea` (bg1) vs the darker gradient body ≈ `#f4f0e6`. This is a **background-colour mismatch, not an element and not a compositing ghost** — it does not render in software-based preview browsers and has no DOM box, so it can only be seen (and must be verified) in real Brave. Warmth/depth in the hero comes from the gold radial accent and content shadows, never a base gradient that changes lightness across the section.
+Chapter 3D uses per-panel GSAP `transformPerspective`, never a `perspective` on `.page`, so the sticky nav is never trapped in a page-level 3D context. Do not put `backdrop-filter` in a CSS `transition` (animating it is a known Chromium glitch trigger).
+
 Desktop dark chapter enters from:
 
 ```text
 clip inset: 2.4% left/right, 54px top corners
-rotationX: 3.2deg
+rotationX: 3.2deg (transformPerspective 1600, per element)
 scale: .965
 y: 92px
 → full width, rotation 0, scale 1, y 0

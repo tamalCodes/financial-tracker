@@ -63,7 +63,7 @@ function ProductPreview() {
 
 export default function LandingPage() {
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-landing-root>
       <LandingMotion />
       <div className={styles.navShell} data-landing-nav>
         <nav className={styles.nav} aria-label="Main navigation"><Brand /><div className={styles.navLinks}><a href="#how">How it works</a><a href="#features">Why Kharcha</a><a href="#stories">Stories</a></div><div className={styles.navActions}><Link href="/auth">Log in</Link><Link className={styles.smallCta} href="/auth?mode=signup">Start free</Link></div><button className={styles.menuToggle} data-nav-toggle type="button" aria-label="Open navigation" aria-expanded="false"><i /><i /></button></nav>

@@ -1377,6 +1377,62 @@ html.dark {
 }
 
 /*
+ * Landing page is theme-independent: the public marketing surface is a fixed warm
+ * editorial composition (cream light sections alternating with intentional charcoal
+ * chapters). It must NOT follow the app's light/dark preference — the web's theme is
+ * separate from the app's. Re-declaring the light token set directly on the landing
+ * root wins over the inherited `html.dark` values (custom props set on an element
+ * override the value inherited from an ancestor), so the landing stays light even
+ * when the app / OS is in dark mode. See specs/LANDING_DESIGN_SYSTEM.md.
+ */
+[data-landing-root] {
+  color-scheme: light;
+
+  --c-bg1: #f6f3ea;
+  --c-bg2: #efe9db;
+
+  --c-surface: #fbf8f0;
+  --c-glass: rgba(255, 253, 247, 0.6);
+  --c-glass-strong: rgba(255, 253, 247, 0.85);
+
+  --c-ink: #201b13;
+  --c-ink-2: #3a332a;
+  --c-body: #57503f;
+  --c-body-2: #6b6355;
+  --c-muted: #8a8172;
+
+  --c-line: #e7e0d0;
+  --c-line-strong: #d6cdb8;
+  --c-field: #f1ecdf;
+  --c-faint: #f8f4ea;
+
+  --c-accent: #8a6d2c;
+  --c-accent-2: #9c7b33;
+  --c-accent-3: #b89a54;
+  --c-accent-4: #d8b36a;
+  --c-accent-bg: #f4ecd8;
+  --c-accent-rgb: 156 123 51;
+
+  --c-violet: #6d28d9;
+  --c-violet-2: #5b21b6;
+  --c-violet-3: #8b5cf6;
+
+  --c-credit: #047857;
+  --c-credit-2: #065f46;
+  --c-credit-3: #10b981;
+
+  --c-expense: #b91c1c;
+  --c-expense-2: #991b1b;
+  --c-expense-3: #ef4444;
+
+  --c-amber: #b45309;
+
+  --c-onaccent: #ffffff;
+  --c-cta: var(--c-ink);
+  --c-cta-fg: var(--c-bg2);
+}
+
+/*
  * Subtle internal scrollbar for desktop dashboard cards whose bodies scroll
  * (Recent payments, Portfolio). Thin, translucent, appears on the track only on
  * hover — keeps the glass aesthetic (specs/features/desktop-dashboard.md).
