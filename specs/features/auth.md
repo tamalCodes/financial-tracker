@@ -2,7 +2,7 @@
 
 Reverse-engineered from `src/app/api/auth/*`, `src/app/auth/callback/route.ts`, `src/app/{globals,layout}.tsx`, `public/{icon.svg,manifest.json,auth-testimonials/*.png}`, `lib/supabase/{auth,cookies}.ts`, `supabase/config.toml`,
 `features/auth/{AuthContext.tsx,identity.ts}`, `features/auth/components/AuthForm.tsx`,
-`src/app/(auth)/layout.tsx`, `src/proxy.ts`,
+`src/app/(auth)/{layout.tsx,auth/page.tsx,login/page.tsx,signup/page.tsx}`, `src/app/(app)/dashboard/page.tsx`, `src/proxy.ts`,
 `supabase/migrations/{003_rls,008_profiles_full_name,010_profiles_last_login}.sql`.
 
 ## Problem
@@ -33,7 +33,7 @@ Supabase `auth.users` (managed by Supabase).
   `fullName` comes from JWT `user_metadata.full_name` (cookie path) or `user_metadata` on
   the `getUser()` fallback — no profiles query.
 - **GET `/auth/callback`** — exchanges Supabase OAuth `code` for the cookie session then redirects
-  to `/dashboard`; missing/exchange error redirects to `/login?error=oauth`.
+  to `/dashboard`; missing/exchange error redirects to `/auth?error=oauth`.
 
 All auth routes already follow CONVENTIONS (rate limit + error shape) — these are the
 **reference** for §3.
@@ -64,10 +64,11 @@ All auth routes already follow CONVENTIONS (rate limit + error shape) — these 
 `AuthContext` (`"use client"`) — `{ user, loading, signIn, signUp, signInWithOAuth, signOut }`;
 `user` carries `fullName`; `signUp(email, password, fullName, openingBalance)`;
 `signInWithOAuth(provider)` obtains the server-generated Supabase authorize URL then navigates;
-`refreshUser` calls `/api/auth/me`. `AuthForm` in `(auth)/login`+`(auth)/signup` pages.
+`refreshUser` calls `/api/auth/me`. `/auth` is the canonical auth page and defaults to login;
+`/auth?mode=signup` opens signup. `(auth)/login` and `(auth)/signup` remain compatibility pages.
 **Log out** is triggered from `AvatarMenu` (`features/dashboard/mobile/AvatarMenu.tsx`) — the
 avatar dropdown in both mobile (`GreetingHeader`) and desktop (`DesktopHome`) headers. It calls
-`signOut()` then `router.replace("/login")`. The avatar was previously inert (no logout path).
+`signOut()` then `router.replace("/auth")`. The avatar was previously inert (no logout path).
 
 **Auth pages support light and dark mode.** Root `ThemeProvider` owns `<html>.dark` before paint.
 As of the warm-theme unification (`specs/WARM_THEME_UNIFICATION_PLAN.md`), the auth screen's `--kh-*`
@@ -106,10 +107,10 @@ uses the existing password login route. It intentionally does not expose whether
 Signup adds full name/current balance. The desktop login shows a slow (8s) rotating customer-story
 carousel, with five fictional AI-generated profile portraits and no star rating. Its dot controls
 are keyboard-accessible buttons: selecting one switches to that story and restarts the 8s timer.
-Mobile omits the carousel. `/` renders its auth UI immediately and lazy-loads the dashboard only
-after the client session resolves, avoiding a client-side loading screen and dashboard bundle on
-auth entry. The OAuth callback error reads from `window.location.search` after hydration, avoiding a
-`useSearchParams` rendering bailout on `/`. Password eye toggles text/password. Hover, focus halo,
+Mobile omits the carousel. `/auth` checks the server session, redirects authenticated users to
+`/dashboard`, and otherwise renders auth in the requested login/signup mode. The OAuth callback error
+reads from `window.location.search` after hydration, avoiding a `useSearchParams` rendering bailout
+on `/auth`. Password eye toggles text/password. Hover, focus halo,
 placeholder, and autofill rules match the handoff.
 
 Supabase project configuration must enable Google and Apple providers and allow each deployed
@@ -130,9 +131,9 @@ Supabase project configuration must enable Google and Apple providers and allow 
 ## Files to touch
 `src/app/api/auth/*/route.ts`, `src/app/auth/callback/route.ts`, `lib/api/schemas.ts` (`signupSchema`), `lib/supabase/auth.ts`,
 `lib/supabase/cookies.ts`, `features/auth/{AuthContext.tsx,identity.ts}`,
-`features/auth/components/AuthForm.tsx`, `src/app/(auth)/layout.tsx`, `src/app/{globals,layout}.tsx`,
+`features/auth/components/AuthForm.tsx`, `src/app/(auth)/{layout.tsx,auth/page.tsx,login/page.tsx,signup/page.tsx}`, `src/app/(app)/dashboard/page.tsx`, `src/app/{globals,layout}.tsx`,
 `public/{icon.svg,manifest.json,auth-testimonials/*.png}`,
-`features/dashboard/{mobile/MobileHome,desktop/DesktopHome}.tsx`,
+`features/dashboard/{mobile/MobileHome,mobile/AvatarMenu,desktop/DesktopHome}.tsx`,
 `supabase/migrations/{008_profiles_full_name,010_profiles_last_login}.sql`, `supabase/config.toml`, `src/proxy.ts`.
 
 ## Out of scope

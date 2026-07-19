@@ -11,10 +11,15 @@ export default function LandingMotion() {
     const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
     const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
     const heroVisual = document.querySelector<HTMLElement>("[data-hero-visual]");
+    const moneyRail = document.querySelector<HTMLElement>("[data-money-rail]");
+    const moneyTrack = document.querySelector<HTMLElement>("[data-money-rail-track]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let menuPinned = false;
     let heroFrame = 0;
     let menuCloseFrame = 0;
+    let moneyResumeTimer = 0;
+    let moneySegment = 0;
+    let moneyPausedTime: CSSNumberish | null = null;
 
     const setMenu = (open: boolean, pinned = menuPinned) => {
       menuPinned = pinned;
@@ -77,6 +82,40 @@ export default function LandingMotion() {
       ["--hero-shift-x", "--hero-shift-y", "--hero-card-x", "--hero-card-y", "--hero-coin-x", "--hero-coin-y"].forEach((property) => heroVisual?.style.setProperty(property, "0px"));
       ["--hero-tilt-x", "--hero-tilt-y"].forEach((property) => heroVisual?.style.setProperty(property, "0deg"));
     };
+    const sizeMoneyRail = () => {
+      if (!moneyRail || !moneyTrack) return;
+      moneySegment = moneyTrack.scrollWidth / 3;
+      if (moneySegment > 0 && (moneyRail.scrollLeft < moneySegment * 0.5 || moneyRail.scrollLeft > moneySegment * 2.5)) moneyRail.scrollLeft = moneySegment;
+    };
+    const wrapMoneyRail = () => {
+      if (!moneyRail || moneySegment <= 0) return;
+      if (moneyRail.scrollLeft < moneySegment * 0.5) moneyRail.scrollLeft += moneySegment;
+      else if (moneyRail.scrollLeft > moneySegment * 1.5) moneyRail.scrollLeft -= moneySegment;
+    };
+    const setMoneyRailPaused = (paused: boolean) => {
+      moneyTrack?.getAnimations().forEach((animation) => {
+        if (paused) {
+          moneyPausedTime = animation.currentTime;
+          animation.pause();
+        } else {
+          if (moneyPausedTime !== null) animation.currentTime = moneyPausedTime;
+          animation.play();
+        }
+      });
+    };
+    const pauseMoneyRail = () => {
+      if (!moneyRail) return;
+      window.clearTimeout(moneyResumeTimer);
+      setMoneyRailPaused(true);
+      moneyResumeTimer = window.setTimeout(() => setMoneyRailPaused(false), 1600);
+    };
+    const onMoneyPointerDown = () => {
+      window.clearTimeout(moneyResumeTimer);
+      setMoneyRailPaused(true);
+    };
+    const onMoneyPointerUp = () => {
+      pauseMoneyRail();
+    };
 
     updateNav();
     window.addEventListener("scroll", updateNav, { passive: true });
@@ -89,6 +128,13 @@ export default function LandingMotion() {
     window.addEventListener("keydown", onKeyDown);
     heroVisual?.addEventListener("pointermove", onHeroMove);
     heroVisual?.addEventListener("pointerleave", resetHero);
+    moneyRail?.addEventListener("scroll", wrapMoneyRail, { passive: true });
+    moneyRail?.addEventListener("pointerdown", onMoneyPointerDown);
+    moneyRail?.addEventListener("pointerup", onMoneyPointerUp);
+    moneyRail?.addEventListener("pointercancel", onMoneyPointerUp);
+    moneyRail?.addEventListener("wheel", pauseMoneyRail, { passive: true });
+    window.addEventListener("resize", sizeMoneyRail);
+    requestAnimationFrame(sizeMoneyRail);
 
     if (reducedMotion.matches) {
       return () => {
@@ -102,7 +148,14 @@ export default function LandingMotion() {
         window.removeEventListener("keydown", onKeyDown);
         heroVisual?.removeEventListener("pointermove", onHeroMove);
         heroVisual?.removeEventListener("pointerleave", resetHero);
+        moneyRail?.removeEventListener("scroll", wrapMoneyRail);
+        moneyRail?.removeEventListener("pointerdown", onMoneyPointerDown);
+        moneyRail?.removeEventListener("pointerup", onMoneyPointerUp);
+        moneyRail?.removeEventListener("pointercancel", onMoneyPointerUp);
+        moneyRail?.removeEventListener("wheel", pauseMoneyRail);
+        window.removeEventListener("resize", sizeMoneyRail);
         cancelAnimationFrame(heroFrame);
+        window.clearTimeout(moneyResumeTimer);
         window.clearTimeout(menuCloseFrame);
       };
     }
@@ -112,7 +165,7 @@ export default function LandingMotion() {
     const chapterPanels = gsap.utils.toArray<HTMLElement>("[data-chapter-panel]");
     const depthFollowup = document.querySelector<HTMLElement>("[data-depth-followup]");
 
-    motion.add("(min-width: 801px)", () => {
+    motion.add("(min-width: 1025px)", () => {
       chapterPanels.forEach((panel) => {
         gsap.fromTo(
           panel,
@@ -156,20 +209,47 @@ export default function LandingMotion() {
       }
     });
 
-    motion.add("(max-width: 800px)", () => {
+    motion.add("(max-width: 1024px)", () => {
       chapterPanels.forEach((panel) => {
-        gsap.fromTo(panel, { y: 48 }, {
-          ease: "none",
-          scrollTrigger: { trigger: panel, start: "top 98%", end: "top 62%", scrub: 0.75 },
-          y: 0,
-        });
+        gsap.fromTo(
+          panel,
+          {
+            clipPath: "inset(0 3.5% 0 3.5% round 38px 38px 0 0)",
+            rotationX: 2.2,
+            scale: 0.955,
+            y: 88,
+          },
+          {
+            clipPath: "inset(0 0% 0 0% round 28px 28px 0 0)",
+            ease: "none",
+            rotationX: 0,
+            scale: 1,
+            scrollTrigger: {
+              trigger: panel,
+              start: "top 100%",
+              end: "top 34%",
+              scrub: 0.9,
+            },
+            y: 0,
+          },
+        );
       });
       if (depthFollowup) {
-        gsap.fromTo(depthFollowup, { y: 64 }, {
-          ease: "none",
-          scrollTrigger: { trigger: depthFollowup, start: "top 100%", end: "top 64%", scrub: 0.8 },
-          y: 0,
-        });
+        gsap.fromTo(
+          depthFollowup,
+          { scale: 0.975, y: 88 },
+          {
+            ease: "none",
+            scale: 1,
+            scrollTrigger: {
+              trigger: depthFollowup,
+              start: "top 100%",
+              end: "top 38%",
+              scrub: 0.9,
+            },
+            y: 0,
+          },
+        );
       }
     });
 
@@ -199,7 +279,14 @@ export default function LandingMotion() {
       window.removeEventListener("keydown", onKeyDown);
       heroVisual?.removeEventListener("pointermove", onHeroMove);
       heroVisual?.removeEventListener("pointerleave", resetHero);
+      moneyRail?.removeEventListener("scroll", wrapMoneyRail);
+      moneyRail?.removeEventListener("pointerdown", onMoneyPointerDown);
+      moneyRail?.removeEventListener("pointerup", onMoneyPointerUp);
+      moneyRail?.removeEventListener("pointercancel", onMoneyPointerUp);
+      moneyRail?.removeEventListener("wheel", pauseMoneyRail);
+      window.removeEventListener("resize", sizeMoneyRail);
       cancelAnimationFrame(heroFrame);
+      window.clearTimeout(moneyResumeTimer);
       window.clearTimeout(menuCloseFrame);
     };
   }, []);

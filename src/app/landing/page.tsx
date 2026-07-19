@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import LandingMotion from "./LandingMotion";
+import StoryRotator from "./StoryRotator";
 import styles from "./landing.module.css";
 
 const features = [
@@ -37,7 +38,7 @@ function MoneyAreaIcon({ area }: { area: string }) {
 
 function Brand() {
   return (
-    <Link className={styles.brand} href="/landing" aria-label="Kharcha home">
+    <Link className={styles.brand} href="/" aria-label="Kharcha home">
       <span className={styles.brandMark}>₹</span>
       <span>Kharcha</span>
     </Link>
@@ -65,8 +66,8 @@ export default function LandingPage() {
     <main className={styles.page}>
       <LandingMotion />
       <div className={styles.navShell} data-landing-nav>
-        <nav className={styles.nav} aria-label="Main navigation"><Brand /><div className={styles.navLinks}><a href="#how">How it works</a><a href="#features">Why Kharcha</a><a href="#stories">Stories</a></div><div className={styles.navActions}><Link href="/login">Log in</Link><Link className={styles.smallCta} href="/signup">Start free</Link></div><button className={styles.menuToggle} data-nav-toggle type="button" aria-label="Open navigation" aria-expanded="false"><i /><i /></button></nav>
-        <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/login">Log in to Kharcha</Link></div></div></div>
+        <nav className={styles.nav} aria-label="Main navigation"><Brand /><div className={styles.navLinks}><a href="#how">How it works</a><a href="#features">Why Kharcha</a><a href="#stories">Stories</a></div><div className={styles.navActions}><Link href="/auth">Log in</Link><Link className={styles.smallCta} href="/auth?mode=signup">Start free</Link></div><button className={styles.menuToggle} data-nav-toggle type="button" aria-label="Open navigation" aria-expanded="false"><i /><i /></button></nav>
+        <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/auth?mode=signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/auth">Log in to Kharcha</Link></div></div></div>
       </div>
       <section className={styles.hero} id="top">
         <div className={styles.heroGrid}>
@@ -74,7 +75,7 @@ export default function LandingPage() {
             <div className={styles.eyebrow}><span /> PERSONAL FINANCE, CLARIFIED</div>
             <h1>Your money.<br /><em>In its place.</em></h1>
             <p>Kharcha brings your everyday money into one clear, thoughtful view — so you can spend, save and grow with confidence.</p>
-            <div className={styles.heroActions}><Link className={styles.primaryCta} href="/signup">Start Tracking <span>→</span></Link></div>
+            <div className={styles.heroActions}><Link className={styles.primaryCta} href="/auth?mode=signup">Start Tracking <span>→</span></Link></div>
             <div className={styles.trust}><div className={styles.faceStack}><Image src="/landing/testimonial-riya.png" alt="Riya" width={54} height={54} /><Image src="/landing/testimonial-meera.png" alt="Meera" width={54} height={54} /><Image src="/landing/testimonial-aarav.png" alt="Aarav" width={54} height={54} /></div><span>Made for people building calmer money habits.</span></div>
           </div>
           <div className={styles.heroVisual} data-hero-visual>
@@ -85,7 +86,12 @@ export default function LandingPage() {
         </div>
         <section className={styles.proof} aria-label="Every part of your money">
           <p>ONE QUIET PLACE FOR EVERY PART OF YOUR MONEY</p>
-          <div>{moneyAreas.map(([label, icon], index) => <span key={label} style={{ animationDelay: `${0.55 + index * 0.09}s` }}><MoneyAreaIcon area={icon} />{label}</span>)}</div>
+          <div>{moneyAreas.map(([label, icon], index) => <span key={label} style={{ animationDelay: `${0.55 + index * 0.09}s` }}><MoneyAreaIcon area={icon} /><b>{label}</b></span>)}</div>
+          <section className={styles.proofMarquee} data-money-rail aria-label="Swipe through money areas" tabIndex={0}>
+            <div className={styles.proofTrack} data-money-rail-track>
+              {[0, 1, 2].map((copy) => <div className={styles.proofLoop} key={copy} aria-hidden={copy === 1 ? undefined : "true"}>{moneyAreas.map(([label, icon]) => <span className={styles.proofPill} key={`${copy}-${label}`}><MoneyAreaIcon area={icon} /><b>{label}</b></span>)}</div>)}
+            </div>
+          </section>
         </section>
       </section>
 
@@ -97,12 +103,26 @@ export default function LandingPage() {
       <section className={styles.depth} data-chapter-panel data-nav-tone="dark" id="features"><div className={styles.depthHeader}><span className={styles.eyebrow}><i /> DESIGNED FOR REAL LIFE</span><h2>Everything you need.<br /><em>Nothing you do not.</em></h2><p>Follow your money from income to intention, without turning your life into a spreadsheet.</p></div><div className={styles.depthGrid}><article className={styles.depthFeature}><span>01 / MONTHLY VIEW</span><h3>Start with what is left.</h3><p>Your balance, earned and spent — set in context at first glance.</p><div className={styles.balanceCard}><small>LEFT IN BANK</small><strong>₹48,260</strong><p>↑ ₹6,350 from last month</p></div></article><article className={styles.depthFeature}><span>02 / SPENDING</span><h3>Every spend has a place.</h3><p>Gentle categories replace guesswork with a pattern you can understand.</p><div className={styles.listCard}><div><i />Groceries <b>−₹2,840</b></div><div><i />Dinner with friends <b>−₹1,260</b></div><div><i />Metro card <b>−₹750</b></div></div></article></div></section>
 
       <div className={styles.storiesShell} data-depth-followup>
-        <section className={styles.stories} id="stories"><div className={styles.storyLead}><span className={styles.eyebrow}><i /> PEOPLE, NOT PERSONAS</span><h2>Clarity looks different<br /><em>on everyone.</em></h2><p>Small, honest habits. Less guilt. More room to choose what comes next.</p></div><div className={styles.storyCards}><article className={styles.personCard}><Image src="/landing/testimonial-meera.png" alt="Portrait of fictional Kharcha member Meera Iyer" width={112} height={112}/><p>“I stopped trying to be perfect with money. I only had to be <em>aware</em> of it.”</p><strong>Meera Iyer</strong><small>Chennai</small></article><article className={`${styles.personCard} ${styles.personCardShift}`}><Image src="/landing/testimonial-aarav.png" alt="Portrait of fictional Kharcha member Aarav Sharma" width={112} height={112}/><p>“Now I can see where my salary goes before month-end surprises me.”</p><strong>Aarav Sharma</strong><small>Bengaluru</small></article></div></section>
+        <section className={styles.stories} id="stories">
+          <div className={styles.storiesMain}>
+            <div className={styles.storyLead}>
+              <span className={styles.eyebrow}><i /> PEOPLE, NOT PERSONAS</span>
+              <h2>Clarity looks different<br /><em>on everyone.</em></h2>
+              <p>Not a perfect budget. A dependable view of what came in, what moved out, and what is still yours to use.</p>
+            </div>
+            <StoryRotator />
+          </div>
+          <div className={styles.storyProof} aria-label="What Kharcha keeps clear">
+            <div><span>01</span><p><strong>Know the month</strong>Income, spending and investments together.</p></div>
+            <div><span>02</span><p><strong>See commitments</strong>Bills, EMIs and SIPs before they surprise you.</p></div>
+            <div><span>03</span><p><strong>Choose calmly</strong>Left-in-bank stays visible for every decision.</p></div>
+          </div>
+        </section>
       </div>
 
-      <section className={styles.closing} data-nav-tone="dark"><div className={styles.closingCopy}><span className={styles.eyebrow}><i /> READY WHEN YOU ARE</span><h2>Make space<br />for what matters.</h2><p>Your money has a story. Kharcha helps it make sense.</p><Link className={styles.primaryCta} href="/signup">Start with Kharcha <span>→</span></Link></div><div className={styles.freedomVisual} aria-hidden="true"><Image className={styles.freedomImage} src="/landing/freedom-cutout.png" alt="" width={1200} height={675} sizes="(max-width: 800px) 620px, 680px" loading="eager" /></div></section>
+      <section className={styles.closing} data-nav-tone="dark"><div className={styles.closingCopy}><span className={styles.eyebrow}><i /> READY WHEN YOU ARE</span><h2>Make space<br />for what matters.</h2><p>Your money has a story. Kharcha helps it make sense.</p><Link className={styles.primaryCta} href="/auth?mode=signup">Start with Kharcha <span>→</span></Link></div><div className={styles.freedomVisual} aria-hidden="true"><Image className={styles.freedomImage} src="/landing/freedom-cutout.png" alt="" width={1200} height={675} sizes="(max-width: 1024px) 96vw, 680px" loading="eager" /></div></section>
 
-      <footer className={styles.footer} data-nav-tone="dark"><div className={styles.footerTop}><div className={styles.footerBrand}><Brand /><p>Your everyday money,<br />in one clear place.</p><div className={styles.socials}><a href="#top" aria-label="Kharcha on X">𝕏</a><a href="#top" aria-label="Kharcha on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1" className={styles.instagramDot}/></svg></a></div></div>{footerGroups.map(([heading, ...items]) => <div className={styles.footerGroup} key={heading}><h3>{heading}</h3>{items.map(item => <a href="#top" key={item}>{item}</a>)}</div>)}</div><div className={styles.footerBottom}><span>© 2026 Kharcha. Made for clearer days.</span><div><a href="#top">Terms</a><a href="#top">Privacy</a></div></div></footer>
+      <footer className={styles.footer} data-nav-tone="dark"><div className={styles.footerTop}><div className={styles.footerBrand}><Brand /><p>Your everyday money,<br />in one clear place.</p><div className={styles.socials}><a href="#top" aria-label="Kharcha on X">𝕏</a><a href="#top" aria-label="Kharcha on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1" className={styles.instagramDot}/></svg></a></div></div><div className={styles.footerLinks}>{footerGroups.map(([heading, ...items]) => <div className={styles.footerGroup} key={heading}><h3>{heading}</h3>{items.map(item => <a href="#top" key={item}>{item}</a>)}</div>)}</div></div><div className={styles.footerBottom}><span>© 2026 Kharcha. Made for clearer days.</span><div><a href="#top">Terms</a><a href="#top">Privacy</a></div></div></footer>
     </main>
   );
 }

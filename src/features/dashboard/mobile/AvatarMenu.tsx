@@ -53,7 +53,7 @@ export default function AvatarMenu({ initials, size = 40 }: Props) {
     setBusy(true);
     try {
       await signOut();
-      router.replace("/login");
+      router.replace("/auth");
     } catch {
       setBusy(false);
     }

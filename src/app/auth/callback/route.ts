@@ -7,7 +7,7 @@ export async function GET(request: Request) {
 
   if (!code) {
     return NextResponse.redirect(
-      new URL("/login?error=oauth", requestUrl.origin),
+      new URL("/auth?error=oauth", requestUrl.origin),
     );
   }
 
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
   if (error) {
     return NextResponse.redirect(
-      new URL("/login?error=oauth", requestUrl.origin),
+      new URL("/auth?error=oauth", requestUrl.origin),
     );
   }
 

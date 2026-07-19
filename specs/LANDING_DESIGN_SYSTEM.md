@@ -5,7 +5,7 @@ This document describes the landing page's visual language, interaction grammar,
 behaviour, motion, subtle gamification, glass treatment, content voice, footer, and implementation
 constraints in enough detail for an AI agent to produce work that belongs to the same system.
 
-> Scope: public/editorial surfaces, especially `/landing`.
+> Scope: public/editorial surfaces, especially canonical `/` (implemented by the landing module).
 > Shared product tokens and app/auth rules remain in `specs/DESIGN_SYSTEM.md`.
 > Reverse-engineered from `src/app/landing/page.tsx`, `src/app/landing/LandingMotion.tsx`,
 > `src/app/landing/landing.module.css`, `src/app/globals.css`, `src/app/layout.tsx`, and
@@ -367,8 +367,8 @@ Landing has two primary breakpoints plus one height adaptation:
 
 | Condition | Meaning | Behaviour |
 |---|---|---|
-| `>800px` | Desktop/tablet landscape | Editorial multi-column layouts, full scroll-sheet motion |
-| `≤800px` | Mobile/tablet portrait | Single-column reflow, short translation-only sheets, compact menu |
+| `>800px` | Desktop/tablet landscape | Editorial multi-column layouts; desktop sheet motion above 1024px |
+| `≤800px` | Mobile/tablet portrait | Single-column reflow, compact menu, touch-width scroll-sheet parallax |
 | `≤450px` | Small phone | Reduced type/spacing, two-column proof rail, simplified decorative art |
 | `801px+` and viewport height `≤820px` | Short desktop | Compress hero vertical spacing so proof rail remains visible |
 
@@ -390,7 +390,11 @@ Landing has two primary breakpoints plus one height adaptation:
 - Narrative, dark feature, and stories grids become one column.
 - Proof items wrap/recompose into three centred max-content columns.
 - Dark chapter radius becomes `28px`; vertical padding shortens deliberately.
-- Scroll-sheet effects become short `y` translations only. No mobile scale/rotation/clip animation.
+- Dark product features form a compact diagonal pair: monthly view aligns upper-left and tilts
+  slightly counter-clockwise; spending aligns lower-right, tilts slightly clockwise and overlaps
+  only safe card edges. Inner balance/spending proofs remain shallow and level inside each card.
+  This treatment extends through 1024px when viewport is portrait.
+- Scroll-sheet effects stay bounded but remain clearly perceptible: longer `y` travel, slight scale/perspective settling, and rounded inset opening. Phones and tablets through 1024px share this motion treatment.
 - Closing artwork moves below/behind copy as an absolutely positioned layer; CTA remains visible.
 - Footer becomes two columns; brand spans full width.
 
@@ -496,20 +500,22 @@ Purpose: show scope without turning hero ending into another raised card.
 - Items are pill-shaped only for hit/hover geometry; idle state has no pill fill.
 - Hover: gold text, faint gold wash, `-2px` lift, 1px underline reveal, icon `-1px/-4deg` response.
 - Entrance staggers at `.55s + index × .09s`.
-- On mobile, rail becomes centred 3-column then 2-column composition.
+- On tablets, rail becomes a centred 3-column composition. On small phones, it becomes one compact horizontal pill monorail with faded edges, seamless repeated segments, refresh-rate-smooth compositor `translate3d` auto-crawl and native thumb/horizontal-wheel scrolling. Interaction pauses the crawl briefly; reduced motion keeps manual scrolling and disables auto-crawl.
 
 ### 8.7 Narrative feature list
 
 - Two-column chapter: headline/idea left, numbered list right.
 - Rows use only hairline separators—no container card.
 - Row anatomy: gold two-digit index, title/copy, gold northeast arrow.
+- On small phones, the index, title's first line and arrow share one typographic baseline; supporting copy begins below the title column.
 - No icon collection needed. Typography and sequence create structure.
 
 ### 8.8 Dark product chapter
 
 - Full-width fixed charcoal sheet, visually raised over preceding cream.
 - Centred headline and body with generous pause before grid.
-- Two large cards with subtle warm-charcoal gradients and 1px borders.
+- Desktop and landscape tablet use two side-by-side cards with subtle warm-charcoal gradients and
+  1px borders. Phone and portrait tablet use a narrower, offset diagonal card pair.
 - Inner demo surfaces tilt ±3 degrees as complete physical objects: border, labels, rows, and values
   rotate together. Do not keep text level while only a decorative pseudo-shell rotates.
 - Use semantic green/red only for small financial proof values.
@@ -532,7 +538,9 @@ Purpose: show scope without turning hero ending into another raised card.
 - Artwork container drifts only `-7px` vertically with `1.008` scale over `7s`.
 - Horizontal alpha mask dissolves cropped wrists at both edges: transparent → 18% at 6% → opaque
   at 21–79% → 18% at 94% → transparent.
-- Mobile moves art below copy and lowers opacity; CTA must not be covered.
+- Phone and portrait tablet place the complete 16:9 art in normal flow below copy at up to 96% of
+  available width. Never use negative horizontal offsets at these widths; both hands must remain
+  visible, drift needs breathing room, and CTA must not be covered.
 - Do not animate the image pixels or add extra particles. Container drift is enough.
 
 ### 8.11 Footer
@@ -550,12 +558,12 @@ Desktop anatomy:
 - links/body in quiet cream-grey;
 - bottom row separated by one dark hairline: copyright left, Terms/Privacy right.
 
-Mobile anatomy:
+Responsive anatomy:
 
-- two-column link grid;
-- brand spans full width first;
-- bottom row stacks vertically;
-- last group may span full width on smallest phones;
+- portrait tablet through `1024px`: brand block first, then three equal Product/Company/Support
+  link columns; legal row remains horizontal;
+- phone through `600px`: two-column Product/Company link grid; Support spans full width as a
+  horizontal quick-link row below its own hairline; legal row stacks vertically;
 - no floating margin, card shadow, newsletter trap, giant logo, or decorative gradient.
 
 Social icons:
