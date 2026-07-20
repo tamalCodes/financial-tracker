@@ -342,7 +342,7 @@ Canonical widths:
 - hero grid maximum: `1280px`;
 - narrative and stories maximum: `1180px`;
 - proof rail content maximum: `1120px`;
-- footer content maximum: `1280px`;
+- footer content maximum: `1120px` (shares the closing CTA's rail so the footer aligns with the "Make space" block instead of spilling wider);
 - body-copy measure: `330–440px`;
 - expanded menu and compact nav: `480px` maximum.
 
@@ -681,6 +681,8 @@ motion follows hover, focus, pointer, or scroll. Nothing important waits for ani
 | `.35–.55s` | Menu morph/open and material transitions |
 | `.65–1s` | Entrance reveal |
 | `1.7s` | Graph line draw |
+| `~1.5s` | Balance count-up (one-time) |
+| `5.6s` | Trend reading-head loop / meter + coin sheen |
 | `5.6–7s` | Ambient float/drift |
 | `24–31s` | Background orbit |
 
@@ -712,11 +714,21 @@ On mobile, remove pointer transition dependence.
 
 ### 10.5 Ambient gamified motion
 
-- Rupee coin: vertical float of `11px`, `5.6s`, infinite, compositor-only `translate`.
+- Rupee coin: vertical float of `11px`, `5.6s`, infinite, compositor-only `translate`; plus a slow specular sheen sweep (`heroCoinSheen`, ~6.4s) so it reads as a minted asset, not a floating glyph.
 - Primary orbit: clockwise `24s` linear.
 - Secondary dashed orbit: counter-clockwise `31s` linear.
 - Closing artwork: `-7px` drift and `1.008` scale at midpoint, `7s` ease-in-out.
 - Orbit and dots remain behind preview; they never cross readable chart/content.
+
+### 10.5a On-theme continuous product motion (not decoration)
+
+The hero's *ongoing* motion must narrate money tracking, not just add life. Three cues, each disabled under reduced motion:
+
+- **Balance computes**: the left-in-bank hero number counts up `0 → ₹48,260` once on load (~`1.5s`, cubic ease-out, `en-IN` grouping, tabular-nums). Reduced-motion shows the final value immediately. Driven in `LandingMotion.tsx` via `requestAnimationFrame` on the `[data-balance]` node.
+- **Trend reads itself**: a short glowing gold dash (`.previewScan`, `stroke-dasharray:15 345` + drop-shadow, `vector-effect:non-scaling-stroke`) travels the *same* trend `path` on a ~`5.6s` loop, fading in/out around the seam so the reading head never visibly teleports back to the start.
+- **Meter fills**: the floating "On track" card's five bars fill left-origin in sequence (`heroMeter`, staggered from ~`1.15s`), then a slow specular sheen sweeps the clipped row (`heroMeterSheen`).
+
+Rule: prefer motion that depicts a real product behaviour (a balance resolving, a trend being traced, progress accruing) over abstract orbits when adding to the hero.
 
 ### 10.6 Scroll-sheet transitions
 

@@ -177,7 +177,7 @@ export default function StoryRotator() {
             key={item.name}
             onClick={() => setActiveIndex(index)}
             type="button"
-          ><span style={{ animationDuration: `${ROTATION_MS}ms`, animationPlayState: paused || dragging ? "paused" : "running" }} /></button>
+          ><span /></button>
         ))}
       </div>
     </div>

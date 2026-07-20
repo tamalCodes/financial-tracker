@@ -45,6 +45,8 @@ function Brand() {
   );
 }
 
+const TREND = "M0 66 C18 58, 25 63, 41 46 S69 52, 87 35 S112 48, 131 24 S158 44, 180 29 S209 35, 250 8";
+
 function ProductPreview() {
   return (
     <div className={styles.preview} aria-label="Preview of Kharcha dashboard">
@@ -52,8 +54,8 @@ function ProductPreview() {
       <div className={styles.previewBody}>
         <aside className={styles.previewSide}><span className={styles.activeDot} />Overview<span>Spending</span><span>Investments</span><span>Plans</span></aside>
         <div className={styles.previewMain}>
-          <p>LEFT IN BANK</p><strong>₹48,260<span>.24</span></strong>
-          <div className={styles.previewGraph}><i /><i /><i /><i /><i /><i /><i /><i /><svg viewBox="0 0 250 76" preserveAspectRatio="none" aria-hidden="true"><path d="M0 66 C18 58, 25 63, 41 46 S69 52, 87 35 S112 48, 131 24 S158 44, 180 29 S209 35, 250 8" /></svg></div>
+          <p>LEFT IN BANK</p><strong>₹<span data-balance>48,260</span><span className={styles.previewDecimal}>.24</span></strong>
+          <div className={styles.previewGraph}><i /><i /><i /><i /><i /><i /><i /><i /><svg viewBox="0 0 250 76" preserveAspectRatio="none" aria-hidden="true"><path d={TREND} /><path className={styles.previewScan} d={TREND} /></svg></div>
           <div className={styles.previewTiles}><div><small>Earned</small><b>₹89,000</b></div><div><small>Spent</small><b>₹32,740</b></div><div><small>Invested</small><b>₹8,000</b></div></div>
         </div>
       </div>
@@ -120,9 +122,11 @@ export default function LandingPage() {
         </section>
       </div>
 
+      <div className={styles.finalScreen}>
       <section className={styles.closing} data-nav-tone="dark"><div className={styles.closingCopy}><span className={styles.eyebrow}><i /> READY WHEN YOU ARE</span><h2>Make space<br />for what matters.</h2><p>Your money has a story. Kharcha helps it make sense.</p><Link className={styles.primaryCta} href="/auth?mode=signup">Start with Kharcha <span>→</span></Link></div><div className={styles.freedomVisual} aria-hidden="true"><Image className={styles.freedomImage} src="/landing/freedom-cutout.png" alt="" width={1200} height={675} sizes="(max-width: 1024px) 96vw, 680px" loading="eager" /></div></section>
 
       <footer className={styles.footer} data-nav-tone="dark"><div className={styles.footerTop}><div className={styles.footerBrand}><Brand /><p>Your everyday money,<br />in one clear place.</p><div className={styles.socials}><a href="#top" aria-label="Kharcha on X">𝕏</a><a href="#top" aria-label="Kharcha on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1" className={styles.instagramDot}/></svg></a></div></div><div className={styles.footerLinks}>{footerGroups.map(([heading, ...items]) => <div className={styles.footerGroup} key={heading}><h3>{heading}</h3>{items.map(item => <a href="#top" key={item}>{item}</a>)}</div>)}</div></div><div className={styles.footerBottom}><span>© 2026 Kharcha. Made for clearer days.</span><div><a href="#top">Terms</a><a href="#top">Privacy</a></div></div></footer>
+      </div>
     </main>
   );
 }
