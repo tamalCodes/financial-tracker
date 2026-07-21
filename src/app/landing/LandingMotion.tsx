@@ -17,6 +17,10 @@ export default function LandingMotion() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let menuPinned = false;
     let heroFrame = 0;
+    let heroX = 0;
+    let heroY = 0;
+    let heroTargetX = 0;
+    let heroTargetY = 0;
     let menuCloseFrame = 0;
     let moneyResumeTimer = 0;
     let moneySegment = 0;
@@ -62,26 +66,37 @@ export default function LandingMotion() {
     const onMenuClick = (event: Event) => {
       if ((event.target as HTMLElement).closest("a")) setMenu(false, false);
     };
+    const animateHero = () => {
+      if (!heroVisual) return;
+      heroX += (heroTargetX - heroX) * 0.16;
+      heroY += (heroTargetY - heroY) * 0.16;
+
+      if (Math.abs(heroTargetX - heroX) < 0.02) heroX = heroTargetX;
+      if (Math.abs(heroTargetY - heroY) < 0.02) heroY = heroTargetY;
+
+      heroVisual.style.setProperty("--hero-shift-x", `${heroX.toFixed(2)}px`);
+      heroVisual.style.setProperty("--hero-shift-y", `${heroY.toFixed(2)}px`);
+
+      if (heroX === heroTargetX && heroY === heroTargetY) {
+        heroFrame = 0;
+        return;
+      }
+      heroFrame = requestAnimationFrame(animateHero);
+    };
+    const requestHeroFrame = () => {
+      if (!heroFrame) heroFrame = requestAnimationFrame(animateHero);
+    };
     const onHeroMove = (event: PointerEvent) => {
       if (!heroVisual || reducedMotion.matches) return;
       const rect = heroVisual.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-      cancelAnimationFrame(heroFrame);
-      heroFrame = requestAnimationFrame(() => {
-        heroVisual.style.setProperty("--hero-shift-x", `${(x * 8).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-shift-y", `${(y * 8).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-card-x", `${(x * -12).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-card-y", `${(y * -10).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-coin-x", `${(x * -15).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-coin-y", `${(y * -12).toFixed(2)}px`);
-        heroVisual.style.setProperty("--hero-tilt-x", `${(y * -1.5).toFixed(2)}deg`);
-        heroVisual.style.setProperty("--hero-tilt-y", `${(x * 1.8).toFixed(2)}deg`);
-      });
+      heroTargetX = (((event.clientX - rect.left) / rect.width - 0.5) * 2) * 8;
+      heroTargetY = (((event.clientY - rect.top) / rect.height - 0.5) * 2) * 8;
+      requestHeroFrame();
     };
     const resetHero = () => {
-      ["--hero-shift-x", "--hero-shift-y", "--hero-card-x", "--hero-card-y", "--hero-coin-x", "--hero-coin-y"].forEach((property) => heroVisual?.style.setProperty(property, "0px"));
-      ["--hero-tilt-x", "--hero-tilt-y"].forEach((property) => heroVisual?.style.setProperty(property, "0deg"));
+      heroTargetX = 0;
+      heroTargetY = 0;
+      requestHeroFrame();
     };
     const sizeMoneyRail = () => {
       if (!moneyRail || !moneyTrack) return;

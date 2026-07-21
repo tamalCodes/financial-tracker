@@ -23,11 +23,12 @@ function PhoneIcon({ children }: { children: React.ReactNode }) {
 export default function HeroPhone() {
   return (
     <div className={styles.heroPhone} data-hero-visual role="img" aria-label="Kharcha mobile dashboard showing left-in-bank balance, bills, SIPs and recent payments">
-      <div className={styles.heroPhoneGlow} aria-hidden="true" />
-      <div className={styles.phoneHardware} aria-hidden="true">
-        <span className={styles.phoneSideButton} />
-        <span className={styles.phoneSideButtonTwo} />
-        <div className={styles.phoneScreen}>
+      <div className={styles.heroPhoneMotion}>
+        <div className={styles.heroPhoneGlow} aria-hidden="true" />
+        <div className={styles.phoneHardware} aria-hidden="true">
+          <span className={styles.phoneSideButton} />
+          <span className={styles.phoneSideButtonTwo} />
+          <div className={styles.phoneScreen}>
           <div className={styles.phoneStatus}><span>9:41</span><i /><span>● ◔ ▰</span></div>
           <header className={styles.phoneHeader}>
             <span className={styles.phoneBrandMark}>₹</span>
@@ -59,6 +60,7 @@ export default function HeroPhone() {
           <nav className={styles.phoneNav} aria-label="Dashboard preview navigation">
             <span className={styles.phoneNavActive}>⌂</span><span>◔</span><span>▤</span><span>☷</span>
           </nav>
+          </div>
         </div>
       </div>
     </div>

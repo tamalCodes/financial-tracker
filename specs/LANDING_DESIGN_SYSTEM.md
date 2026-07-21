@@ -679,7 +679,7 @@ motion follows hover, focus, pointer, or scroll. Nothing important waits for ani
 | `.35–.55s` | Menu morph/open and material transitions |
 | `.65–1s` | Entrance reveal |
 | `1s` | Phone artwork entrance |
-| `6s` | Seamless cloud-film loop |
+| `12s` | Seamless slow forward-only cloud-film loop |
 | `5.6–7s` | CTA sheen / closing artwork drift |
 
 ### 10.3 Hero entrance choreography
@@ -700,12 +700,14 @@ Normalize pointer position to `-1…1`, update in `requestAnimationFrame`, and w
 |---|---:|---:|---|
 | Phone artwork | `±8px` | `±8px` | none; keep the device face stable and readable |
 
-Use a `1100px` perspective. Reset all variables to zero on pointer leave. Disable on reduced motion.
-On mobile, remove pointer transition dependence.
+Use one requestAnimationFrame interpolation loop for pointer movement and return-to-rest, with no
+per-event CSS transition restart. Keep entrance motion on an outer wrapper and pointer response on
+an inner motion layer so both animations never compete for `transform`. Reset targets to zero on
+pointer leave. Disable on reduced motion.
 
 ### 10.5 Ambient gamified motion
 
-- Hero atmosphere: silent six-second cloud film with visible cloud deformation, mirrored outer cloud masses and a warm gold grade, encoded as a forward/reverse motion cycle so the final pose returns to the opening pose before the browser restarts it.
+- Hero atmosphere: silent 12-second cloud film with slow forward-only cloud deformation, mirrored outer cloud masses and a warm gold grade. Drive deformation with a continuously advancing procedural displacement phase that returns exactly after one file duration. Do not use crossfades or append reversed frames.
 - Closing artwork: `-7px` drift and `1.008` scale at midpoint, `7s` ease-in-out.
 
 ### 10.5a Hero film contract
