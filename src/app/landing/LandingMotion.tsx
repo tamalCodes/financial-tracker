@@ -11,6 +11,7 @@ export default function LandingMotion() {
     const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
     const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
     const heroVisual = document.querySelector<HTMLElement>("[data-hero-visual]");
+    const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-video]");
     const moneyRail = document.querySelector<HTMLElement>("[data-money-rail]");
     const moneyTrack = document.querySelector<HTMLElement>("[data-money-rail-track]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -136,26 +137,8 @@ export default function LandingMotion() {
     window.addEventListener("resize", sizeMoneyRail);
     requestAnimationFrame(sizeMoneyRail);
 
-    // Balance computes on load: the hero number counts up to its resting value once,
-    // so the preview reads as the app tallying your money rather than a static mockup.
-    const balanceEl = document.querySelector<HTMLElement>("[data-balance]");
-    let balanceFrame = 0;
-    if (balanceEl && !reducedMotion.matches) {
-      const target = 48260;
-      const duration = 1500;
-      const format = (value: number) => value.toLocaleString("en-IN");
-      const startAt = performance.now() + 480;
-      const step = (now: number) => {
-        const progress = Math.min(1, Math.max(0, (now - startAt) / duration));
-        const eased = 1 - Math.pow(1 - progress, 3);
-        balanceEl.textContent = format(Math.round(target * eased));
-        if (progress < 1) balanceFrame = requestAnimationFrame(step);
-      };
-      balanceEl.textContent = format(0);
-      balanceFrame = requestAnimationFrame(step);
-    }
-
     if (reducedMotion.matches) {
+      heroVideo?.pause();
       return () => {
         window.removeEventListener("scroll", updateNav);
         toggle?.removeEventListener("click", onToggle);
@@ -174,7 +157,6 @@ export default function LandingMotion() {
         moneyRail?.removeEventListener("wheel", pauseMoneyRail);
         window.removeEventListener("resize", sizeMoneyRail);
         cancelAnimationFrame(heroFrame);
-        cancelAnimationFrame(balanceFrame);
         window.clearTimeout(moneyResumeTimer);
         window.clearTimeout(menuCloseFrame);
       };
@@ -310,7 +292,6 @@ export default function LandingMotion() {
       moneyRail?.removeEventListener("wheel", pauseMoneyRail);
       window.removeEventListener("resize", sizeMoneyRail);
       cancelAnimationFrame(heroFrame);
-      cancelAnimationFrame(balanceFrame);
       window.clearTimeout(moneyResumeTimer);
       window.clearTimeout(menuCloseFrame);
     };

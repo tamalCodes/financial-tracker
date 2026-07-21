@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import HeroPhone from "./HeroPhone";
 import LandingMotion from "./LandingMotion";
 import StoryRotator from "./StoryRotator";
 import styles from "./landing.module.css";
@@ -45,24 +46,6 @@ function Brand() {
   );
 }
 
-const TREND = "M0 66 C18 58, 25 63, 41 46 S69 52, 87 35 S112 48, 131 24 S158 44, 180 29 S209 35, 250 8";
-
-function ProductPreview() {
-  return (
-    <div className={styles.preview} aria-label="Preview of Kharcha dashboard">
-      <div className={styles.previewTop}><span className={styles.previewLogo}>K</span><span>June 2026</span><span className={styles.previewAvatar}>AS</span></div>
-      <div className={styles.previewBody}>
-        <aside className={styles.previewSide}><span className={styles.activeDot} />Overview<span>Spending</span><span>Investments</span><span>Plans</span></aside>
-        <div className={styles.previewMain}>
-          <p>LEFT IN BANK</p><strong>₹<span data-balance>48,260</span><span className={styles.previewDecimal}>.24</span></strong>
-          <div className={styles.previewGraph}><i /><i /><i /><i /><i /><i /><i /><i /><svg viewBox="0 0 250 76" preserveAspectRatio="none" aria-hidden="true"><path d={TREND} /><path className={styles.previewScan} d={TREND} /></svg></div>
-          <div className={styles.previewTiles}><div><small>Earned</small><b>₹89,000</b></div><div><small>Spent</small><b>₹32,740</b></div><div><small>Invested</small><b>₹8,000</b></div></div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function LandingPage() {
   return (
     <main className={styles.page} data-landing-root>
@@ -72,21 +55,25 @@ export default function LandingPage() {
         <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/auth?mode=signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/auth">Log in to Kharcha</Link></div></div></div>
       </div>
       <section className={styles.hero} id="top">
-        <div className={styles.heroGrid}>
+        <div className={styles.heroBackdrop} aria-hidden="true">
+          <video className={styles.heroVideo} data-hero-video autoPlay muted loop playsInline preload="metadata" poster="/landing/hero-clouds-gold-poster.avif">
+            <source src="/landing/hero-clouds-gold-mobile.webm" type="video/webm" media="(max-width: 800px)" />
+            <source src="/landing/hero-clouds-gold.webm" type="video/webm" media="(min-width: 801px)" />
+            <source src="/landing/hero-clouds-gold-mobile.mp4" type="video/mp4" media="(max-width: 800px)" />
+            <source src="/landing/hero-clouds-gold.mp4" type="video/mp4" />
+          </video>
+          <div className={styles.heroVideoWash} />
+        </div>
+        <div className={styles.heroContent}>
           <div className={styles.heroCopy}>
-            <div className={styles.eyebrow}><span /> PERSONAL FINANCE, CLARIFIED</div>
             <h1>Your money.<br /><em>In its place.</em></h1>
             <p>Kharcha brings your everyday money into one clear, thoughtful view — so you can spend, save and grow with confidence.</p>
             <div className={styles.heroActions}><Link className={styles.primaryCta} href="/auth?mode=signup">Start Tracking <span>→</span></Link></div>
-            <div className={styles.trust}><div className={styles.faceStack}><Image src="/landing/testimonial-riya.png" alt="Riya" width={54} height={54} /><Image src="/landing/testimonial-meera.png" alt="Meera" width={54} height={54} /><Image src="/landing/testimonial-aarav.png" alt="Aarav" width={54} height={54} /></div><span>Made for people building calmer money habits.</span></div>
           </div>
-          <div className={styles.heroVisual} data-hero-visual>
-            <div className={styles.orbit}><i className={styles.orbitDot} /></div><div className={styles.orbitTwo} /><div className={styles.goldCoin}>₹</div>
-            <ProductPreview />
-            <div className={styles.floatingCard}><span>THIS MONTH</span><b>On track</b><small>₹15,520 left to spend</small><div><i /><i /><i /><i /><i /></div></div>
-          </div>
+          <HeroPhone />
         </div>
-        <section className={styles.proof} aria-label="Every part of your money">
+      </section>
+      <section className={styles.proof} aria-label="Every part of your money">
           <p>ONE QUIET PLACE FOR EVERY PART OF YOUR MONEY</p>
           <div>{moneyAreas.map(([label, icon], index) => <span key={label} style={{ animationDelay: `${0.55 + index * 0.09}s` }}><MoneyAreaIcon area={icon} /><b>{label}</b></span>)}</div>
           <section className={styles.proofMarquee} data-money-rail aria-label="Swipe through money areas" tabIndex={0}>
@@ -94,7 +81,6 @@ export default function LandingPage() {
               {[0, 1, 2].map((copy) => <div className={styles.proofLoop} key={copy} aria-hidden={copy === 1 ? undefined : "true"}>{moneyAreas.map(([label, icon]) => <span className={styles.proofPill} key={`${copy}-${label}`}><MoneyAreaIcon area={icon} /><b>{label}</b></span>)}</div>)}
             </div>
           </section>
-        </section>
       </section>
 
       <section className={styles.story} id="how">
