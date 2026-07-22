@@ -467,8 +467,8 @@ Expanded links use Manrope, not Fraunces. Gold appears only on hover and on the 
 
 Hero anatomy:
 
-1. static full-bleed cream-to-ivory gradient field;
-2. restrained gold radial light, concentric hairlines and one horizontal ledger rule;
+1. full-bleed cream-to-ivory gradient with two slow, low-opacity edge auras;
+2. restrained gold radial light, concentric hairlines, one horizontal ledger rule and at most three tiny motes;
 3. gold eyebrow between two short rules;
 4. two-line Fraunces promise with one italic/gold turn;
 5. one calm supporting paragraph;
@@ -694,28 +694,35 @@ motion follows hover, focus, pointer, or scroll. Nothing important waits for ani
 | `.65–1s` | Entrance reveal |
 | `5.6–7s` | CTA sheen / closing artwork drift |
 
-### 10.3 Static hero contract
+### 10.3 Hero entrance contract
 
-Phases 1–3 hero copy, CTA, monthly pulse and all product screens render directly in their stable final positions. There is no
-hero entrance choreography, no animated word rotation and no pointer-driven product movement.
-Important product information therefore never waits for animation. The separate money-area proof
-rail retains its existing entrance/crawl treatment.
+Phase 4 adds one restrained load sequence. Eyebrow, headline, body and CTA settle `9px → 0` over
+`.62–.74s`; their starting opacity stays at `.82`, so important information is readable immediately.
+The italic gold line receives one `1.05s` gradient sweep and then stops. Monthly pulse settles once
+from `9px`; its individual figures never count or animate. Product screens settle `17–20px → 0`
+over `.82–.88s`. There is no word rotation, type scrambling or pointer-driven movement.
 
 ### 10.4 Hero depth
 
 Depth comes from the photographed device, radial alpha falloff, one soft gold halo and background
-hairlines. The hero installs no pointer listener and writes no motion CSS variables in Phases 1–3.
+hairlines. After entrance, the central product moves only `3px` vertically over `7.2s`; companions
+move `3px` in opposing directions over `7.6s` while retaining their fixed tilts. The hero installs no
+pointer listener and writes no motion CSS variables.
 
 ### 10.5 Ambient gamified motion
 
+- Hero edge auras: blurred CSS light fields drift `16–18px` over `17–19s`; centre remains untouched.
+- Hero motes: at most three `2–4px` points vary gently over `9s`; phones keep only one.
+- Product screens: `3px` maximum vertical drift; no rotation change, bounce or autoplay carousel.
 - Closing artwork: `-7px` drift and `1.008` scale at midpoint, `7s` ease-in-out.
 
-### 10.5a Static hero atmosphere
+### 10.5a Hero atmosphere
 
 The hero backdrop is CSS-only and non-interactive. It uses shared surface/background/accent tokens,
-keeps its centre quiet, and introduces depth through radial light plus low-alpha hairline rings. No
-video, poster or background image loads in Phases 1–3. This guarantees the same complete atmosphere
-for normal and reduced-motion visitors.
+keeps its centre quiet, and introduces depth through radial light, low-alpha hairline rings, two
+outer blurred auras and tiny motes. No video, poster, literal cloud or background image loads. The
+auras remain outside the central copy/product column and use only transform animation. Reduced
+motion preserves the complete atmosphere in its static final positions.
 
 ### 10.6 Scroll-sheet transitions
 

@@ -55,7 +55,11 @@ export default function LandingPage() {
         <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/auth?mode=signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/auth">Log in to Kharcha</Link></div></div></div>
       </div>
       <section className={styles.hero} id="top">
-        <div className={styles.heroBackdrop} aria-hidden="true" />
+        <div className={styles.heroBackdrop} aria-hidden="true">
+          <span className={`${styles.heroAura} ${styles.heroAuraLeft}`} />
+          <span className={`${styles.heroAura} ${styles.heroAuraRight}`} />
+          <span className={styles.heroMotes}><i /><i /><i /></span>
+        </div>
         <div className={styles.heroContent}>
           <div className={styles.heroCopy}>
             <span className={styles.heroEyebrow}><i /> ONE MONTH. ONE CLEAR VIEW. <i /></span>
