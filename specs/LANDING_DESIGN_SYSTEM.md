@@ -274,10 +274,11 @@ Use gradients to create light and temperature, not multicolour branding.
 Canonical compositions:
 
 ```css
-/* Hero: warm paper plus a faint gold atmosphere behind product. */
+/* Static Luminous Ledger hero: warm paper, quiet gold light, no media layer. */
 background:
-  radial-gradient(circle at 77% 52%, rgb(var(--c-accent-rgb) / .15), transparent 22%),
-  linear-gradient(125deg, var(--c-bg1), var(--c-bg2));
+  radial-gradient(ellipse 34% 46% at 50% 72%, rgb(var(--c-accent-rgb) / .18), transparent 72%),
+  radial-gradient(circle at 86% 24%, rgb(var(--c-accent-rgb) / .08), transparent 27%),
+  linear-gradient(180deg, var(--c-surface), var(--c-bg1) 56%, var(--c-bg2));
 
 /* Dark feature surface: one warm charcoal family. */
 background: linear-gradient(145deg, #292219, #201b13);
@@ -380,8 +381,8 @@ Landing has two primary breakpoints plus one height adaptation:
 
 ### 7.1 Desktop rules
 
-- Hero is exactly `100svh`; its film starts at viewport pixel zero and the fixed navigation overlays it.
-- Phone artwork remains centred and uses a restrained `±8px` pointer response.
+- Hero is exactly `100svh` with a `720px` safe minimum; its static gradient field starts at viewport pixel zero and the fixed navigation overlays it.
+- Natural phone-and-hand balance artwork remains centred and static. Code-native Spending and Investments phones sit behind it with understated opposing tilts; no pointer response runs in Phases 1–2.
 - Primary narrative sections use two columns.
 - Dark product cards use two equal columns.
 - Footer uses `2fr repeat(3,1fr)`.
@@ -389,10 +390,10 @@ Landing has two primary breakpoints plus one height adaptation:
 
 ### 7.2 Mobile ≤800px
 
-- Hero remains an exact `100svh` centred composition; copy precedes product art and the navigation overlays the film.
+- Hero remains an exact `100svh` centred composition with a `700px` safe minimum; copy precedes product art and navigation overlays the static atmosphere.
 - Navigation width remains `calc(100vw - 32px)` and compact height becomes `54px`.
 - Desktop nav links/actions disappear; menu toggle stays available.
-- Phone width recomposes to `clamp(255px, min(66vw, 42svh), 360px)` so the bezel stays visible.
+- Phone artwork wrapper recomposes to `clamp(320px, 78vw, 380px)` with a height capped at `48svh`; its enlarged internal image crop keeps balance, bills and transaction proof legible. Secondary screens are removed through `800px` so product proof does not crowd the focused mobile stack.
 - Narrative, dark feature, and stories grids become one column.
 - Proof items wrap/recompose into three centred max-content columns.
 - Dark chapter radius becomes `28px`; vertical padding shortens deliberately.
@@ -406,8 +407,8 @@ Landing has two primary breakpoints plus one height adaptation:
 
 ### 7.3 Small phone ≤450px
 
-- Hero display: `clamp(46px, 14.6vw, 62px)`; body: `14px`.
-- Phone width caps at `320px`/`82vw`; it stays centred below the CTA.
+- Hero display: `clamp(44px, 13.2vw, 57px)`; body: `14px`.
+- Phone wrapper caps at `330px`/`82vw` and `44svh`; it stays centred below the CTA.
 - Proof rail becomes two columns.
 - Feature row grid compresses from `50/1fr/30` to `32/1fr/18`.
 - Testimonial cards remain side by side with smaller gaps and type; do not hide either card.
@@ -466,18 +467,24 @@ Expanded links use Manrope, not Fraunces. Gold appears only on hover and on the 
 
 Hero anatomy:
 
-1. silent full-bleed cloud film with WebM/MP4 sources and poster fallback;
-2. warm readability wash with cloud mass held at the outer sides;
+1. static full-bleed cream-to-ivory gradient field;
+2. restrained gold radial light, concentric hairlines and one horizontal ledger rule;
 3. gold eyebrow between two short rules;
 4. two-line Fraunces promise with one italic/gold turn;
 5. one calm supporting paragraph;
 6. one primary charcoal CTA;
-7. centred Kharcha phone-in-hand artwork with the complete bezel visible;
-8. separate money-area proof rail below the hero.
+7. centred Kharcha phone-in-hand balance artwork, cropped toward its informative upper screen;
+8. two static desktop companion phones behind it for Spending and Investments;
+9. separate money-area proof rail below the hero.
 
-The phone artwork is a project-owned product mockup, not a competitor screenshot. Preserve its
-Kharcha UI, full device frame and bottom bezel. Its cream field blends into the film using multiply
-compositing and a soft radial mask; do not crop the device border to make it larger.
+The central phone artwork is a project-owned product mockup, not a competitor screenshot. Preserve
+its Kharcha UI and Dynamic Island. Phase 2 uses `hero-phone-hand-v5.png`: the balance UI remains
+verbatim while the grip uses natural medium-brown skin and the source field becomes clean warm ivory.
+The layout enlarges that canvas so Left-in-bank, Bills & EMIs, SIPs and Transactions read before the
+lower hand exits the viewport; multiply compositing plus a soft radial alpha mask dissolve its edges.
+Desktop companion screens are 168px-wide code-native shells with static `-7deg`/`7deg` rotations.
+They show only enough data to prove product breadth, sit behind the central hand and disappear at
+`800px`; they must never compete with the primary balance.
 
 ### 8.4 Primary CTA
 
@@ -678,54 +685,38 @@ motion follows hover, focus, pointer, or scroll. Nothing important waits for ani
 | `.2–.3s` | Colour, arrow, underline, compact interaction |
 | `.35–.55s` | Menu morph/open and material transitions |
 | `.65–1s` | Entrance reveal |
-| `1s` | Phone artwork entrance |
-| `12s` | Seamless slow forward-only cloud-film loop |
 | `5.6–7s` | CTA sheen / closing artwork drift |
 
-### 10.3 Hero entrance choreography
+### 10.3 Static hero contract
 
-- overall copy opacity: `.9s`, delay `.08s`;
-- individual lines rise `18px` over `.85s`;
-- delays: eyebrow `.08s`, headline `.16s`, body `.25s`, CTA `.34s`;
-- phone artwork rises `28px` and settles from `.97` scale over `1s` after `.28s`;
-- proof items enter over `.65s`, staggered `.09s` starting `.55s`.
+Phases 1–2 hero copy, CTA and all product screens render directly in their stable final positions. There is no
+hero entrance choreography, no animated word rotation and no pointer-driven product movement.
+Important product information therefore never waits for animation. The separate money-area proof
+rail retains its existing entrance/crawl treatment.
 
-Total choreography remains under roughly 2.5 seconds and content is readable immediately.
+### 10.4 Hero depth
 
-### 10.4 Pointer-reactive hero depth
-
-Normalize pointer position to `-1…1`, update in `requestAnimationFrame`, and write CSS variables:
-
-| Layer | X response | Y response | Depth/tilt |
-|---|---:|---:|---|
-| Phone artwork | `±8px` | `±8px` | none; keep the device face stable and readable |
-
-Use one requestAnimationFrame interpolation loop for pointer movement and return-to-rest, with no
-per-event CSS transition restart. Keep entrance motion on an outer wrapper and pointer response on
-an inner motion layer so both animations never compete for `transform`. Reset targets to zero on
-pointer leave. Disable on reduced motion.
+Depth comes from the photographed device, radial alpha falloff, one soft gold halo and background
+hairlines. The hero installs no pointer listener and writes no motion CSS variables in Phases 1–2.
 
 ### 10.5 Ambient gamified motion
 
-- Hero atmosphere: silent 12-second cloud film with slow forward-only cloud deformation, mirrored outer cloud masses and a warm gold grade. Drive deformation with a continuously advancing procedural displacement phase that returns exactly after one file duration. Do not use crossfades or append reversed frames.
 - Closing artwork: `-7px` drift and `1.008` scale at midpoint, `7s` ease-in-out.
 
-### 10.5a Hero film contract
+### 10.5a Static hero atmosphere
 
-The film is atmosphere, never the content. Keep it silent, non-interactive and behind the complete
-copy/phone stack. Use WebM first and MP4 fallback, `preload="metadata"`, `muted`, `playsInline`,
-`autoPlay`, `loop`, and the compressed AVIF poster. Ship separate 1080p desktop and 720p mobile
-encodes. Clouds stay at both outer edges; the central field
-stays low-detail. The source motion must end at its opening pose so native looping does not flash or
-hard-cut. Reduced motion pauses and hides the film while the poster remains visible.
+The hero backdrop is CSS-only and non-interactive. It uses shared surface/background/accent tokens,
+keeps its centre quiet, and introduces depth through radial light plus low-alpha hairline rings. No
+video, poster or background image loads in Phases 1–2. This guarantees the same complete atmosphere
+for normal and reduced-motion visitors.
 
 ### 10.6 Scroll-sheet transitions
 
 The `rotationX` perspective is supplied per-panel via GSAP `transformPerspective: 1600`, never as a `perspective` on `.page`/`main`.
 
-The page body remains flat `--c-bg1`; only the hero replaces that field with the cloud film and its
-warm readability wash. The film backdrop has the poster as its opaque fallback, so no page-colour
-patch can appear while video metadata loads or when autoplay is unavailable.
+The page body remains flat `--c-bg1`; only the hero replaces that field with its static token-driven
+cream/gold atmosphere. Because no hero media loads, there is no autoplay fallback or metadata-time
+colour patch.
 Chapter 3D uses per-panel GSAP `transformPerspective`, never a `perspective` on `.page`, so the sticky nav is never trapped in a page-level 3D context. Do not put `backdrop-filter` in a CSS `transition` (animating it is a known Chromium glitch trigger).
 
 Desktop dark chapter enters from:
@@ -767,9 +758,8 @@ Under `prefers-reduced-motion: reduce`:
 
 - disable Lenis;
 - do not initialize GSAP sheet transitions;
-- remove entrance, proof and closing-art animations, and pause/hide the hero film;
+- remove proof and closing-art animations;
 - remove CTA sheen/transform transitions;
-- stop hero pointer response;
 - use stable final layouts;
 - decorative static tilt may remain only where it is not produced by motion; demo-card
   reduced-motion rules may flatten tilt.
@@ -936,16 +926,15 @@ Avoid:
 ## 15. Performance and implementation
 
 - Prefer CSS transforms/opacity for continuous animation.
-- Pointer motion writes CSS variables inside `requestAnimationFrame`.
 - Use passive scroll listeners.
-- Cancel RAF/timeouts and remove every listener on cleanup.
+- Cancel timers and remove every listener on cleanup.
 - Revert GSAP match media and destroy Lenis on unmount.
 - Avoid layout-triggering per-frame properties; rupee float uses compositor `translate`.
 - Keep ambient layers `pointer-events: none`.
 - Use `overflow: clip` where chapter art must not create horizontal scroll.
 - Reserve visual height so async images do not shift layout.
 - Use `next/image` dimensions and responsive `sizes`.
-- Keep hero video silent and tiny: WebM first, MP4 fallback, poster fallback, metadata preload.
+- Load the static hero phone through `next/image` with dimensions, responsive `sizes` and priority.
 - Do not add WebGL for effects achievable with CSS/GSAP.
 - Fixed `will-change` is acceptable only on known active sheet layers; remove/avoid it on large
   idle surfaces where possible.
@@ -953,10 +942,10 @@ Avoid:
 
 Current motion stack:
 
-- CSS keyframes/transitions for entrance, hover, proof rail and ambient drift;
+- CSS keyframes/transitions for hover, proof rail and closing-art drift;
 - GSAP + ScrollTrigger for bounded chapter-sheet transitions;
 - Lenis for smooth wheel/anchor movement;
-- native pointer/scroll listeners for hero depth and nav adaptation.
+- native scroll listeners for nav adaptation.
 
 ---
 

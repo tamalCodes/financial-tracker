@@ -10,17 +10,10 @@ export default function LandingMotion() {
     const nav = document.querySelector<HTMLElement>("[data-landing-nav]");
     const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
     const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
-    const heroVisual = document.querySelector<HTMLElement>("[data-hero-visual]");
-    const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-video]");
     const moneyRail = document.querySelector<HTMLElement>("[data-money-rail]");
     const moneyTrack = document.querySelector<HTMLElement>("[data-money-rail-track]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let menuPinned = false;
-    let heroFrame = 0;
-    let heroX = 0;
-    let heroY = 0;
-    let heroTargetX = 0;
-    let heroTargetY = 0;
     let menuCloseFrame = 0;
     let moneyResumeTimer = 0;
     let moneySegment = 0;
@@ -66,38 +59,6 @@ export default function LandingMotion() {
     const onMenuClick = (event: Event) => {
       if ((event.target as HTMLElement).closest("a")) setMenu(false, false);
     };
-    const animateHero = () => {
-      if (!heroVisual) return;
-      heroX += (heroTargetX - heroX) * 0.16;
-      heroY += (heroTargetY - heroY) * 0.16;
-
-      if (Math.abs(heroTargetX - heroX) < 0.02) heroX = heroTargetX;
-      if (Math.abs(heroTargetY - heroY) < 0.02) heroY = heroTargetY;
-
-      heroVisual.style.setProperty("--hero-shift-x", `${heroX.toFixed(2)}px`);
-      heroVisual.style.setProperty("--hero-shift-y", `${heroY.toFixed(2)}px`);
-
-      if (heroX === heroTargetX && heroY === heroTargetY) {
-        heroFrame = 0;
-        return;
-      }
-      heroFrame = requestAnimationFrame(animateHero);
-    };
-    const requestHeroFrame = () => {
-      if (!heroFrame) heroFrame = requestAnimationFrame(animateHero);
-    };
-    const onHeroMove = (event: PointerEvent) => {
-      if (!heroVisual || reducedMotion.matches) return;
-      const rect = heroVisual.getBoundingClientRect();
-      heroTargetX = (((event.clientX - rect.left) / rect.width - 0.5) * 2) * 8;
-      heroTargetY = (((event.clientY - rect.top) / rect.height - 0.5) * 2) * 8;
-      requestHeroFrame();
-    };
-    const resetHero = () => {
-      heroTargetX = 0;
-      heroTargetY = 0;
-      requestHeroFrame();
-    };
     const sizeMoneyRail = () => {
       if (!moneyRail || !moneyTrack) return;
       moneySegment = moneyTrack.scrollWidth / 3;
@@ -142,8 +103,6 @@ export default function LandingMotion() {
     menu?.addEventListener("mouseleave", onLeave);
     menu?.addEventListener("click", onMenuClick);
     window.addEventListener("keydown", onKeyDown);
-    heroVisual?.addEventListener("pointermove", onHeroMove);
-    heroVisual?.addEventListener("pointerleave", resetHero);
     moneyRail?.addEventListener("scroll", wrapMoneyRail, { passive: true });
     moneyRail?.addEventListener("pointerdown", onMoneyPointerDown);
     moneyRail?.addEventListener("pointerup", onMoneyPointerUp);
@@ -153,7 +112,6 @@ export default function LandingMotion() {
     requestAnimationFrame(sizeMoneyRail);
 
     if (reducedMotion.matches) {
-      heroVideo?.pause();
       return () => {
         window.removeEventListener("scroll", updateNav);
         toggle?.removeEventListener("click", onToggle);
@@ -163,15 +121,12 @@ export default function LandingMotion() {
         menu?.removeEventListener("mouseleave", onLeave);
         menu?.removeEventListener("click", onMenuClick);
         window.removeEventListener("keydown", onKeyDown);
-        heroVisual?.removeEventListener("pointermove", onHeroMove);
-        heroVisual?.removeEventListener("pointerleave", resetHero);
         moneyRail?.removeEventListener("scroll", wrapMoneyRail);
         moneyRail?.removeEventListener("pointerdown", onMoneyPointerDown);
         moneyRail?.removeEventListener("pointerup", onMoneyPointerUp);
         moneyRail?.removeEventListener("pointercancel", onMoneyPointerUp);
         moneyRail?.removeEventListener("wheel", pauseMoneyRail);
         window.removeEventListener("resize", sizeMoneyRail);
-        cancelAnimationFrame(heroFrame);
         window.clearTimeout(moneyResumeTimer);
         window.clearTimeout(menuCloseFrame);
       };
@@ -298,15 +253,12 @@ export default function LandingMotion() {
       menu?.removeEventListener("mouseleave", onLeave);
       menu?.removeEventListener("click", onMenuClick);
       window.removeEventListener("keydown", onKeyDown);
-      heroVisual?.removeEventListener("pointermove", onHeroMove);
-      heroVisual?.removeEventListener("pointerleave", resetHero);
       moneyRail?.removeEventListener("scroll", wrapMoneyRail);
       moneyRail?.removeEventListener("pointerdown", onMoneyPointerDown);
       moneyRail?.removeEventListener("pointerup", onMoneyPointerUp);
       moneyRail?.removeEventListener("pointercancel", onMoneyPointerUp);
       moneyRail?.removeEventListener("wheel", pauseMoneyRail);
       window.removeEventListener("resize", sizeMoneyRail);
-      cancelAnimationFrame(heroFrame);
       window.clearTimeout(moneyResumeTimer);
       window.clearTimeout(menuCloseFrame);
     };

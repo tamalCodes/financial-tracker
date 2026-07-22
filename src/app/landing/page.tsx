@@ -55,20 +55,13 @@ export default function LandingPage() {
         <div className={styles.navMenu} data-nav-menu aria-hidden="true"><div className={styles.navMenuLabel}>EXPLORE KHARCHA</div><a href="#how">How it works <span>↗</span></a><a href="#features">Why Kharcha <span>↗</span></a><a href="#stories">Member stories <span>↗</span></a><div className={styles.navMenuFoot}><div><small>START HERE</small><Link href="/auth?mode=signup">Create your free account</Link></div><div><small>ALREADY TRACKING?</small><Link href="/auth">Log in to Kharcha</Link></div></div></div>
       </div>
       <section className={styles.hero} id="top">
-        <div className={styles.heroBackdrop} aria-hidden="true">
-          <video className={styles.heroVideo} data-hero-video autoPlay muted loop playsInline preload="metadata" poster="/landing/hero-clouds-gold-poster.avif">
-            <source src="/landing/hero-clouds-gold-mobile.webm" type="video/webm" media="(max-width: 800px)" />
-            <source src="/landing/hero-clouds-gold.webm" type="video/webm" media="(min-width: 801px)" />
-            <source src="/landing/hero-clouds-gold-mobile.mp4" type="video/mp4" media="(max-width: 800px)" />
-            <source src="/landing/hero-clouds-gold.mp4" type="video/mp4" />
-          </video>
-          <div className={styles.heroVideoWash} />
-        </div>
+        <div className={styles.heroBackdrop} aria-hidden="true" />
         <div className={styles.heroContent}>
           <div className={styles.heroCopy}>
-            <h1>Your money.<br /><em>In its place.</em></h1>
-            <p>Kharcha brings your everyday money into one clear, thoughtful view — so you can spend, save and grow with confidence.</p>
-            <div className={styles.heroActions}><Link className={styles.primaryCta} href="/auth?mode=signup">Start Tracking <span>→</span></Link></div>
+            <span className={styles.heroEyebrow}><i /> ONE MONTH. ONE CLEAR VIEW. <i /></span>
+            <h1>See what&apos;s left.<br /><em>Choose what&apos;s next.</em></h1>
+            <p>Income, spending, bills and investments — clear in one calm monthly view.</p>
+            <div className={styles.heroActions}><Link className={styles.primaryCta} href="/auth?mode=signup">Start tracking free <span>→</span></Link></div>
           </div>
           <HeroPhone />
         </div>
