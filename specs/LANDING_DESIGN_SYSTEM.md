@@ -473,9 +473,10 @@ Hero anatomy:
 4. two-line Fraunces promise with one italic/gold turn;
 5. one calm supporting paragraph;
 6. one primary charcoal CTA;
-7. centred Kharcha phone-in-hand balance artwork, cropped toward its informative upper screen;
-8. two static desktop companion phones behind it for Spending and Investments;
-9. separate money-area proof rail below the hero.
+7. one compact three-metric monthly pulse using a single glass/hairline rail;
+8. centred Kharcha phone-in-hand balance artwork, cropped toward its informative upper screen;
+9. two static desktop companion phones behind it for Spending and Investments;
+10. separate money-area proof rail below the hero.
 
 The central phone artwork is a project-owned product mockup, not a competitor screenshot. Preserve
 its Kharcha UI and Dynamic Island. Phase 2 uses `hero-phone-hand-v5.png`: the balance UI remains
@@ -485,6 +486,12 @@ lower hand exits the viewport; multiply compositing plus a soft radial alpha mas
 Desktop companion screens are 168px-wide code-native shells with static `-7deg`/`7deg` rotations.
 They show only enough data to prove product breadth, sit behind the central hand and disappear at
 `800px`; they must never compete with the primary balance.
+
+The Phase 3 monthly pulse is an accessible `<dl>` positioned in the natural air between CTA and
+device hardware. It contains exactly three example values—Left in bank, Spent this month and Next
+SIP—inside one low-opacity glass rail with two vertical hairlines. Desktop width caps at `480px` and
+height begins at `49px`; mobile compresses to `43–45px`. Do not split it into three raised cards,
+animate the figures or add another metric. The rail clarifies the product before it decorates it.
 
 ### 8.4 Primary CTA
 
@@ -689,7 +696,7 @@ motion follows hover, focus, pointer, or scroll. Nothing important waits for ani
 
 ### 10.3 Static hero contract
 
-Phases 1–2 hero copy, CTA and all product screens render directly in their stable final positions. There is no
+Phases 1–3 hero copy, CTA, monthly pulse and all product screens render directly in their stable final positions. There is no
 hero entrance choreography, no animated word rotation and no pointer-driven product movement.
 Important product information therefore never waits for animation. The separate money-area proof
 rail retains its existing entrance/crawl treatment.
@@ -697,7 +704,7 @@ rail retains its existing entrance/crawl treatment.
 ### 10.4 Hero depth
 
 Depth comes from the photographed device, radial alpha falloff, one soft gold halo and background
-hairlines. The hero installs no pointer listener and writes no motion CSS variables in Phases 1–2.
+hairlines. The hero installs no pointer listener and writes no motion CSS variables in Phases 1–3.
 
 ### 10.5 Ambient gamified motion
 
@@ -707,7 +714,7 @@ hairlines. The hero installs no pointer listener and writes no motion CSS variab
 
 The hero backdrop is CSS-only and non-interactive. It uses shared surface/background/accent tokens,
 keeps its centre quiet, and introduces depth through radial light plus low-alpha hairline rings. No
-video, poster or background image loads in Phases 1–2. This guarantees the same complete atmosphere
+video, poster or background image loads in Phases 1–3. This guarantees the same complete atmosphere
 for normal and reduced-motion visitors.
 
 ### 10.6 Scroll-sheet transitions

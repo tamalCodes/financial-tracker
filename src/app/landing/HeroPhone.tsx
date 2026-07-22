@@ -29,8 +29,13 @@ function CompanionPhone({
 
 export default function HeroPhone() {
   return (
-    <div className={styles.heroPhone} role="img" aria-label="Three Kharcha app views for monthly balance, spending and investments">
+    <div className={styles.heroPhone}>
       <div className={styles.heroPhoneHalo} aria-hidden="true" />
+      <dl className={styles.heroSnapshot} aria-label="Example Kharcha monthly snapshot">
+        <div><dt>Left in bank</dt><dd>₹48,260</dd></div>
+        <div><dt>Spent this month</dt><dd>₹18,420</dd></div>
+        <div><dt>Next SIP</dt><dd>₹8,000</dd></div>
+      </dl>
       <CompanionPhone className={styles.heroCompanionSpending} eyebrow="THIS MONTH" title="Spending" amount="₹18,420">
         <div className={styles.companionDonut}><span>64%</span></div>
         <div className={styles.companionLegend}><span><i />Essentials</span><b>₹11,840</b></div>
